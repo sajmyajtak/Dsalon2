@@ -1,0 +1,62 @@
+# DSTUDIO | Beauty Salon — web
+
+Statický web salonu DSTUDIO (Praha 7 – Holešovice). Čisté HTML, CSS a JavaScript bez
+frameworku a bez build kroku: co je v repozitáři, to se nasazuje.
+
+## Spuštění
+
+```bash
+python3 -m http.server 4173
+```
+
+Pak otevřete `http://localhost:4173/`.
+
+## Nasazení (Netlify)
+
+Celý adresář se nahraje tak, jak je (drag & drop nebo ZIP). `netlify.toml` nastavuje
+bezpečnostní hlavičky (CSP, HSTS, …) a cache. `404.html` Netlify použije automaticky.
+
+## Struktura
+
+| Soubor | Co v něm je |
+| --- | --- |
+| `index.html` | Celá úvodní stránka včetně ceníku |
+| `ochrana-osobnich-udaju.html` | Ochrana osobních údajů a cookies |
+| `404.html` | Stránka „nenalezeno“ |
+| `assets/css/main.css` | Všechny styly; nahoře barvy a písma z brandbooku |
+| `assets/js/main.js` | Menu, otevírací doba, zvýraznění úrovně v ceníku, cookies, mapa, poukaz |
+| `assets/fonts/` | Inter a Cormorant Garamond (SIL OFL), hostované lokálně |
+| `assets/logo/` | Logo vytažené z vektoru v brandbooku (čokoládová, krémová, bílá) |
+| `assets/img/d.svg` | Obrys písmene D z loga — maska v úvodu stránky |
+
+## Značka
+
+Web používá výhradně pět barev a dvě písma z Brandbooku 2.0. Logo se nikde nesází
+písmem — všude je vložený schválený vektor.
+
+## Co je v demu zástupné
+
+Všechna zástupná místa mají v HTML atribut `data-demo` a na stránce štítek **DEMO**:
+
+- **Naše práce** — pět rámečků 4:5 čeká na fotografie. Do `<li class="pane">` stačí
+  vložit `<img src="…" alt="…">`; linky v rámečku fotografie překryje.
+- **Náš tým** — jména, portréty a úrovně specialistek.
+- **Recenze** — tři linkované karty čekají na skutečné recenze.
+- **Kontakt** — fotografie vchodu.
+- **Ochrana osobních údajů** — žlutě podbarvená místa `[doplnit …]` (e-mail, datum účinnosti).
+
+Po doplnění obsahu se prvek s `data-demo` smaže.
+
+## Ceník
+
+Ceník je běžná HTML tabulka v `index.html` (sekce `#cenik`), přepsaná z brandbooku.
+Změna ceny = přepsání čísla v příslušné buňce. Ceny se objevují ještě ve dvou odpovědích
+v sekci Časté otázky (řasy, pánská manikúra a pedikúra) a u úrovní v sekci Náš tým.
+
+## Cookies a měření
+
+Web sám žádné cookies neukládá; volbu návštěvníka si pamatuje v `localStorage`
+(`dstudio-consent`). Mapa Google se načte až po kliknutí. Měření návštěvnosti není
+nasazeno — po doplnění ID do `<meta name="dstudio:analytics-id">` se načte až po
+souhlasu; zároveň je potřeba rozšířit CSP v `netlify.toml` a text na stránce o ochraně
+osobních údajů.

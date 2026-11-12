@@ -9,6 +9,66 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   /* ------------------------------------------------------------------ *
+   * 0. Parallax hero and smooth scrolling
+   *    A plain-JS port of the reference component: one scrubbed GSAP
+   *    timeline moves the four layers by different amounts while the
+   *    hero scrolls away; Lenis smooths wheel scrolling. Skipped for
+   *    people who prefer reduced motion, and if the libraries are absent.
+   * ------------------------------------------------------------------ */
+  let lenis = null;
+  if (!reduceMotion.matches && window.gsap && window.ScrollTrigger) {
+    const { gsap, ScrollTrigger } = window;
+    gsap.registerPlugin(ScrollTrigger);
+
+    const layersRoot = $('[data-parallax-layers]');
+    if (layersRoot) {
+      const timeline = gsap.timeline({
+        scrollTrigger: { trigger: layersRoot, start: '0% 0%', end: '100% 0%', scrub: 0 },
+      });
+      [['1', 70], ['2', 55], ['3', 40], ['4', 10]].forEach(([layer, yPercent], index) => {
+        timeline.to(
+          $$(`[data-parallax-layer="${layer}"]`, layersRoot),
+          { yPercent, ease: 'none' },
+          index === 0 ? undefined : '<',
+        );
+      });
+    }
+
+    if (window.Lenis) {
+      lenis = new window.Lenis();
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+      gsap.ticker.lagSmoothing(0);
+
+      // In-page links: glide to the section and stop below the sticky header, the same
+      // place a native jump would land (scroll-padding on <html>, scroll-margin on the
+      // target). The position is measured from the real scroll offset at click time.
+      document.addEventListener('click', (event) => {
+        if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        const link = event.target.closest('a[href^="#"]');
+        if (!link) return;
+        const id = decodeURIComponent(link.getAttribute('href').slice(1));
+        const target = id ? document.getElementById(id) : document.body;
+        if (!target) return;
+        event.preventDefault();
+        const offset = (parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0)
+          + (parseFloat(getComputedStyle(target).scrollMarginTop) || 0);
+        const y = Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset);
+        lenis.scrollTo(window.scrollY, { immediate: true, force: true });   // start from where the page really is
+        lenis.scrollTo(y, { force: true, duration: 1.1 });
+        if (id && location.hash !== `#${id}`) history.pushState(null, '', `#${id}`);
+        // keyboard and screen-reader users continue from the section they asked for
+        if (target !== document.body) {
+          if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+          target.focus({ preventScroll: true });
+        }
+      });
+    }
+  }
+  // Overlays pause the smooth scroll underneath them.
+  const pauseScroll = (paused) => { if (lenis) { if (paused) lenis.stop(); else lenis.start(); } };
+
+  /* ------------------------------------------------------------------ *
    * 1. Header: hairline once the page has moved, and the mobile menu
    * ------------------------------------------------------------------ */
   const header = $('[data-header]');
@@ -31,6 +91,7 @@
       document.documentElement.classList.toggle('menu-open', open);
       // The sheet covers the page; keep keyboard and screen readers inside it.
       behind.forEach((el) => { el.inert = open; });
+      pauseScroll(open);
       if (open) {
         const first = $('a, button', menu);
         if (first) first.focus({ preventScroll: true });
@@ -257,6 +318,7 @@
   const openDialog = () => {
     if (!dialog) return;
     syncDialog();
+    pauseScroll(true);
     if (typeof dialog.showModal === 'function') dialog.showModal();
     else dialog.setAttribute('open', '');
   };
@@ -301,6 +363,7 @@
   if (dialog) {
     // A click on the backdrop closes the dialog.
     dialog.addEventListener('click', (e) => { if (e.target === dialog) closeDialog(); });
+    dialog.addEventListener('close', () => pauseScroll(false));
   }
 
   consent.current = consent.read();

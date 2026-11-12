@@ -24,10 +24,23 @@ bezpečnostní hlavičky (CSP, HSTS, …) a cache. `404.html` Netlify použije a
 | `ochrana-osobnich-udaju.html` | Ochrana osobních údajů a cookies |
 | `404.html` | Stránka „nenalezeno“ |
 | `assets/css/main.css` | Všechny styly; nahoře barvy a písma z brandbooku |
-| `assets/js/main.js` | Menu, otevírací doba, zvýraznění úrovně v ceníku, souhlas s mapou, poukaz |
+| `assets/js/main.js` | Parallax úvodu, menu, otevírací doba, zvýraznění úrovně v ceníku, souhlas s mapou, poukaz |
+| `assets/js/vendor/` | GSAP + ScrollTrigger (parallax) a Lenis (plynulé rolování), hostované lokálně |
 | `assets/fonts/` | Inter a Cormorant Garamond (SIL OFL), hostované lokálně |
 | `assets/logo/` | Logo vytažené z vektoru v brandbooku (čokoládová, krémová, bílá) |
-| `assets/img/d.svg` | Obrys písmene D z loga — tvar v úvodu stránky |
+| `assets/img/hero/` | Vrstvy úvodní scény: zeď, dva závěsy, ruka s kyticí, flakony |
+
+## Úvodní scéna (hero)
+
+Úvod je složený ze čtyř vrstev, které se při rolování posouvají různou rychlostí:
+zeď se slunečním světlem → sametové závěsy → titulek → ruka s kyticí a flakony.
+Pohyb řídí GSAP ScrollTrigger, plynulé rolování Lenis; obojí je v `assets/js/vendor/`
+(GSAP: standardní bezplatná licence, Lenis: MIT). Při zapnutém „omezit pohyb“ v systému
+zůstává scéna v klidu a stránka se roluje běžně. Rozmístění vrstev pro mobil, tablet
+a široké obrazovky je v `assets/css/main.css` v části „Hero“.
+
+Obrázky scény jsou ilustrační. Až budou k dispozici vlastní fotografie salonu, stačí
+vyměnit soubory v `assets/img/hero/` (průhledné WebP, stejné názvy).
 
 ## Značka
 

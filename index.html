@@ -26,6 +26,9 @@
   <link rel="preload" href="assets/fonts/inter-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/css/main.css">
   <script src="assets/js/boot.js"></script>
+  <script src="assets/js/vendor/gsap.min.js" defer></script>
+  <script src="assets/js/vendor/ScrollTrigger.min.js" defer></script>
+  <script src="assets/js/vendor/lenis.min.js" defer></script>
   <script src="assets/js/main.js" defer></script>
   <script type="application/ld+json">
   {
@@ -83,7 +86,7 @@
     <a class="logo" href="#top" aria-label="DSTUDIO Beauty Salon – na začátek stránky">
       <svg viewBox="0 0 552.514 146.363" aria-hidden="true"><use href="#logo"/></svg>
     </a>
-    <nav class="nav" id="menu" aria-label="Hlavní navigace" data-menu>
+    <nav class="nav" id="menu" aria-label="Hlavní navigace" data-menu data-lenis-prevent>
       <ul class="nav-list">
         <li><a href="#o-dstudio">O&nbsp;DSTUDIO</a></li>
         <li><a href="#cenik">Služby a&nbsp;ceník</a></li>
@@ -110,36 +113,50 @@
 <main id="obsah">
 
   <!-- ============ ÚVOD ============ -->
+  <!-- Parallax ve čtyřech vrstvách: pozadí, zeleň, titulek, popředí. Vrstvy posouvá
+       GSAP ScrollTrigger (viz assets/js/main.js), plynulé rolování zajišťuje Lenis. -->
   <section class="hero" id="top">
-    <div class="wrap hero-stage">
-      <h1 class="hero-title">
-        <span class="ht-d" aria-hidden="true"></span>
-        <span class="ht-l ht-1">Krása je&nbsp;v</span> <span class="ht-r ht-1">detailech.</span>
-        <span class="ht-l ht-2">Péče&nbsp;v</span> <span class="ht-r ht-2">přístupu.</span>
-      </h1>
-      <div class="hero-copy" data-bookbar-hide>
-        <p class="lead">DSTUDIO&nbsp;– salon krásy na Praze&nbsp;7, kde věnujeme pozornost vašim přáním i&nbsp;každému detailu výsledku.</p>
-        <div class="hero-actions">
-          <a class="btn" href="https://noona.app/dstudio" target="_blank" rel="noopener">Rezervovat online <span class="btn-arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span><span class="visually-hidden"> (otevře se na nové kartě)</span></a>
-          <a class="link-arrow" href="#prace">Prohlédnout naše práce</a>
+    <div class="hero-visuals">
+      <div class="hero-layers" data-parallax-layers>
+        <div class="hero-layer hero-layer--wall" data-parallax-layer="1">
+          <img src="assets/img/hero/wall.webp" alt="" width="1600" height="1410" fetchpriority="high" decoding="async">
+        </div>
+        <div class="hero-layer hero-layer--drapes" data-parallax-layer="2">
+          <img class="hero-drape hero-drape--l" src="assets/img/hero/drape-l.webp" alt="" width="418" height="1344" decoding="async">
+          <img class="hero-drape hero-drape--r" src="assets/img/hero/drape-r.webp" alt="" width="454" height="1344" decoding="async">
+        </div>
+        <div class="hero-layer-title" data-parallax-layer="3">
+          <div class="hero-copy">
+            <h1 class="hero-title">Krása je v&nbsp;detailech. <span>Péče v&nbsp;přístupu.</span></h1>
+            <p class="lead">DSTUDIO&nbsp;– salon krásy na Praze&nbsp;7, kde věnujeme pozornost vašim přáním i&nbsp;každému detailu výsledku.</p>
+            <div class="hero-actions" data-bookbar-hide>
+              <a class="btn" href="https://noona.app/dstudio" target="_blank" rel="noopener">Rezervovat online <span class="btn-arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span><span class="visually-hidden"> (otevře se na nové kartě)</span></a>
+              <a class="link-arrow" href="#prace">Prohlédnout naše práce</a>
+            </div>
+          </div>
+        </div>
+        <div class="hero-layer hero-layer--front" data-parallax-layer="4">
+          <img class="hero-prop hero-prop--hand" src="assets/img/hero/hand.webp" alt="" width="992" height="507" decoding="async">
+          <img class="hero-prop hero-prop--still" src="assets/img/hero/still.webp" alt="" width="964" height="576" decoding="async">
         </div>
       </div>
-      <div class="hero-meta">
-        <p>Milady Horákové&nbsp;398/30<br>Praha&nbsp;7 · ve dvoře</p>
-        <p class="status" data-hours-status><span class="status-dot" aria-hidden="true"></span><span data-hours-text>Po–Pá 9:00–19:00</span></p>
-      </div>
-    </div>
-
-    <div class="wrap">
-      <ul class="services-row" aria-label="Služby">
-        <li><a href="#cenik-nail-care">Manikúra</a></li>
-        <li><a href="#cenik-nail-care">Pedikúra</a></li>
-        <li><a href="#cenik-beauty">Obočí</a></li>
-        <li><a href="#cenik-beauty">Řasy</a></li>
-        <li><a href="#cenik-beauty">Líčení</a></li>
-      </ul>
+      <div class="hero-fade"></div>
     </div>
   </section>
+
+  <div class="wrap hero-foot">
+    <ul class="services-row" aria-label="Služby">
+      <li><a href="#cenik-nail-care">Manikúra</a></li>
+      <li><a href="#cenik-nail-care">Pedikúra</a></li>
+      <li><a href="#cenik-beauty">Obočí</a></li>
+      <li><a href="#cenik-beauty">Řasy</a></li>
+      <li><a href="#cenik-beauty">Líčení</a></li>
+    </ul>
+    <div class="hero-meta">
+      <p>Milady Horákové&nbsp;398/30 · Praha&nbsp;7 · ve dvoře</p>
+      <p class="status" data-hours-status><span class="status-dot" aria-hidden="true"></span><span data-hours-text>Po–Pá 9:00–19:00</span></p>
+    </div>
+  </div>
 
   <!-- ============ O DSTUDIO ============ -->
   <section class="section about" id="o-dstudio">
@@ -626,7 +643,7 @@
   <a class="bookbar-call" href="tel:+420773706196" aria-label="Zavolat do DSTUDIO: +420 773 706 196"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-phone"/></svg></a>
 </nav>
 
-<dialog class="consent-dialog" aria-labelledby="consent-dialog-title" data-consent-dialog>
+<dialog class="consent-dialog" aria-labelledby="consent-dialog-title" data-consent-dialog data-lenis-prevent>
   <form method="dialog" class="consent-form">
     <h2 class="h2" id="consent-dialog-title">Nastavení cookies</h2>
     <p>Vyberte, co smí web používat. Volbu uložíme jen ve vašem prohlížeči a&nbsp;kdykoli ji tady změníte.</p>

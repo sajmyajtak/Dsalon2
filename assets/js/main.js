@@ -59,7 +59,7 @@
    *    Po–Pá 9:00–19:00, So–Ne pouze na objednání. Europe/Prague time.
    * ------------------------------------------------------------------ */
   const HOURS = { open: 9 * 60, close: 19 * 60 };
-  const DAY_NAMES = ['v neděli', 'v pondělí', 'v úterý', 've středu', 've čtvrtek', 'v pátek', 'v sobotu'];
+  const DAY_NAMES = ['v\u00A0neděli', 'v\u00A0pondělí', 'v\u00A0úterý', 've středu', 've čtvrtek', 'v\u00A0pátek', 'v\u00A0sobotu'];
 
   function pragueParts(date = new Date()) {
     const parts = new Intl.DateTimeFormat('en-GB', {
@@ -94,7 +94,7 @@
   function hoursStatus(now = pragueParts()) {
     const weekday = now.dow >= 1 && now.dow <= 5;
     if (isCzechHoliday(now.y, now.m, now.d)) {
-      return { state: 'holiday', text: 'Dnes je svátek · termín si ověřte v rezervaci' };
+      return { state: 'holiday', text: 'Dnes je státní svátek · termíny najdete v\u00A0rezervaci Noona' };
     }
     if (weekday && now.minutes >= HOURS.open && now.minutes < HOURS.close) {
       return { state: 'open', text: 'Právě otevřeno · dnes do 19:00' };
@@ -114,7 +114,7 @@
     }
     if (!next) return { state: 'closed', text: 'Po–Pá 9:00–19:00' };
     if (!weekday) {
-      return { state: 'appointment', text: `O víkendu pouze na objednání · ${DAY_NAMES[next.dow]} od 9:00` };
+      return { state: 'appointment', text: `O\u00A0víkendu pouze na objednání · otevíráme ${DAY_NAMES[next.dow]} v\u00A09:00` };
     }
     return { state: 'closed', text: next.tomorrow ? 'Zítra otevíráme v\u00A09:00' : `Otevíráme ${DAY_NAMES[next.dow]} v\u00A09:00` };
   }
@@ -188,9 +188,9 @@
   }
 
   /* ------------------------------------------------------------------ *
-   * 4. Consent (cookies / third-party content)
-   *    Stored in localStorage as "dstudio-consent". Nothing optional
-   *    loads before the visitor says yes.
+   * 4. Consent for third-party content (the Google map)
+   *    Stored in localStorage as "dstudio-consent". Nothing from another
+   *    server loads before the visitor says yes. The site has no analytics.
    * ------------------------------------------------------------------ */
   const CONSENT_KEY = 'dstudio-consent';
   const CONSENT_VERSION = 1;
@@ -198,6 +198,7 @@
   const dialog = $('[data-consent-dialog]');
 
   const consent = {
+    current: null,
     read() {
       try {
         const value = JSON.parse(localStorage.getItem(CONSENT_KEY));
@@ -210,23 +211,18 @@
         v: CONSENT_VERSION,
         necessary: true,
         external: Boolean(choice.external),
-        analytics: Boolean(choice.analytics),
         ts: new Date().toISOString(),
       };
-      try { localStorage.setItem(CONSENT_KEY, JSON.stringify(value)); } catch (e) { /* session only */ }
+      try { localStorage.setItem(CONSENT_KEY, JSON.stringify(value)); } catch (e) { /* this visit only */ }
       consent.current = value;
       consent.apply();
       return value;
     },
-    current: null,
     apply() {
-      const state = consent.current || { external: false, analytics: false };
-      $$('[data-map]').forEach((map) => (state.external ? loadMap(map) : unloadMap(map)));
-      if (state.analytics) loadAnalytics();
-      document.dispatchEvent(new CustomEvent('dstudio:consent', { detail: state }));
+      const allowed = Boolean(consent.current && consent.current.external);
+      $$('[data-map]').forEach((map) => (allowed ? loadMap(map) : unloadMap(map)));
     },
   };
-  window.dstudioConsent = consent;
 
   function loadMap(map) {
     if (map.dataset.loaded) return;
@@ -236,8 +232,7 @@
     frame.loading = 'lazy';
     frame.referrerPolicy = 'no-referrer-when-downgrade';
     frame.setAttribute('allowfullscreen', '');
-    const slot = $('[data-map-slot]', map) || map;
-    slot.appendChild(frame);
+    ($('[data-map-slot]', map) || map).appendChild(frame);
     map.dataset.loaded = 'true';
   }
   function unloadMap(map) {
@@ -245,22 +240,6 @@
     const frame = $('iframe', map);
     if (frame) frame.remove();
     delete map.dataset.loaded;
-  }
-  // Analytics are not installed. If a measurement ID is ever added to
-  // <meta name="dstudio:analytics-id">, it loads only after consent.
-  function loadAnalytics() {
-    const meta = $('meta[name="dstudio:analytics-id"]');
-    const id = meta && meta.content.trim();
-    if (!id || window.dstudioAnalyticsLoaded) return;
-    window.dstudioAnalyticsLoaded = true;
-    const s = document.createElement('script');
-    s.async = true;
-    s.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
-    document.head.appendChild(s);
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function gtag() { window.dataLayer.push(arguments); };
-    window.gtag('js', new Date());
-    window.gtag('config', id, { anonymize_ip: true });
   }
 
   const showBanner = (show) => {
@@ -270,7 +249,7 @@
   };
   const syncDialog = () => {
     if (!dialog) return;
-    const state = consent.current || { external: false, analytics: false };
+    const state = consent.current || {};
     $$('input[data-consent-category]', dialog).forEach((input) => {
       input.checked = Boolean(state[input.dataset.consentCategory]);
     });
@@ -291,8 +270,9 @@
     const action = e.target.closest('[data-consent]');
     if (action) {
       const kind = action.dataset.consent;
-      if (kind === 'accept') consent.write({ external: true, analytics: true });
-      if (kind === 'reject') consent.write({ external: false, analytics: false });
+      if (kind === 'close') { closeDialog(); return; }
+      if (kind === 'accept') consent.write({ external: true });
+      if (kind === 'reject') consent.write({ external: false });
       if (kind === 'save' && dialog) {
         const choice = {};
         $$('input[data-consent-category]', dialog).forEach((input) => {
@@ -300,7 +280,6 @@
         });
         consent.write(choice);
       }
-      if (kind === 'close') { closeDialog(); return; }
       showBanner(false);
       closeDialog();
       return;
@@ -313,16 +292,14 @@
     const mapButton = e.target.closest('[data-map-load]');
     if (mapButton) {
       // Loading the map is itself the consent for third-party content.
-      const state = consent.current || { analytics: false };
-      consent.write({ external: true, analytics: state.analytics });
+      consent.write({ external: true });
       showBanner(false);
-      const map = mapButton.closest('[data-map]');
-      const frame = map && $('iframe', map);
+      const frame = $('iframe', mapButton.closest('[data-map]'));
       if (frame) frame.focus();
     }
   });
   if (dialog) {
-    // Click on the backdrop closes the dialog.
+    // A click on the backdrop closes the dialog.
     dialog.addEventListener('click', (e) => { if (e.target === dialog) closeDialog(); });
   }
 

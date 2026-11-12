@@ -56,7 +56,9 @@
         const y = Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset);
         lenis.scrollTo(window.scrollY, { immediate: true, force: true });   // start from where the page really is
         lenis.scrollTo(y, { force: true, duration: 1.1 });
-        if (id && location.hash !== `#${id}`) history.pushState(null, '', `#${id}`);
+        if (id && location.hash !== `#${id}`) {
+          try { history.pushState(null, '', `#${id}`); } catch (error) { /* embedded previews may forbid it */ }
+        }
         // keyboard and screen-reader users continue from the section they asked for
         if (target !== document.body) {
           if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');

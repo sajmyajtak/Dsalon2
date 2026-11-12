@@ -54,6 +54,25 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+/* Fallback faces tuned to the web fonts' metrics: until Inter and Cormorant Garamond
+   arrive, text set in the system font occupies the same space, so nothing jumps. */
+@font-face {
+  font-family: 'Cormorant Fallback';
+  src: local('Times New Roman'), local('Liberation Serif'), local('Times');
+  size-adjust: 96.6%;
+  ascent-override: 95.7%;
+  descent-override: 29.7%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Helvetica');
+  size-adjust: 106.2%;
+  ascent-override: 91.2%;
+  descent-override: 22.7%;
+  line-gap-override: 0%;
+}
+
 /* ---------- Tokens ---------- */
 :root {
   /* Brandbook 2.0 palette — the only colours on the site */
@@ -63,8 +82,8 @@
   --beige: #D7BC95;
   --emerald: #0F4C3A;
 
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-serif: 'Cormorant Garamond', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-sans: 'Inter', 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Cormorant Garamond', 'Cormorant Fallback', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
 
   --gutter: clamp(1rem, 5vw, 4.5rem);
   --max: 82rem;
@@ -271,7 +290,11 @@ html.menu-open { overflow: hidden; }
 html:not(.js) .menu-toggle { display: none; }
 html:not(.js) .nav { position: static; display: block; padding: 0; }
 html:not(.js) .nav-extra { display: none; }
-html:not(.js) .header-inner { height: auto; flex-wrap: wrap; padding-block: 1rem; }
+html:not(.js) .header-inner { height: auto; flex-wrap: wrap; padding-block: 1rem; row-gap: 0.25rem; }
+html:not(.js) .site-header { position: static; }
+html:not(.js) .nav { flex-basis: 100%; }
+html:not(.js) .nav-list { display: flex; flex-wrap: wrap; gap: 0 1.25rem; }
+html:not(.js) .nav-list a { display: inline-block; padding: 0.6rem 0; border: 0; font-family: var(--font-sans); font-size: 0.875rem; font-weight: 500; }
 
 @media (min-width: 60em) {
   .logo svg { width: 9.5rem; }
@@ -307,7 +330,7 @@ html:not(.js) .header-inner { height: auto; flex-wrap: wrap; padding-block: 1rem
   column-gap: 0.22em;
   margin-right: calc(var(--gutter) * -0.5);
   font-family: var(--font-serif); font-weight: 500;
-  font-size: clamp(1.875rem, 9.6vw, 3.75rem);
+  font-size: clamp(1.875rem, 9.6vw, 5.25rem);
   line-height: 1.06; letter-spacing: -0.012em;
 }
 .ht-d {
@@ -360,15 +383,23 @@ html:not(.js) .header-inner { height: auto; flex-wrap: wrap; padding-block: 1rem
   .hero-title {
     grid-column: 1 / -1; grid-row: 2; margin-right: 0;
     grid-template-columns: minmax(0, 1fr) var(--d-w);
+    grid-template-rows: 0.88fr 1.12fr;
     font-size: clamp(3.5rem, calc(var(--d-w) * 0.2), 7.5rem);
   }
-  .hero-copy { grid-column: 1 / 6; grid-row: 2; align-self: end; position: relative; z-index: 1; }
+  /* 960–1279px: the copy sits under the headline, where it can never meet it */
+  .hero-copy { grid-column: 1 / 9; grid-row: 3; margin-top: 2rem; position: relative; z-index: 1; }
   .hero-meta {
     grid-column: 1 / -1; grid-row: 2; align-self: end; justify-self: end;
     width: var(--d-w); padding: 0 0 clamp(2rem, 3.6vw, 3.25rem) clamp(1.5rem, 2.4vw, 2.25rem);
     position: relative; z-index: 1; color: var(--cream);
     flex-direction: column; gap: 0.35rem;
   }
+}
+
+@media (min-width: 80em) {
+  /* wide screens: the copy moves into the white field left of the D, on its baseline */
+  .hero-copy { grid-column: 1 / 7; grid-row: 2; align-self: end; margin-top: 0; }
+  .hero-copy .lead { max-width: 32rem; font-size: clamp(1.0625rem, 0.9rem + 0.4vw, 1.1875rem); }
 }
 
 /* ---------- About / statement / reasons ---------- */
@@ -401,9 +432,11 @@ html:not(.js) .header-inner { height: auto; flex-wrap: wrap; padding-block: 1rem
   margin-inline: calc(var(--gutter) * -1); padding: 0.25rem var(--gutter);
   background: var(--cream); border-block: 1px solid var(--beige);
 }
+.chapter-index { flex: 1 1 auto; max-width: 11.5rem; }
 .chapter-index ol { display: flex; margin: 0; padding: 0; list-style: none; }
+.chapter-index li { flex: 1 1 0; }
 .chapter-index a {
-  display: grid; place-items: center; min-width: clamp(1.75rem, 8.6vw, 2.5rem); min-height: 2.75rem;
+  display: grid; place-items: center; min-width: 1.75rem; min-height: 2.75rem;
   font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.04em; font-variant-numeric: tabular-nums;
   text-decoration: none;
 }
@@ -457,7 +490,7 @@ html:not(.js) .header-inner { height: auto; flex-wrap: wrap; padding-block: 1rem
 }
 .chapter-foot {
   display: flex; justify-content: space-between; margin-top: 1.75rem;
-  font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+  font-size: 0.75rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
 }
 .prices-foot { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--chocolate); font-size: 0.875rem; max-width: 40em; text-wrap: pretty; }
 
@@ -490,6 +523,7 @@ html:not(.js) .header-inner { height: auto; flex-wrap: wrap; padding-block: 1rem
     display: grid; gap: 1.75rem; justify-content: stretch;
     margin: 0; padding: 0; border: 0; background: none;
   }
+  .chapter-index { max-width: none; }
   .chapter-index ol { display: grid; border-bottom: 1px solid var(--chocolate); }
   .chapter-index a {
     grid-template-columns: 2.75rem 1fr; place-items: baseline start; min-height: 0;
@@ -520,6 +554,7 @@ html:not(.js) .header-inner { height: auto; flex-wrap: wrap; padding-block: 1rem
   padding-inline: var(--gutter); scroll-padding-inline: var(--gutter);
 }
 .panes-scroller::-webkit-scrollbar { display: none; }
+.panes-scroller:focus-visible { outline-offset: -2px; }
 .panes { display: grid; grid-auto-flow: column; grid-auto-columns: min(62vw, 17rem); gap: var(--pane-gap); width: max-content; }
 .pane {
   position: relative; aspect-ratio: 4 / 5; overflow: hidden;
@@ -553,7 +588,7 @@ html:not(.js) .header-inner { height: auto; flex-wrap: wrap; padding-block: 1rem
 }
 .demo-tag {
   flex: none; padding: 0.12rem 0.4rem; border: 1px solid currentColor;
-  font-size: 0.625rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
 }
 
 /* ---------- Team ---------- */
@@ -605,7 +640,7 @@ html:not(.js) .header-inner { height: auto; flex-wrap: wrap; padding-block: 1rem
 .voucher-sub { font-size: 1.9cqw; line-height: 1.2; }
 .voucher-fields { display: grid; gap: 1.5cqw; width: 100%; margin-top: 0.6cqw; }
 .voucher-fields > div { display: flex; align-items: flex-end; gap: 1.2cqw; font-size: 1.8cqw; line-height: 1; }
-.voucher-fields dd { flex: 1; border-bottom: 1px solid var(--chocolate); height: 0.9em; }
+.voucher-fields i { flex: 1; border-bottom: 1px solid var(--chocolate); height: 0.9em; }
 @media (min-width: 48em) {
   .voucher-scene { --env-w: 52%; --card-w: 50.3%; --slide: 83%; --card-pad-l: 12.8cqw; width: 100%; aspect-ratio: 100 / 34; }
   .voucher-card { gap: 1.1cqw; padding-block: 2.6cqw; }
@@ -716,7 +751,7 @@ html:not(.js) .header-inner { height: auto; flex-wrap: wrap; padding-block: 1rem
 .plate-rule { width: 4rem; height: 1px; background: var(--chocolate); }
 .plate-cols { display: grid; gap: 1.75rem; width: 100%; max-width: 54rem; font-size: 0.9375rem; line-height: 1.6; }
 .plate-cols > div { display: grid; gap: 0.6rem; align-content: start; }
-.plate-label { font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; }
+.plate-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; }
 .plate-cols a { text-decoration: none; }
 .plate-cols a:hover { text-decoration: underline; }
 @media (min-width: 48em) {
@@ -780,6 +815,7 @@ html.menu-open .bookbar, html.has-consent-banner .bookbar { display: none; }
 .consent-form .h2 { font-size: 2.125rem; }
 .consent-row { display: grid; grid-template-columns: 1fr auto; gap: 1.25rem; align-items: center; padding-top: 1.1rem; border-top: 1px solid var(--beige); }
 .consent-row p { font-size: 0.875rem; margin-top: 0.25rem; }
+.consent-row label { cursor: pointer; }
 .consent-always { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
 .switch { position: relative; display: block; width: 3rem; height: 1.75rem; }
 .switch input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; z-index: 1; }
@@ -813,19 +849,11 @@ html.menu-open .bookbar, html.has-consent-banner .bookbar { display: none; }
 
 /* ---------- Motion (only for people who have not asked for less) ---------- */
 @media (prefers-reduced-motion: no-preference) {
-  .js [data-reveal] { opacity: 0; transform: translateY(1.25rem); transition: opacity 1s var(--ease), transform 1s var(--ease); }
-  .js [data-reveal].is-in { opacity: 1; transform: none; }
-
-  /* Hero: the D opens outward from the axis; the words settle on it. */
-  .js .ht-d { animation: d-open 1.25s var(--ease) 0.1s both; }
-  .js .ht-l { animation: word-in 1s var(--ease) 0.05s both; }
-  .js .ht-r { animation: word-in 1s var(--ease) 0.55s both; }
-  .js .ht-2.ht-l { animation-delay: 0.15s; }
-  .js .ht-2.ht-r { animation-delay: 0.65s; }
-  .js .ht-d svg { animation: wipe 2.2s var(--ease-soft) 0.9s both; }
+  /* Hero, once: the D opens outward from the axis and uncovers the words set on it.
+     Nothing else on the page animates in; content is there at first paint. */
+  .js .ht-d { animation: d-open 1s var(--ease) both; }
+  .js .ht-d svg { animation: d-open 1.8s var(--ease-soft) 0.55s both; }
   @keyframes d-open { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
-  @keyframes word-in { from { opacity: 0; transform: translateY(0.18em); } to { opacity: 1; transform: none; } }
-  @keyframes wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
 
   /* Voucher: slides out of the envelope as the section arrives. */
   .js .voucher-card { transform: translate(0, -50%); transition: transform 1.5s var(--ease) 0.15s; }
@@ -842,6 +870,11 @@ html.menu-open .bookbar, html.has-consent-banner .bookbar { display: none; }
 
   @view-transition { navigation: none; }
   ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.28s; }
+}
+
+/* People who asked for less motion get instant state changes, never a half-way colour. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-delay: 0s !important; }
 }
 
 /* ---------- Print: the page becomes a price sheet ---------- */

@@ -24,10 +24,13 @@
   const menu = $('[data-menu]');
   const menuToggle = $('[data-menu-toggle]');
   if (menu && menuToggle) {
+    const behind = $$('main, .site-footer, .bookbar');
     const setMenu = (open) => {
       menuToggle.setAttribute('aria-expanded', String(open));
       menu.classList.toggle('is-open', open);
       document.documentElement.classList.toggle('menu-open', open);
+      // The sheet covers the page; keep keyboard and screen readers inside it.
+      behind.forEach((el) => { el.inert = open; });
       if (open) {
         const first = $('a, button', menu);
         if (first) first.focus({ preventScroll: true });
@@ -99,14 +102,21 @@
     if (weekday && now.minutes < HOURS.open) {
       return { state: 'soon', text: 'Dnes otevíráme v 9:00' };
     }
-    // After closing on a weekday, or on the weekend: find the next weekday.
-    let next = (now.dow + 1) % 7;
-    while (next === 0 || next === 6) next = (next + 1) % 7;
-    const tomorrow = next === (now.dow + 1) % 7;
-    if (!weekday) {
-      return { state: 'appointment', text: `O víkendu pouze na objednání · ${DAY_NAMES[next]} od 9:00` };
+    // After closing on a weekday, or on the weekend: the next working day that is
+    // not a public holiday (so the line never promises a Monday that is Easter Monday).
+    let next = null;
+    for (let i = 1; i <= 10 && !next; i += 1) {
+      const day = new Date(Date.UTC(now.y, now.m - 1, now.d + i));
+      const dow = day.getUTCDay();
+      if (dow === 0 || dow === 6) continue;
+      if (isCzechHoliday(day.getUTCFullYear(), day.getUTCMonth() + 1, day.getUTCDate())) continue;
+      next = { dow, tomorrow: i === 1 };
     }
-    return { state: 'closed', text: tomorrow ? 'Zítra otevíráme v 9:00' : `Otevíráme ${DAY_NAMES[next]} v 9:00` };
+    if (!next) return { state: 'closed', text: 'Po–Pá 9:00–19:00' };
+    if (!weekday) {
+      return { state: 'appointment', text: `O víkendu pouze na objednání · ${DAY_NAMES[next.dow]} od 9:00` };
+    }
+    return { state: 'closed', text: next.tomorrow ? 'Zítra otevíráme v\u00A09:00' : `Otevíráme ${DAY_NAMES[next.dow]} v\u00A09:00` };
   }
 
   function paintHours() {
@@ -321,26 +331,7 @@
   showBanner(!consent.current);
 
   /* ------------------------------------------------------------------ *
-   * 5. Scroll reveals — one quiet rise, once. Skipped with reduced motion.
-   * ------------------------------------------------------------------ */
-  const revealables = $$('[data-reveal]');
-  if (revealables.length) {
-    if ('IntersectionObserver' in window && !reduceMotion.matches) {
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add('is-in');
-          io.unobserve(entry.target);
-        });
-      }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
-      revealables.forEach((el) => io.observe(el));
-    } else {
-      revealables.forEach((el) => el.classList.add('is-in'));
-    }
-  }
-
-  /* ------------------------------------------------------------------ *
-   * 6. Mobile booking bar — appears after the hero CTA has scrolled away,
+   * 5. Mobile booking bar — appears after the hero CTA has scrolled away,
    *    steps aside for the final call to action and the footer.
    * ------------------------------------------------------------------ */
   const bookBar = $('[data-bookbar]');
@@ -358,7 +349,7 @@
   }
 
   /* ------------------------------------------------------------------ *
-   * 7. Gift voucher — slides out of the envelope to the right.
+   * 6. Gift voucher — slides out of the envelope to the right.
    *    Where CSS scroll-driven animations exist, CSS does it on its own.
    * ------------------------------------------------------------------ */
   const voucher = $('[data-voucher]');
@@ -373,6 +364,20 @@
         io.disconnect();
       }, { threshold: 0.6 }).observe(voucher);
     }
+  }
+
+  /* ------------------------------------------------------------------ *
+   * 7. Gallery strip: a keyboard stop only while it really scrolls
+   *    (phones and tablets); on wide screens all panes are in view.
+   * ------------------------------------------------------------------ */
+  const scroller = $('[data-scroller]');
+  if (scroller) {
+    const sync = () => {
+      if (scroller.scrollWidth > scroller.clientWidth + 1) scroller.tabIndex = 0;
+      else scroller.removeAttribute('tabindex');
+    };
+    sync();
+    window.addEventListener('resize', sync, { passive: true });
   }
 
   /* ------------------------------------------------------------------ *

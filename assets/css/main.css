@@ -134,7 +134,7 @@ body {
 h1, h2, h3, h4, p, figure, blockquote, dl, dd, ul, ol { margin: 0; }
 ul[class], ol[class] { padding: 0; list-style: none; }
 img, svg, picture { display: block; max-width: 100%; }
-svg[viewBox="0 0 546.514 140.363"] { aspect-ratio: 546.514 / 140.363; height: auto; }
+svg[viewBox="0 0 552.514 146.363"] { aspect-ratio: 552.514 / 146.363; height: auto; }
 a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.22em; }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { background: none; border: 0; padding: 0; cursor: pointer; }
@@ -258,7 +258,7 @@ a[href^="tel:"] { white-space: nowrap; }
   height: var(--header-h);
 }
 .logo { display: block; color: var(--chocolate); flex: none; }
-.logo svg { width: 8.5rem; height: auto; aspect-ratio: 546.514 / 140.363; fill: currentColor; }
+.logo svg { width: 8.5rem; height: auto; aspect-ratio: 552.514 / 146.363; fill: currentColor; }
 .header-actions { display: flex; align-items: center; gap: 0.5rem; }
 .header-cta { display: none; }
 .menu-toggle { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; margin-right: -0.6rem; }

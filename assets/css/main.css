@@ -444,12 +444,12 @@ html.lenis, html.lenis body { height: auto; }
 /* ---------- The line ----------
    One beige line runs from the silk in the hero to the foot of the page and is drawn by
    the scroll (assets/js/main.js, part 0c). It lies above the section backgrounds and
-   below their content, so it never covers text; it passes behind the dark statement
-   block. Beside the content it keeps to the page margin and crosses over only in the
-   space between two sections. */
+   below their content, so it never covers text. It passes behind the carousel and the
+   coloured blocks, and leaves each block in that block's colour. Beside the content it
+   keeps to the page margin and crosses over only in the space between two sections. */
 body { position: relative; }
 .ribbon { position: absolute; top: 0; left: 0; z-index: 1; width: 100%; height: 100%; pointer-events: none; }
-.ribbon path { fill: none; stroke: var(--beige); stroke-width: clamp(5px, 0.9vw, 14px); stroke-linecap: round; stroke-linejoin: round; }
+.ribbon path { fill: none; stroke: var(--beige); stroke-width: clamp(4px, 0.8vw, 12px); stroke-linecap: round; stroke-linejoin: round; }
 main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2; }
 
 /* ---------- Story: O DSTUDIO as a scroll scene ----------
@@ -537,25 +537,37 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
 }
 .glass-cursor.is-on { opacity: 1; scale: 1; }
 @media (hover: none) { .glass-cursor { display: none; } }
-.glass .demo-note { margin-top: 0.9rem; }
 
-/* ---------- Statement block: large, rounded, dark ---------- */
-.philosophy {
+/* ---------- Blocks: large, rounded, coloured ----------
+   A statement set very large on a chocolate or emerald block that sits inset from the
+   page edge. The page line passes behind each block and comes out in the block's
+   colour (data-line on the section, read in assets/js/main.js). */
+.block {
   position: relative; z-index: 2;
   margin-inline: clamp(0.5rem, 1.6vw, 1.5rem); border-radius: clamp(1.5rem, 3.2vw, 2.75rem);
   padding-block: clamp(2.75rem, 6vw, 5rem) clamp(2rem, 4vw, 3.25rem);
 }
-.philosophy .statement { font-size: 26.6vw; line-height: 0.9; text-align: center; }
-.philosophy .statement > em { font-size: 0.27em; margin-top: 0.14em; }
+.block + .section, .section + .block, .glass + .block { margin-top: 0; }
+.section + .block { margin-top: clamp(0.5rem, 1.6vw, 1.5rem); }
+.block + .site-footer, .block { margin-bottom: clamp(0.5rem, 1.6vw, 1.5rem); }
+.block .statement { font-size: 26.6vw; line-height: 0.9; text-align: center; text-wrap: balance; }
+.block .statement > em { font-size: 0.27em; margin-top: 0.14em; }
+.block--long .statement { font-size: 24vw; }
 @media (min-width: 48em) {
-  .philosophy .statement { font-size: min(18.2vw, 17.2rem); line-height: 0.98; }
-  .philosophy .statement > em { font-size: 0.28em; margin-top: 0.08em; }
+  .block .statement { font-size: min(18.2vw, 17.2rem); line-height: 0.98; }
+  .block .statement > em { font-size: 0.28em; margin-top: 0.08em; }
+  .block--long .statement { font-size: min(15vw, 14.25rem); }
+  .block--long .statement > em { font-size: 0.32em; }
 }
-.philosophy-foot { display: grid; gap: 1rem; margin-top: clamp(2.5rem, 7vw, 6rem); padding-top: 1.5rem; border-top: 1px solid rgb(244 239 234 / 0.22); }
+.block-foot { display: grid; gap: 1rem; margin-top: clamp(2.5rem, 7vw, 6rem); padding-top: 1.5rem; border-top: 1px solid rgb(244 239 234 / 0.22); }
+.block-foot--action { justify-items: start; gap: 1.25rem; }
 @media (min-width: 60em) {
-  .philosophy-foot { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 1.5rem; align-items: start; }
-  .philosophy-foot .eyebrow { grid-column: 1 / 6; padding-top: 0.5rem; }
-  .philosophy-text { grid-column: 7 / -1; }
+  .block-foot { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 1.5rem; align-items: start; }
+  .block-foot .eyebrow { grid-column: 1 / 6; padding-top: 0.5rem; }
+  .block-foot .lead { grid-column: 7 / -1; }
+  .block-foot--action { align-items: center; }
+  .block-foot--action .lead { grid-column: 1 / 8; }
+  .block-foot--action .btn { grid-column: 8 / -1; justify-self: end; }
 }
 
 .reason { padding-block: 1.5rem; border-top: 1px solid var(--beige); display: grid; gap: 0.6rem; }
@@ -729,24 +741,10 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
   .work-foot { grid-template-columns: 1fr auto; align-items: center; }
 }
 
-/* Honest placeholders: visible in the demo, removed when real content arrives. */
-.demo-note {
-  display: flex; align-items: baseline; gap: 0.65rem;
-  max-width: 44em; font-size: 0.8125rem; line-height: 1.5;
-}
-.demo-tag {
-  flex: none; padding: 0.12rem 0.4rem; border: 1px solid currentColor;
-  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
-}
-
 /* ---------- Team ---------- */
 .team .prose a { font-weight: 500; }
-.team .demo-note { margin-top: 1.5rem; }
 .team .btn { margin-top: 2rem; }
 
-/* ---------- Reviews: a slim band until there are real words to show ---------- */
-.reviews { padding-block: clamp(3rem, 6vw, 5rem); }
-.reviews .demo-note { margin-top: 1.5rem; }
 
 /* ---------- Gift voucher: the cream card drawn out of the emerald envelope ---------- */
 .voucher-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.5rem; align-items: center; }
@@ -872,13 +870,6 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
   .way { grid-column: 7 / -1; }
 }
 
-/* ---------- Closing ---------- */
-.closing { overflow: hidden; }
-.closing-inner { position: relative; display: grid; gap: clamp(2rem, 5vw, 4rem); }
-.closing-action { display: grid; gap: 1.25rem; justify-items: start; }
-@media (min-width: 60em) {
-  .closing-action { grid-template-columns: 1fr auto; align-items: center; justify-items: stretch; padding-top: 1.75rem; border-top: 1px solid var(--beige); }
-}
 
 /* ---------- Footer: the door plate ---------- */
 .site-footer { padding-block: clamp(2.5rem, 6vw, 5rem) 1.5rem; }
@@ -901,7 +892,6 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
   .plate-cols > div + div { border-left: 1px solid var(--chocolate); }
 }
 .footer-bar { display: grid; gap: 1rem; padding-top: 1.5rem; font-size: 0.8125rem; }
-.footer-legal { grid-column: 1 / -1; max-width: 62em; line-height: 1.6; }
 .footer-links { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; }
 .footer-links a, .footer-links button { display: inline-flex; align-items: center; min-height: 2.75rem; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.3em; }
 @media (min-width: 60em) {
@@ -986,7 +976,6 @@ html.menu-open .bookbar, html.has-consent-banner .bookbar { display: none; }
 .legal button[data-consent-open] { text-decoration: underline; text-underline-offset: 0.22em; font-weight: 500; }
 .legal caption { text-align: left; padding-bottom: 0.5rem; font-weight: 600; }
 .legal tbody th { font-weight: 500; }
-.todo { background: var(--beige); color: var(--chocolate); padding: 0.05em 0.3em; }
 .notfound { min-height: calc(100dvh - var(--header-h)); display: grid; align-content: center; gap: 1.5rem; padding-block: 4rem; justify-items: start; }
 
 /* ---------- Motion (only for people who have not asked for less) ---------- */
@@ -1015,7 +1004,7 @@ html.menu-open .bookbar, html.has-consent-banner .bookbar { display: none; }
 
 /* ---------- Print: the page becomes a price sheet ---------- */
 @media print {
-  .site-header, .bookbar, .consent, .consent-dialog, .ribbon, .glass, .prices-bar, .panes-scroller, .demo-note, .map-slot, .closing, .hero-actions, .btn { display: none !important; }
+  .site-header, .bookbar, .consent, .consent-dialog, .ribbon, .glass, .prices-bar, .panes-scroller, .map-slot, .closing, .hero-actions, .btn { display: none !important; }
   .section { padding-block: 1.5rem; }
   body { font-size: 11pt; }
 }

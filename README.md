@@ -50,10 +50,15 @@ Z hedvábí v úvodu vychází béžová linka a vede až na spodní okraj strá
 podle polohy stránky (`assets/js/main.js`, část „0c“):
 
 - v sekci O DSTUDIO obkrouží nadpis a proplete se mezerami mezi bloky textu,
-- projde za tmavým blokem s heslem,
+- projde za plochou carouselu a za barevnými bloky; z každého bloku vyjede v jeho
+  barvě (čokoládová, smaragdová — atribut `data-line` na bloku),
 - dál běží okrajem stránky vedle obsahu a stranu mění jen v mezeře mezi dvěma sekcemi,
   takže nikde nevede přes text,
 - leží nad pozadím sekcí a pod jejich obsahem (CSS, část „The line“).
+
+Bloky jsou sekce s třídou `block` (velké heslo na zaoblené barevné ploše): filozofie
+(čokoládová), recenze (smaragdová) a závěrečná výzva (čokoládová). Další blok vznikne
+stejným zápisem v `index.html`; linka si ho najde sama.
 
 Trasa se počítá ze skutečného rozložení stránky a přepočítá se při změně velikosti okna
 i výšky stránky (otevřená otázka, načtená mapa). Při „omezit pohyb“ je linka vykreslená
@@ -83,7 +88,7 @@ roluje stránku. Klik na prostřední snímek ho zvětší (zavřít: tlačítko
 - Vykreslování je v `assets/js/glass-carousel.js` (čisté WebGL, načítá se až u sekce).
 - Bez WebGL nebo skriptů zůstane seznam jako obyčejná řada obrázků, která se posouvá do
   strany. Při „omezit pohyb“ odpadá úvodní nájezd a třpyt čočky.
-- Současné snímky jsou ilustrační (označené štítkem Demo).
+- Současné snímky jsou ilustrační; až budou fotografie ze salonu, stačí je vyměnit.
 
 ### Předlohy efektů
 
@@ -113,21 +118,20 @@ Kdyby se mělo vrátit k čistě brandbookové typografii, stačí `--font-displ
 
 ## Co je potřeba doplnit
 
-Zástupná místa na úvodní stránce mají v HTML atribut `data-demo` a na stránce štítek **DEMO**:
+Na webu už nejsou žádné poznámky „Demo“ ani zástupné texty. Co stále chybí, je vedené
+jen tady:
 
 - **Naše práce** — pět rámečků 4:5 čeká na fotografie. Do `<li class="pane">` stačí
   vložit `<img src="…" alt="…">`; linky v rámečku fotografie překryje.
+- **Carousel služeb a úvod** — ilustrační snímky nahradit fotografiemi ze salonu.
 - **Náš tým** — jména, portréty a úrovně specialistek.
-- **Recenze** — skutečné recenze klientek.
-- **Kontakt** — fotografie vchodu.
-
-Po doplnění obsahu se prvek s `data-demo` smaže.
-
-Podbarvená místa `[doplnit …]` čekají na údaje od provozovatele:
-
+- **Recenze** — skutečné recenze klientek (teď je sekce jen blok s poděkováním).
+- **Kontakt** — fotografie vchodu, o které mluví úvodní text sekce.
 - **Patička** — sídlo společnosti a zápis v obchodním rejstříku (soud, oddíl, vložka).
-- **Ochrana osobních údajů** — sídlo a zápis v rejstříku, e-mail pro žádosti, doba
-  uchování údajů z rezervací, datum účinnosti.
+  Řádek s těmito údaji byl z patičky odstraněn, dokud nejsou známé; obchodní
+  společnost je má na webu uvádět.
+- **Ochrana osobních údajů** — sídlo a zápis v rejstříku, e-mail pro žádosti, konkrétní
+  doba uchování údajů z rezervací (teď obecná formulace) a datum účinnosti.
 
 ## Ceník
 

@@ -100,8 +100,9 @@
    *     One line drawn by the scroll, from the silk in the hero to the foot
    *     of the page (idea after Skiper UI 19). Its route is worked out from
    *     where things really are: it lassoes the story heading, threads the
-   *     gaps between that section's blocks, goes behind the dark statement
-   *     block, then runs down the page margin, changing sides in the space
+   *     gaps between that section's blocks, goes behind the carousel and the
+   *     coloured blocks — leaving each block in that block's colour — and
+   *     otherwise runs down the page margin, changing sides in the space
    *     between sections. It is cut into short paths so that only the piece
    *     being drawn repaints.
    * ------------------------------------------------------------------ */
@@ -124,9 +125,11 @@
     const route = (W, H) => {
       const hero = at($('.hero')), foot = at($('.hero-foot')), column = at($('.story-inner'));
       const t = at(storyTitle), label = at($('.story .eyebrow')), l = at($('.story-lead')), k = at($('.story-tokens')), x = at($('.story-text'));
-      const dark = at($('.philosophy'));
+      const story = at($('.story'));
+      const rest = $$('main > section').filter((el) => !el.classList.contains('glass') && at(el).t >= story.b - 5).concat($('.site-footer') || []);
       const glassEl = $('.glass-stage'), glass = glassEl ? at(glassEl) : null;
-      const next = glass || dark;                                            // the block the line goes behind first
+      const next = glass || (rest.length ? at(rest[0]) : { t: H });          // what the line goes behind first
+      const marks = {};                                                      // point index -> colour the line takes from there
       const lane = Math.max(Math.min(column.l * 0.5, column.l - 12), 8);        // where the line runs beside the content
       const laneX = { l: lane, r: W - lane };
       const rx = Math.min(t.w * 0.56, W * 0.47);
@@ -145,12 +148,18 @@
         [W * 0.7, gap2], [W * 0.28, gap2], [beside(x.l, -1), x.cy],                             // back under the tokens, down the left of the text
         [W * 0.34, below], [W * 0.68, below + (next.t - below) * 0.35],                         // under the text
         ...(glass ? [[W * 0.56, glass.t + 24], [W * 0.46, glass.cy], [W * 0.54, glass.b - 16]] : []),   // behind the carousel
-        [W * 0.56, dark.t + 24], [W * 0.5, dark.cy], [W * 0.6, dark.b - 24],                     // behind the dark block
       ];
-      // the rest of the page: down the margin, changing sides between sections
+      // the rest of the page: behind each coloured block (which dyes the line), otherwise
+      // down the margin, changing sides between sections
       let side = 'r';
-      $$('main > section').filter((el) => at(el).t > dark.t + 10).concat($('.site-footer') || []).forEach((el) => {
+      rest.forEach((el) => {
         const b = at(el);
+        if (el.classList.contains('block')) {
+          p.push([W * 0.56, b.t + 24]);
+          if (el.dataset.line) marks[p.length] = el.dataset.line;           // the change happens out of sight
+          p.push([W * 0.5, b.cy], [W * 0.6, b.b - 24]);
+          return;
+        }
         const pad = Math.min(Math.max((parseFloat(getComputedStyle(el).paddingTop) || 48) * 0.5, 24), b.h * 0.25);
         const x0 = laneX[side], sway = Math.min(lane * 0.35, 14) * (side === 'r' ? -1 : 1);
         const from = b.t + pad, to = b.b - pad, steps = Math.floor((to - from) / 520);
@@ -160,7 +169,7 @@
         side = side === 'r' ? 'l' : 'r';
       });
       p.push([p[p.length - 1][0], H + 40]);                                                      // and off the foot of the page
-      return p;
+      return { points: p, marks };
     };
 
     const apply = () => {
@@ -194,13 +203,20 @@
       line.size = `${W}x${H}`;
       ribbonSvg.setAttribute('viewBox', `0 0 ${W} ${H}`);
       ribbonSvg.setAttribute('preserveAspectRatio', 'none');
-      const points = route(W, H), curve = spans(points);
+      const { points, marks } = route(W, H), curve = spans(points);
       ribbonSvg.textContent = '';
       line.paths = []; line.table = [];
-      let from = 0, far = -Infinity;
-      for (let i = 0; i < curve.length; i += 4) {
+      let from = 0, far = -Infinity, colour = '';
+      // short pieces (at most four spans); a new piece also starts wherever the colour changes
+      const cuts = [0];
+      for (let i = 1; i < curve.length; i += 1) if (marks[i] || i - cuts[cuts.length - 1] >= 4) cuts.push(i);
+      cuts.push(curve.length);
+      for (let c = 0; c < cuts.length - 1; c += 1) {
+        const i = cuts[c], end = cuts[c + 1];
+        if (marks[i]) colour = marks[i];
         const el = document.createElementNS(NS, 'path');
-        el.setAttribute('d', `M${points[i][0].toFixed(1)},${points[i][1].toFixed(1)}${curve.slice(i, i + 4).join('')}`);
+        el.setAttribute('d', `M${points[i][0].toFixed(1)},${points[i][1].toFixed(1)}${curve.slice(i, end).join('')}`);
+        if (colour) el.style.stroke = `var(--${colour})`;
         ribbonSvg.appendChild(el);
         const len = el.getTotalLength();
         el.style.strokeDasharray = `${len} ${len}`;

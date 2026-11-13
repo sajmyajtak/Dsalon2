@@ -478,6 +478,67 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
 .story-text { margin-top: clamp(3.5rem, 8vw, 6rem); max-width: 34em; font-size: 1.0625rem; }
 .story-text p { max-width: none; }
 
+/* ---------- Liquid glass carousel ----------
+   A rounded white stage with an endless row of pictures drawn in WebGL behind a
+   liquid-glass lens (assets/js/glass-carousel.js). Until the script takes over — or if
+   it cannot — the pictures are an ordinary row that scrolls sideways. */
+.glass { position: relative; padding-bottom: clamp(0.5rem, 1.6vw, 1.5rem); }
+.glass-stage {
+  overflow: hidden; isolation: isolate;
+  margin-inline: clamp(0.5rem, 1.6vw, 1.5rem); border-radius: clamp(1.5rem, 3.2vw, 2.75rem);
+  height: clamp(27rem, 84svh, 50rem); background: var(--white); border: 1px solid rgb(215 188 149 / 0.6);
+}
+.glass-stage:focus-visible { outline: 2px solid var(--emerald); outline-offset: 4px; }
+.glass-stage canvas {
+  position: absolute; inset: 0; display: block; width: 100%; height: 100%;
+  touch-action: pan-y; -webkit-user-select: none; user-select: none;
+}
+.glass-list {
+  display: flex; align-items: center; gap: 0.75rem; height: 100%; padding-inline: 8vw;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+}
+.glass-list li { flex: none; scroll-snap-align: center; }
+.glass-list figure { display: grid; gap: 0.6rem; justify-items: center; }
+.glass-list img { width: auto; height: min(52svh, 28rem); aspect-ratio: 3 / 4; object-fit: cover; }
+.glass-list figcaption { font-size: 0.875rem; font-weight: 500; }
+.glass-list:focus-visible { outline: 2px solid var(--emerald); outline-offset: -4px; }
+.glass-stage.is-live .glass-list { position: absolute; inset: 0; overflow: hidden; opacity: 0; pointer-events: none; }
+.glass-title, .glass-count {
+  position: absolute; left: 50%; z-index: 3; translate: -50% 0; pointer-events: none;
+  font-weight: 500; line-height: 1; opacity: 0;
+  transition: opacity 0.9s var(--ease-soft), translate 0.4s var(--ease);
+}
+.glass-title { top: 5%; font-size: clamp(0.9375rem, 0.85rem + 0.3vw, 1.125rem); letter-spacing: -0.01em; }
+.glass-count { bottom: 5.5%; font-size: 0.875rem; }
+.glass-stage.is-ready .glass-title, .glass-stage.is-ready .glass-count { opacity: 1; }
+.glass-stage.is-focused .glass-title { translate: -50% -0.5rem; }
+.glass-stage.is-focused .glass-count { opacity: 0; }
+.glass-nav {
+  position: absolute; top: 50%; z-index: 3; translate: 0 -50%; display: none; place-items: center;
+  width: 3rem; height: 3rem; border-radius: 50%; border: 1px solid rgb(43 30 26 / 0.18);
+  background: rgb(255 255 255 / 0.62); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  transition: background-color 0.3s var(--ease-soft), color 0.3s var(--ease-soft);
+}
+.glass-stage.is-live .glass-nav { display: grid; }
+.glass-nav:hover, .glass-nav:focus-visible { background: var(--chocolate); color: var(--cream); }
+.glass-nav svg { width: 1rem; height: 1rem; }
+.glass-nav--prev { left: clamp(0.6rem, 2.6vw, 2.25rem); }
+.glass-nav--prev svg { rotate: 180deg; }
+.glass-nav--next { right: clamp(0.6rem, 2.6vw, 2.25rem); }
+.glass-close {
+  position: absolute; top: 3.2%; right: 3.5%; z-index: 3; min-height: 2.75rem; padding-inline: 0.75rem;
+  font-size: 0.875rem; font-weight: 500; text-decoration: underline; text-underline-offset: 0.35em;
+}
+.glass-cursor {
+  position: absolute; top: 0; left: 0; z-index: 3; pointer-events: none;
+  padding: 0.4rem 0.75rem; border-radius: 999px; background: var(--chocolate); color: var(--cream);
+  font-size: 0.75rem; font-weight: 500; line-height: 1; opacity: 0; scale: 0.6;
+  transition: opacity 0.25s var(--ease-soft), scale 0.3s var(--ease);
+}
+.glass-cursor.is-on { opacity: 1; scale: 1; }
+@media (hover: none) { .glass-cursor { display: none; } }
+.glass .demo-note { margin-top: 0.9rem; }
+
 /* ---------- Statement block: large, rounded, dark ---------- */
 .philosophy {
   position: relative; z-index: 2;
@@ -954,7 +1015,7 @@ html.menu-open .bookbar, html.has-consent-banner .bookbar { display: none; }
 
 /* ---------- Print: the page becomes a price sheet ---------- */
 @media print {
-  .site-header, .bookbar, .consent, .consent-dialog, .ribbon, .prices-bar, .panes-scroller, .demo-note, .map-slot, .closing, .hero-actions, .btn { display: none !important; }
+  .site-header, .bookbar, .consent, .consent-dialog, .ribbon, .glass, .prices-bar, .panes-scroller, .demo-note, .map-slot, .closing, .hero-actions, .btn { display: none !important; }
   .section { padding-block: 1.5rem; }
   body { font-size: 11pt; }
 }

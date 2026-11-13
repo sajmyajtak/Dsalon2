@@ -25,10 +25,12 @@ bezpečnostní hlavičky (CSP, HSTS, …) a cache. `404.html` Netlify použije a
 | `404.html` | Stránka „nenalezeno“ |
 | `assets/css/main.css` | Všechny styly; nahoře barvy a písma z brandbooku |
 | `assets/js/main.js` | Parallax úvodu, scrollová scéna O DSTUDIO, linka přes stránku, menu, otevírací doba, zvýraznění úrovně v ceníku, souhlas s mapou, poukaz |
+| `assets/js/glass-carousel.js` | Carousel služeb za „tekutým sklem“ (WebGL, bez knihoven) |
 | `assets/js/vendor/` | GSAP + ScrollTrigger (parallax) a Lenis (plynulé rolování), hostované lokálně |
 | `assets/fonts/` | Inter, Cormorant Garamond a League Gothic (SIL OFL), hostované lokálně |
 | `assets/logo/` | Logo vytažené z vektoru v brandbooku (čokoládová, krémová, bílá) |
 | `assets/img/hero/` | Fotografie hedvábí pro úvod (na šířku a na výšku) |
+| `assets/img/glass/` | Sedm ilustračních snímků služeb pro carousel (3 : 4, 768 × 1024) |
 
 ## Úvod (hero)
 
@@ -69,6 +71,20 @@ Hned pod úvodem (vše v `assets/js/main.js`, část „0b“):
 Text nadpisu se v `index.html` rozkládá na písmena až při sestavení; čitelná podoba
 zůstává ve stránce pro čtečky a vyhledávače.
 
+## Carousel služeb („tekuté sklo“)
+
+Za sekcí O DSTUDIO je zaoblená plocha s nekonečným pásem snímků, přes který leží
+skleněná čočka: na jejím okraji se obraz vlní a rozkládá do barev. Pás se posouvá tažením,
+šipkami na klávesnici, tlačítky po stranách nebo vodorovným gestem; kolečko myši dál
+roluje stránku. Klik na prostřední snímek ho zvětší (zavřít: tlačítko, Esc nebo klik).
+
+- Snímky a jejich názvy jsou obyčejný seznam v `index.html` (sekce „SLUŽBY V OBRAZE“);
+  stačí vyměnit soubory v `assets/img/glass/` nebo upravit položky seznamu.
+- Vykreslování je v `assets/js/glass-carousel.js` (čisté WebGL, načítá se až u sekce).
+- Bez WebGL nebo skriptů zůstane seznam jako obyčejná řada obrázků, která se posouvá do
+  strany. Při „omezit pohyb“ odpadá úvodní nájezd a třpyt čočky.
+- Současné snímky jsou ilustrační (označené štítkem Demo).
+
 ### Předlohy efektů
 
 Efekty jsou přepsané do čistého JavaScriptu (web nemá React ani sestavovací krok):
@@ -76,7 +92,9 @@ Efekty jsou přepsané do čistého JavaScriptu (web nemá React ani sestavovac�
 - parallax úvodu — Osmo „Parallax Scrolling“,
 - zvýrazněné slovo a nájezd textu v úvodu — Watermelon UI „Hero 17“,
 - sbíhání písmen a štítků — **Skiper UI** „ScrollAnimation_002“ (autor @gurvinder-singh02),
-- linka kreslená rolováním — **Skiper UI** „Skiper 19“ (tamtéž; inspirováno comgio.ai).
+- linka kreslená rolováním — **Skiper UI** „Skiper 19“ (tamtéž; inspirováno comgio.ai),
+- carousel za tekutým sklem — **Componentry** „Liquid Glass Carousel“ (Harsh Jadhav,
+  licence MIT); shader čočky je převzatý, zbytek je přepsaný bez Reactu a three.js.
 
 Bezplatná verze Skiper UI vyžaduje uvedení autora; je uveden zde a v komentáři v kódu.
 

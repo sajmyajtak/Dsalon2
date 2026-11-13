@@ -30,6 +30,7 @@
   <script src="assets/js/vendor/ScrollTrigger.min.js" defer></script>
   <script src="assets/js/vendor/lenis.min.js" defer></script>
   <script src="assets/js/main.js" defer></script>
+  <script src="assets/js/glass-carousel.js" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -169,6 +170,32 @@
         <p>Záleží nám na tom, aby výsledek ladil právě s&nbsp;vámi&nbsp;– s&nbsp;vaším stylem, náladou i&nbsp;životním rytmem.</p>
       </div>
     </div>
+  </section>
+
+  <!-- ============ SLUŽBY V OBRAZE ============ -->
+  <!-- Nekonečný pás snímků za „tekutým sklem“ (WebGL, assets/js/glass-carousel.js). Bez WebGL
+       nebo skriptů zůstává obyčejná posuvná řada obrázků. -->
+  <section class="glass" id="obrazem" aria-labelledby="glass-heading">
+    <h2 class="visually-hidden" id="glass-heading">Naše služby v&nbsp;obraze</h2>
+    <div class="glass-stage" data-glass-stage role="group" aria-roledescription="karusel" aria-labelledby="glass-heading">
+      <ul class="glass-list" data-glass-list tabindex="0" aria-label="Snímky služeb">
+        <li><figure><img src="assets/img/glass/manikura.webp" alt="" width="768" height="1024" loading="lazy" decoding="async"><figcaption>Manikúra</figcaption></figure></li>
+        <li><figure><img src="assets/img/glass/pedikura.webp" alt="" width="768" height="1024" loading="lazy" decoding="async"><figcaption>Pedikúra</figcaption></figure></li>
+        <li><figure><img src="assets/img/glass/modelaz.webp" alt="" width="768" height="1024" loading="lazy" decoding="async"><figcaption>Modeláž nehtů</figcaption></figure></li>
+        <li><figure><img src="assets/img/glass/design.webp" alt="" width="768" height="1024" loading="lazy" decoding="async"><figcaption>Design nehtů</figcaption></figure></li>
+        <li><figure><img src="assets/img/glass/oboci.webp" alt="" width="768" height="1024" loading="lazy" decoding="async"><figcaption>Obočí</figcaption></figure></li>
+        <li><figure><img src="assets/img/glass/rasy.webp" alt="" width="768" height="1024" loading="lazy" decoding="async"><figcaption>Řasy</figcaption></figure></li>
+        <li><figure><img src="assets/img/glass/liceni.webp" alt="" width="768" height="1024" loading="lazy" decoding="async"><figcaption>Líčení</figcaption></figure></li>
+      </ul>
+      <p class="glass-title" data-glass-title aria-hidden="true"></p>
+      <p class="glass-count num" data-glass-count aria-hidden="true"></p>
+      <p class="visually-hidden" data-glass-live aria-live="polite"></p>
+      <span class="glass-cursor" data-glass-cursor aria-hidden="true">Zobrazit</span>
+      <button class="glass-nav glass-nav--prev" type="button" data-glass-prev aria-label="Předchozí snímek"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      <button class="glass-nav glass-nav--next" type="button" data-glass-next aria-label="Další snímek"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      <button class="glass-close" type="button" data-glass-close hidden>Zavřít</button>
+    </div>
+    <p class="wrap demo-note" data-demo><span class="demo-tag">Demo</span> Ilustrační snímky. Nahradí je fotografie ze salonu.</p>
   </section>
 
   <!-- ============ NAŠE FILOZOFIE ============ -->

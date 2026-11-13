@@ -125,12 +125,14 @@
       const hero = at($('.hero')), foot = at($('.hero-foot')), column = at($('.story-inner'));
       const t = at(storyTitle), label = at($('.story .eyebrow')), l = at($('.story-lead')), k = at($('.story-tokens')), x = at($('.story-text'));
       const dark = at($('.philosophy'));
+      const glassEl = $('.glass-stage'), glass = glassEl ? at(glassEl) : null;
+      const next = glass || dark;                                            // the block the line goes behind first
       const lane = Math.max(Math.min(column.l * 0.5, column.l - 12), 8);        // where the line runs beside the content
       const laneX = { l: lane, r: W - lane };
       const rx = Math.min(t.w * 0.56, W * 0.47);
       const top = Math.min(t.t - t.h * 0.3, label.t - 18), bottom = t.b + t.h * 0.07;     // the lasso clears the label and accents above, the lead below
       const beside = (edge, dir) => Math.min(Math.max(edge + dir * Math.min(W * 0.09, 120), 12), W - 12);
-      const gap1 = (l.b + k.t) / 2, gap2 = (k.b + x.t) / 2, below = x.b + Math.min((dark.t - x.b) * 0.3, 90);
+      const gap1 = (l.b + k.t) / 2, gap2 = (k.b + x.t) / 2, below = x.b + Math.min((next.t - x.b) * 0.3, 90);
       const p = [
         ...(W < 700                                                                              // out of the silk; on phones it keeps below the copy
           ? [[W + 40, hero.t + hero.h * 0.56], [W * 0.72, hero.t + hero.h * 0.7], [W * 0.5, hero.t + hero.h * 0.9], [W * 0.9, foot.cy]]
@@ -141,7 +143,8 @@
         [t.cx - rx * 1.1, top + t.h * 0.3], [beside(l.l, -1), l.cy],                            // out and down the left of the lead
         [W * 0.3, gap1], [W * 0.72, gap1], [beside(k.r, 1), k.cy],                              // across under the lead, round the tokens
         [W * 0.7, gap2], [W * 0.28, gap2], [beside(x.l, -1), x.cy],                             // back under the tokens, down the left of the text
-        [W * 0.34, below], [W * 0.68, below + (dark.t - below) * 0.35],                         // under the text
+        [W * 0.34, below], [W * 0.68, below + (next.t - below) * 0.35],                         // under the text
+        ...(glass ? [[W * 0.56, glass.t + 24], [W * 0.46, glass.cy], [W * 0.54, glass.b - 16]] : []),   // behind the carousel
         [W * 0.56, dark.t + 24], [W * 0.5, dark.cy], [W * 0.6, dark.b - 24],                     // behind the dark block
       ];
       // the rest of the page: down the margin, changing sides between sections

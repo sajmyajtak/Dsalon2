@@ -12,7 +12,8 @@
    * 0. Parallax hero and smooth scrolling
    *    A plain-JS port of the reference component: one scrubbed GSAP
    *    timeline moves the four layers by different amounts while the
-   *    hero scrolls away; Lenis smooths wheel scrolling. Skipped for
+   *    hero scrolls away (layers a page does not use are skipped); Lenis
+   *    smooths wheel scrolling. Skipped for
    *    people who prefer reduced motion, and if the libraries are absent.
    * ------------------------------------------------------------------ */
   let lenis = null;
@@ -25,12 +26,9 @@
       const timeline = gsap.timeline({
         scrollTrigger: { trigger: layersRoot, start: '0% 0%', end: '100% 0%', scrub: 0 },
       });
-      [['1', 70], ['2', 55], ['3', 40], ['4', 10]].forEach(([layer, yPercent], index) => {
-        timeline.to(
-          $$(`[data-parallax-layer="${layer}"]`, layersRoot),
-          { yPercent, ease: 'none' },
-          index === 0 ? undefined : '<',
-        );
+      [['1', 70], ['2', 55], ['3', 40], ['4', 10]].forEach(([layer, yPercent]) => {
+        const layers = $$(`[data-parallax-layer="${layer}"]`, layersRoot);
+        if (layers.length) timeline.to(layers, { yPercent, ease: 'none' }, 0);
       });
     }
 
@@ -73,9 +71,6 @@
    *     out from their middle and come together while the block scrolls from
    *     the bottom of the screen to its centre (effect modelled on Skiper UI
    *     "ScrollAnimation_002" by @gurvinder-singh02).
-   *     Ribbon: a line drawn by the scroll; it lassoes the heading and runs
-   *     down the section (after Skiper UI 19). Its shape is built from the
-   *     real positions of the heading and tokens, so it fits every screen.
    * ------------------------------------------------------------------ */
   const motionOn = !reduceMotion.matches && window.gsap && window.ScrollTrigger;
   if (motionOn) {
@@ -100,87 +95,134 @@
     });
   }
 
-  const story = $('[data-story]');
-  const ribbon = story && $('[data-ribbon]', story);
-  if (ribbon) {
-    const svg = ribbon.ownerSVGElement;
-    const title = $('.story-title', story);
-    const tokens = $('.story-tokens', story);
-    const lead = $('.story-lead', story);
-    const text = $('.story-text', story);
-    const state = { total: 0, table: [], drawn: 0 };
-    // smooth curve through the points (Catmull-Rom converted to cubic Béziers)
-    const spline = (p) => {
-      let d = `M${p[0][0].toFixed(1)},${p[0][1].toFixed(1)}`;
-      for (let i = 0; i < p.length - 1; i += 1) {
-        const a = p[Math.max(i - 1, 0)], b = p[i], c = p[i + 1], e = p[Math.min(i + 2, p.length - 1)];
-        d += ` C${(b[0] + (c[0] - a[0]) / 6).toFixed(1)},${(b[1] + (c[1] - a[1]) / 6).toFixed(1)} ${(c[0] - (e[0] - b[0]) / 6).toFixed(1)},${(c[1] - (e[1] - b[1]) / 6).toFixed(1)} ${c[0].toFixed(1)},${c[1].toFixed(1)}`;
-      }
-      return d;
+  /* ------------------------------------------------------------------ *
+   * 0c. The line
+   *     One line drawn by the scroll, from the silk in the hero to the foot
+   *     of the page (idea after Skiper UI 19). Its route is worked out from
+   *     where things really are: it lassoes the story heading, threads the
+   *     gaps between that section's blocks, goes behind the dark statement
+   *     block, then runs down the page margin, changing sides in the space
+   *     between sections. It is cut into short paths so that only the piece
+   *     being drawn repaints.
+   * ------------------------------------------------------------------ */
+  const ribbonSvg = $('[data-ribbon]');
+  const storyTitle = $('.story-title');
+  if (ribbonSvg && storyTitle) {
+    const NS = 'http://www.w3.org/2000/svg';
+    const line = { paths: [], total: 0, table: [], drawn: 0, size: '', first: true };
+    const at = (el) => {
+      const r = el.getBoundingClientRect();
+      const l = r.left + window.scrollX, t = r.top + window.scrollY;
+      return { l, r: l + r.width, t, b: t + r.height, w: r.width, h: r.height, cx: l + r.width / 2, cy: t + r.height / 2 };
     };
-    const apply = () => { ribbon.style.strokeDashoffset = String(Math.max(state.total - state.drawn, 0)); };
-    const build = () => {
-      const W = story.clientWidth, H = story.clientHeight;
-      if (!W || !H) return;
-      const s = story.getBoundingClientRect();
-      const box = (el) => { const r = el.getBoundingClientRect(); return { l: r.left - s.left, r: r.right - s.left, t: r.top - s.top, b: r.bottom - s.top, w: r.width, h: r.height, cx: r.left - s.left + r.width / 2, cy: r.top - s.top + r.height / 2 }; };
-      const t = box(title), l = box(lead), k = box(tokens), x = box(text);
+    // smooth curve through the points: Catmull-Rom, one cubic Bézier per span
+    const spans = (p) => p.slice(0, -1).map((b, i) => {
+      const a = p[Math.max(i - 1, 0)], c = p[i + 1], e = p[Math.min(i + 2, p.length - 1)];
+      return ` C${(b[0] + (c[0] - a[0]) / 6).toFixed(1)},${(b[1] + (c[1] - a[1]) / 6).toFixed(1)} ${(c[0] - (e[0] - b[0]) / 6).toFixed(1)},${(c[1] - (e[1] - b[1]) / 6).toFixed(1)} ${c[0].toFixed(1)},${c[1].toFixed(1)}`;
+    });
+
+    const route = (W, H) => {
+      const hero = at($('.hero')), foot = at($('.hero-foot')), column = at($('.story-inner'));
+      const t = at(storyTitle), label = at($('.story .eyebrow')), l = at($('.story-lead')), k = at($('.story-tokens')), x = at($('.story-text'));
+      const dark = at($('.philosophy'));
+      const lane = Math.max(Math.min(column.l * 0.5, column.l - 12), 8);        // where the line runs beside the content
+      const laneX = { l: lane, r: W - lane };
       const rx = Math.min(t.w * 0.56, W * 0.47);
-      const label = $('.eyebrow', story);
-      const top = Math.min(t.t - t.h * 0.3, label ? box(label).t - 18 : Infinity), bottom = t.b + t.h * 0.07;   // clears the label and accents above, the lead below
-      const side = (edge, dir) => Math.min(Math.max(edge + dir * Math.min(W * 0.09, 120), 14), W - 14);   // just outside a text block
-      const gap1 = (l.b + k.t) / 2, gap2 = (k.b + x.t) / 2, below = x.b + Math.min((H - x.b) * 0.28, 90);
-      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-      // The line only crosses the page in the gaps between blocks, so it never strikes through a line of text.
-      ribbon.setAttribute('d', spline([
-        [W + 60, top - t.h * 0.35],                                                              // in from the right
+      const top = Math.min(t.t - t.h * 0.3, label.t - 18), bottom = t.b + t.h * 0.07;     // the lasso clears the label and accents above, the lead below
+      const beside = (edge, dir) => Math.min(Math.max(edge + dir * Math.min(W * 0.09, 120), 12), W - 12);
+      const gap1 = (l.b + k.t) / 2, gap2 = (k.b + x.t) / 2, below = x.b + Math.min((dark.t - x.b) * 0.3, 90);
+      const p = [
+        ...(W < 700                                                                              // out of the silk; on phones it keeps below the copy
+          ? [[W + 40, hero.t + hero.h * 0.56], [W * 0.72, hero.t + hero.h * 0.7], [W * 0.5, hero.t + hero.h * 0.9], [W * 0.9, foot.cy]]
+          : [[W + 60, hero.t + hero.h * 0.3], [W * 0.8, hero.t + hero.h * 0.48], [W * 0.58, hero.t + hero.h * 0.82], [W * 0.5, foot.cy]]),
         [t.cx + rx * 0.5, top], [t.cx - rx * 0.55, top + t.h * 0.05], [t.cx - rx * 1.03, t.cy],  // over the heading, round its left end
         [t.cx - rx * 0.55, bottom], [t.cx + rx * 0.5, bottom + 2], [t.cx + rx * 1.04, t.cy],     // underneath, up the right end
         [t.cx + rx * 0.6, top + t.h * 0.02], [t.cx - rx * 0.1, top - t.h * 0.12],               // close the loop
-        [t.cx - rx * 1.1, top + t.h * 0.3], [side(l.l, -1), l.cy],                              // out and down the left of the lead
-        [W * 0.3, gap1], [W * 0.72, gap1], [side(k.r, 1), k.cy],                                // across under the lead, round the tokens
-        [W * 0.7, gap2], [W * 0.28, gap2], [side(x.l, -1), x.cy],                               // back under the tokens, down the left of the text
-        [W * 0.34, below], [W * 0.7, below + (H - below) * 0.25],                               // under the text
-        [W * 0.6, below + (H - below) * 0.7], [W * 0.5, H + 90],                                // and down behind the dark block
-      ]));
-      state.total = ribbon.getTotalLength();
-      ribbon.style.strokeDasharray = String(state.total);
-      // how far the line has travelled down the section at each length along it
-      state.table = [];
-      let far = -Infinity;
-      for (let i = 0; i <= 320; i += 1) {
-        const len = (state.total * i) / 320;
-        far = Math.max(far, ribbon.getPointAtLength(len).y);
-        state.table.push([far, len]);
-      }
-      if (!motionOn) { state.drawn = state.total; apply(); } else follow(true);
+        [t.cx - rx * 1.1, top + t.h * 0.3], [beside(l.l, -1), l.cy],                            // out and down the left of the lead
+        [W * 0.3, gap1], [W * 0.72, gap1], [beside(k.r, 1), k.cy],                              // across under the lead, round the tokens
+        [W * 0.7, gap2], [W * 0.28, gap2], [beside(x.l, -1), x.cy],                             // back under the tokens, down the left of the text
+        [W * 0.34, below], [W * 0.68, below + (dark.t - below) * 0.35],                         // under the text
+        [W * 0.56, dark.t + 24], [W * 0.5, dark.cy], [W * 0.6, dark.b - 24],                     // behind the dark block
+      ];
+      // the rest of the page: down the margin, changing sides between sections
+      let side = 'r';
+      $$('main > section').filter((el) => at(el).t > dark.t + 10).concat($('.site-footer') || []).forEach((el) => {
+        const b = at(el);
+        const pad = Math.min(Math.max((parseFloat(getComputedStyle(el).paddingTop) || 48) * 0.5, 24), b.h * 0.25);
+        const x0 = laneX[side], sway = Math.min(lane * 0.35, 14) * (side === 'r' ? -1 : 1);
+        const from = b.t + pad, to = b.b - pad, steps = Math.floor((to - from) / 520);
+        p.push([x0, from]);
+        for (let i = 1; i <= steps; i += 1) p.push([x0 + (i % 2 ? sway : 0), from + ((to - from) * i) / (steps + 1)]);
+        p.push([x0, to]);
+        side = side === 'r' ? 'l' : 'r';
+      });
+      p.push([p[p.length - 1][0], H + 40]);                                                      // and off the foot of the page
+      return p;
     };
-    // the tip keeps to the lower part of the screen; loops are caught up with a short tween
-    const follow = (instant) => {
-      const tip = window.innerHeight * 0.8 - story.getBoundingClientRect().top;
-      let target = 0;
-      for (let i = 0; i < state.table.length; i += 1) {
-        const [far, len] = state.table[i];
-        if (far > tip) {
-          if (i > 0) {
-            const [pFar, pLen] = state.table[i - 1];
-            target = pLen + (len - pLen) * Math.min(Math.max((tip - pFar) / Math.max(far - pFar, 0.001), 0), 1);
-          }
-          break;
+
+    const apply = () => {
+      line.paths.forEach((piece) => {
+        const shown = Math.min(Math.max(line.drawn - piece.from, 0), piece.len);
+        if (shown === piece.shown) return;
+        piece.shown = shown;
+        piece.el.style.visibility = shown > 0 ? 'visible' : 'hidden';
+        piece.el.style.strokeDashoffset = String(piece.len - shown);
+      });
+    };
+    // how much of the line belongs above the lower part of the screen
+    const target = () => {
+      const max = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+      const tip = window.scrollY + window.innerHeight * (0.8 + 0.2 * Math.min(window.scrollY / max, 1));
+      const t = line.table;
+      if (!t.length || tip <= t[0][0]) return 0;
+      let lo = 0, hi = t.length - 1;
+      if (tip >= t[hi][0]) return line.total;
+      while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (t[mid][0] <= tip) lo = mid; else hi = mid; }
+      return t[lo][1] + (t[hi][1] - t[lo][1]) * Math.min(Math.max((tip - t[lo][0]) / Math.max(t[hi][0] - t[lo][0], 0.001), 0), 1);
+    };
+    const follow = (seconds) => {
+      if (!motionOn) { line.drawn = line.total; apply(); return; }
+      if (!seconds) { window.gsap.killTweensOf(line); line.drawn = target(); apply(); return; }
+      window.gsap.to(line, { drawn: target(), duration: seconds, ease: 'power2.out', overwrite: true, onUpdate: apply });
+    };
+    const build = () => {
+      const W = document.documentElement.clientWidth, H = document.body.offsetHeight;
+      if (!W || !H || line.size === `${W}x${H}`) return;
+      line.size = `${W}x${H}`;
+      ribbonSvg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+      ribbonSvg.setAttribute('preserveAspectRatio', 'none');
+      const points = route(W, H), curve = spans(points);
+      ribbonSvg.textContent = '';
+      line.paths = []; line.table = [];
+      let from = 0, far = -Infinity;
+      for (let i = 0; i < curve.length; i += 4) {
+        const el = document.createElementNS(NS, 'path');
+        el.setAttribute('d', `M${points[i][0].toFixed(1)},${points[i][1].toFixed(1)}${curve.slice(i, i + 4).join('')}`);
+        ribbonSvg.appendChild(el);
+        const len = el.getTotalLength();
+        el.style.strokeDasharray = `${len} ${len}`;
+        el.style.visibility = 'hidden';
+        // the lowest point the line has reached at each length along it
+        const samples = Math.max(8, Math.round(len / 40));
+        for (let s = 0; s <= samples; s += 1) {
+          far = Math.max(far, el.getPointAtLength((len * s) / samples).y);
+          line.table.push([far, from + (len * s) / samples]);
         }
-        target = len;
+        line.paths.push({ el, len, from, shown: -1 });
+        from += len;
       }
-      if (instant) { window.gsap.killTweensOf(state); state.drawn = target; apply(); return; }
-      window.gsap.to(state, { drawn: target, duration: 0.7, ease: 'power2.out', overwrite: true, onUpdate: apply });
+      line.total = from;
+      const keep = line.first ? 0 : null;
+      if (line.first) { line.first = false; line.drawn = 0; apply(); follow(1.8); } else follow(keep);
     };
     build();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(build);
     window.addEventListener('load', build);
-    let resizeTimer = 0;
-    window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(build, 150); });
-    if (motionOn) {
-      window.ScrollTrigger.create({ trigger: story, start: 'top bottom', end: 'bottom top', onUpdate: () => follow(false) });
-    }
+    let rebuild = 0;
+    const later = () => { clearTimeout(rebuild); rebuild = setTimeout(build, 180); };
+    window.addEventListener('resize', later);
+    if (window.ResizeObserver) new ResizeObserver(later).observe(document.body);   // the page grows when an answer opens, the map loads…
+    if (motionOn) window.addEventListener('scroll', () => follow(0.7), { passive: true });
   }
 
   // Overlays pause the smooth scroll underneath them.

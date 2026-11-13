@@ -110,24 +110,25 @@
   </div>
 </header>
 
+<!-- Linka kreslená rolováním; tvar se počítá v assets/js/main.js podle rozložení stránky. -->
+<svg class="ribbon" data-ribbon aria-hidden="true" focusable="false"></svg>
+
 <main id="obsah">
 
   <!-- ============ ÚVOD ============ -->
-  <!-- Parallax ve čtyřech vrstvách: pozadí, zeleň, titulek, popředí. Vrstvy posouvá
-       GSAP ScrollTrigger (viz assets/js/main.js), plynulé rolování zajišťuje Lenis. -->
+  <!-- Krémové hedvábí: klidná plocha pod textem, sklady na druhé straně. Fotografie a text
+       se při rolování posouvají různou rychlostí (GSAP ScrollTrigger, assets/js/main.js);
+       z hedvábí vychází béžová linka, která vede celou stránkou až do patičky. -->
   <section class="hero" id="top">
     <div class="hero-visuals">
       <div class="hero-layers" data-parallax-layers>
-        <div class="hero-layer hero-layer--wall" data-parallax-layer="1">
-          <img src="assets/img/hero/wall.webp" alt="" width="1600" height="1410" fetchpriority="high" decoding="async">
-        </div>
-        <div class="hero-layer hero-layer--drapes" data-parallax-layer="2">
-          <img class="hero-drape hero-drape--l" src="assets/img/hero/drape-l.webp" alt="" width="418" height="1344" decoding="async">
-          <img class="hero-drape hero-drape--r" src="assets/img/hero/drape-r.webp" alt="" width="454" height="1344" decoding="async">
-        </div>
+        <picture class="hero-layer hero-layer--silk" data-parallax-layer="1">
+          <source media="(max-aspect-ratio: 4/5)" srcset="assets/img/hero/silk-m.webp" width="1080" height="1890">
+          <img src="assets/img/hero/silk.webp" alt="" width="2000" height="1143" fetchpriority="high" decoding="async">
+        </picture>
+        <div class="hero-veil"></div>
         <div class="hero-layer-title" data-parallax-layer="3">
           <div class="hero-copy">
-            <p class="hero-chip">Salon krásy · Praha&nbsp;7</p>
             <h1 class="hero-title"><span class="hero-title-main"><span>Krása je</span> <span class="hero-hl">v&nbsp;detailech.</span></span> <span class="hero-title-accent">Péče v&nbsp;přístupu.</span></h1>
             <p class="lead">DSTUDIO&nbsp;– salon krásy na Praze&nbsp;7, kde věnujeme pozornost vašim přáním i&nbsp;každému detailu výsledku.</p>
             <div class="hero-actions" data-bookbar-hide>
@@ -135,11 +136,6 @@
               <a class="link-arrow" href="#prace">Prohlédnout naše práce</a>
             </div>
           </div>
-          <a class="hero-scroll" href="#o-dstudio"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-arrow"/></svg>Posouvejte dál</a>
-        </div>
-        <div class="hero-layer hero-layer--front" data-parallax-layer="4">
-          <img class="hero-prop hero-prop--hand" src="assets/img/hero/hand.webp" alt="" width="992" height="507" decoding="async">
-          <img class="hero-prop hero-prop--still" src="assets/img/hero/still.webp" alt="" width="964" height="576" decoding="async">
         </div>
       </div>
       <div class="hero-fade"></div>
@@ -154,10 +150,9 @@
   </div>
 
   <!-- ============ O DSTUDIO ============ -->
-  <!-- Scrollová scéna: písmena nadpisu a štítky služeb se při rolování sjedou k sobě,
-       béžová linka se kreslí podle polohy stránky a vede dolů do tmavého bloku. -->
+  <!-- Scrollová scéna: písmena nadpisu a štítky služeb se při rolování sjedou k sobě;
+       linka z úvodu tu obkrouží nadpis a pokračuje dál stránkou. -->
   <section class="story" id="o-dstudio" data-story>
-    <svg class="story-ribbon" aria-hidden="true" focusable="false"><path data-ribbon d=""/></svg>
     <div class="wrap story-inner">
       <p class="eyebrow">O&nbsp;DSTUDIO</p>
       <h2 class="story-title" data-converge="text"><span class="visually-hidden">Chvíle pro sebe</span><span aria-hidden="true"><span class="cvw"><span class="cv" data-cv>C</span><span class="cv" data-cv>h</span><span class="cv" data-cv>v</span><span class="cv" data-cv>í</span><span class="cv" data-cv>l</span><span class="cv" data-cv>e</span></span> <span class="cvw"><span class="cv" data-cv>p</span><span class="cv" data-cv>r</span><span class="cv" data-cv>o</span></span> <span class="cvw"><span class="cv" data-cv>s</span><span class="cv" data-cv>e</span><span class="cv" data-cv>b</span><span class="cv" data-cv>e</span></span></span></h2>

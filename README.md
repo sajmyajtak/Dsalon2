@@ -24,34 +24,47 @@ bezpečnostní hlavičky (CSP, HSTS, …) a cache. `404.html` Netlify použije a
 | `ochrana-osobnich-udaju.html` | Ochrana osobních údajů a cookies |
 | `404.html` | Stránka „nenalezeno“ |
 | `assets/css/main.css` | Všechny styly; nahoře barvy a písma z brandbooku |
-| `assets/js/main.js` | Parallax úvodu, scrollová scéna O DSTUDIO, menu, otevírací doba, zvýraznění úrovně v ceníku, souhlas s mapou, poukaz |
+| `assets/js/main.js` | Parallax úvodu, scrollová scéna O DSTUDIO, linka přes stránku, menu, otevírací doba, zvýraznění úrovně v ceníku, souhlas s mapou, poukaz |
 | `assets/js/vendor/` | GSAP + ScrollTrigger (parallax) a Lenis (plynulé rolování), hostované lokálně |
 | `assets/fonts/` | Inter, Cormorant Garamond a League Gothic (SIL OFL), hostované lokálně |
 | `assets/logo/` | Logo vytažené z vektoru v brandbooku (čokoládová, krémová, bílá) |
-| `assets/img/hero/` | Vrstvy úvodní scény: zeď, dva závěsy, ruka s kyticí, flakony |
+| `assets/img/hero/` | Fotografie hedvábí pro úvod (na šířku a na výšku) |
 
-## Úvodní scéna (hero)
+## Úvod (hero)
 
-Úvod je složený ze čtyř vrstev, které se při rolování posouvají různou rychlostí:
-zeď se slunečním světlem → sametové závěsy → titulek → ruka s kyticí a flakony.
-Pohyb řídí GSAP ScrollTrigger, plynulé rolování Lenis; obojí je v `assets/js/vendor/`
-(GSAP: standardní bezplatná licence, Lenis: MIT). Při zapnutém „omezit pohyb“ v systému
-zůstává scéna v klidu a stránka se roluje běžně. Rozmístění vrstev pro mobil, tablet
-a široké obrazovky je v `assets/css/main.css` v části „Hero“.
+Úvod vychází z návrhu s krémovým hedvábím: text je vlevo (na mobilu nahoře), sklady
+látky na druhé straně. Fotografie a text se při rolování posouvají různou rychlostí
+(GSAP ScrollTrigger), plynulé rolování zajišťuje Lenis; obojí je v `assets/js/vendor/`
+(GSAP: standardní bezplatná licence, Lenis: MIT). Při zapnutém „omezit pohyb“ zůstává
+vše v klidu a stránka se roluje běžně.
 
-Obrázky scény jsou ilustrační. Až budou k dispozici vlastní fotografie salonu, stačí
-vyměnit soubory v `assets/img/hero/` (průhledné WebP, stejné názvy).
+Obrázky jsou ilustrační: `assets/img/hero/silk.webp` (na šířku) a `silk-m.webp` (na
+výšku, pro mobily). Jiný motiv z návrhů (smaragdové hedvábí, květ, …) znamená jen
+vyměnit tyto dva soubory; světlejší nebo tmavší závoj pod textem je `.hero-veil` v CSS.
+
+## Linka přes celou stránku
+
+Z hedvábí v úvodu vychází béžová linka a vede až na spodní okraj stránky. Kreslí se
+podle polohy stránky (`assets/js/main.js`, část „0c“):
+
+- v sekci O DSTUDIO obkrouží nadpis a proplete se mezerami mezi bloky textu,
+- projde za tmavým blokem s heslem,
+- dál běží okrajem stránky vedle obsahu a stranu mění jen v mezeře mezi dvěma sekcemi,
+  takže nikde nevede přes text,
+- leží nad pozadím sekcí a pod jejich obsahem (CSS, část „The line“).
+
+Trasa se počítá ze skutečného rozložení stránky a přepočítá se při změně velikosti okna
+i výšky stránky (otevřená otázka, načtená mapa). Při „omezit pohyb“ je linka vykreslená
+celá. Barva a tloušťka: `.ribbon path` v CSS.
 
 ## Scrollová scéna „O DSTUDIO“
 
-Hned pod úvodem se při rolování odehrají tři věci (vše v `assets/js/main.js`, část „0b“):
+Hned pod úvodem (vše v `assets/js/main.js`, část „0b“):
 
 - písmena nadpisu „Chvíle pro sebe“ a pět štítků služeb začínají rozhozené a sjedou se
   k sobě, než blok dojede doprostřed obrazovky,
-- béžová linka se kreslí podle polohy stránky: obkrouží nadpis, proplete se mezerami
-  mezi bloky textu a zmizí za tmavým blokem s heslem „Naslouchat vám.“ Její tvar se
-  počítá ze skutečné polohy nadpisu, štítků a odstavců, takže sedí na každé šířce,
-- při zapnutém „omezit pohyb“ vše stojí na místě a linka je vykreslená celá.
+- linka z úvodu tu obkrouží nadpis (viz výše),
+- při zapnutém „omezit pohyb“ vše stojí na místě.
 
 Text nadpisu se v `index.html` rozkládá na písmena až při sestavení; čitelná podoba
 zůstává ve stránce pro čtečky a vyhledávače.
@@ -61,7 +74,7 @@ zůstává ve stránce pro čtečky a vyhledávače.
 Efekty jsou přepsané do čistého JavaScriptu (web nemá React ani sestavovací krok):
 
 - parallax úvodu — Osmo „Parallax Scrolling“,
-- štítek, zvýrazněné slovo a vodítko v úvodu — Watermelon UI „Hero 17“,
+- zvýrazněné slovo a nájezd textu v úvodu — Watermelon UI „Hero 17“,
 - sbíhání písmen a štítků — **Skiper UI** „ScrollAnimation_002“ (autor @gurvinder-singh02),
 - linka kreslená rolováním — **Skiper UI** „Skiper 19“ (tamtéž; inspirováno comgio.ai).
 

@@ -24,9 +24,9 @@ bezpečnostní hlavičky (CSP, HSTS, …) a cache. `404.html` Netlify použije a
 | `ochrana-osobnich-udaju.html` | Ochrana osobních údajů a cookies |
 | `404.html` | Stránka „nenalezeno“ |
 | `assets/css/main.css` | Všechny styly; nahoře barvy a písma z brandbooku |
-| `assets/js/main.js` | Parallax úvodu, menu, otevírací doba, zvýraznění úrovně v ceníku, souhlas s mapou, poukaz |
+| `assets/js/main.js` | Parallax úvodu, scrollová scéna O DSTUDIO, menu, otevírací doba, zvýraznění úrovně v ceníku, souhlas s mapou, poukaz |
 | `assets/js/vendor/` | GSAP + ScrollTrigger (parallax) a Lenis (plynulé rolování), hostované lokálně |
-| `assets/fonts/` | Inter, Cormorant Garamond a Sofia Sans Extra Condensed (SIL OFL), hostované lokálně |
+| `assets/fonts/` | Inter, Cormorant Garamond a League Gothic (SIL OFL), hostované lokálně |
 | `assets/logo/` | Logo vytažené z vektoru v brandbooku (čokoládová, krémová, bílá) |
 | `assets/img/hero/` | Vrstvy úvodní scény: zeď, dva závěsy, ruka s kyticí, flakony |
 
@@ -42,17 +42,43 @@ a široké obrazovky je v `assets/css/main.css` v části „Hero“.
 Obrázky scény jsou ilustrační. Až budou k dispozici vlastní fotografie salonu, stačí
 vyměnit soubory v `assets/img/hero/` (průhledné WebP, stejné názvy).
 
+## Scrollová scéna „O DSTUDIO“
+
+Hned pod úvodem se při rolování odehrají tři věci (vše v `assets/js/main.js`, část „0b“):
+
+- písmena nadpisu „Chvíle pro sebe“ a pět štítků služeb začínají rozhozené a sjedou se
+  k sobě, než blok dojede doprostřed obrazovky,
+- béžová linka se kreslí podle polohy stránky: obkrouží nadpis, proplete se mezerami
+  mezi bloky textu a zmizí za tmavým blokem s heslem „Naslouchat vám.“ Její tvar se
+  počítá ze skutečné polohy nadpisu, štítků a odstavců, takže sedí na každé šířce,
+- při zapnutém „omezit pohyb“ vše stojí na místě a linka je vykreslená celá.
+
+Text nadpisu se v `index.html` rozkládá na písmena až při sestavení; čitelná podoba
+zůstává ve stránce pro čtečky a vyhledávače.
+
+### Předlohy efektů
+
+Efekty jsou přepsané do čistého JavaScriptu (web nemá React ani sestavovací krok):
+
+- parallax úvodu — Osmo „Parallax Scrolling“,
+- štítek, zvýrazněné slovo a vodítko v úvodu — Watermelon UI „Hero 17“,
+- sbíhání písmen a štítků — **Skiper UI** „ScrollAnimation_002“ (autor @gurvinder-singh02),
+- linka kreslená rolováním — **Skiper UI** „Skiper 19“ (tamtéž; inspirováno comgio.ai).
+
+Bezplatná verze Skiper UI vyžaduje uvedení autora; je uveden zde a v komentáři v kódu.
+
 ## Značka
 
 Web používá výhradně pět barev z Brandbooku 2.0 a jeho dvě písma: Inter nese běžný
 text, Cormorant Garamond je akcent (kurzivní řádek pod titulky, ceník, poukaz).
 Logo se nikde nesází písmem — všude je vložený schválený vektor.
 
-Nad rámec brandbooku je přidané třetí písmo, **Sofia Sans Extra Condensed** (tučné,
-vysoké verzálky): úvodní titulek, nadpisy sekcí a dvě velká hesla. V CSS je to
-proměnná `--font-display`; kdyby se mělo vrátit k čistě brandbookové typografii,
-stačí ji přepsat na `var(--font-sans)` a u `.h2`, `.statement` a `.hero-title`
-zrušit `text-transform`.
+Nad rámec brandbooku je přidané třetí písmo, **League Gothic** (vysoké úzké verzálky,
+volná licence SIL OFL): úvodní titulek, nadpisy sekcí, nadpis „Chvíle pro sebe“ a dvě
+velká hesla. Font má proměnnou šířku; web ho sází na 88 % (`--display-width` v CSS).
+Kdyby se mělo vrátit k čistě brandbookové typografii, stačí `--font-display` přepsat na
+`var(--font-sans)` a u `.h2`, `.statement`, `.story-title` a `.hero-title` zrušit
+`text-transform`.
 
 ## Co je potřeba doplnit
 

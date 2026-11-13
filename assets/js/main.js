@@ -67,6 +67,122 @@
       });
     }
   }
+  /* ------------------------------------------------------------------ *
+   * 0b. Story section
+   *     Converge: the heading's letters and the service tokens start spread
+   *     out from their middle and come together while the block scrolls from
+   *     the bottom of the screen to its centre (effect modelled on Skiper UI
+   *     "ScrollAnimation_002" by @gurvinder-singh02).
+   *     Ribbon: a line drawn by the scroll; it lassoes the heading and runs
+   *     down the section (after Skiper UI 19). Its shape is built from the
+   *     real positions of the heading and tokens, so it fits every screen.
+   * ------------------------------------------------------------------ */
+  const motionOn = !reduceMotion.matches && window.gsap && window.ScrollTrigger;
+  if (motionOn) {
+    const { gsap } = window;
+    $$('[data-converge]').forEach((box) => {
+      const items = $$('[data-cv]', box);
+      if (!items.length) return;
+      const centre = Math.floor(items.length / 2);
+      const arc = box.dataset.converge === 'arc';
+      const unit = () => Math.max(0.42, Math.min(window.innerWidth, 1440) / 1440);   // spread follows the screen
+      const tl = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: { trigger: box, start: 'top bottom', end: 'center 56%', scrub: 0, invalidateOnRefresh: true },
+      });
+      items.forEach((el, i) => {
+        const d = i - centre;
+        const from = arc
+          ? { x: () => d * 90 * unit(), y: () => -Math.abs(d) * 22 * unit(), rotate: d * 34, scale: 0.75 }
+          : { x: () => d * 50 * unit(), rotateX: d * 50, transformPerspective: 500 };
+        tl.fromTo(el, from, { x: 0, y: 0, rotate: 0, rotateX: 0, scale: 1 }, 0);
+      });
+    });
+  }
+
+  const story = $('[data-story]');
+  const ribbon = story && $('[data-ribbon]', story);
+  if (ribbon) {
+    const svg = ribbon.ownerSVGElement;
+    const title = $('.story-title', story);
+    const tokens = $('.story-tokens', story);
+    const lead = $('.story-lead', story);
+    const text = $('.story-text', story);
+    const state = { total: 0, table: [], drawn: 0 };
+    // smooth curve through the points (Catmull-Rom converted to cubic Béziers)
+    const spline = (p) => {
+      let d = `M${p[0][0].toFixed(1)},${p[0][1].toFixed(1)}`;
+      for (let i = 0; i < p.length - 1; i += 1) {
+        const a = p[Math.max(i - 1, 0)], b = p[i], c = p[i + 1], e = p[Math.min(i + 2, p.length - 1)];
+        d += ` C${(b[0] + (c[0] - a[0]) / 6).toFixed(1)},${(b[1] + (c[1] - a[1]) / 6).toFixed(1)} ${(c[0] - (e[0] - b[0]) / 6).toFixed(1)},${(c[1] - (e[1] - b[1]) / 6).toFixed(1)} ${c[0].toFixed(1)},${c[1].toFixed(1)}`;
+      }
+      return d;
+    };
+    const apply = () => { ribbon.style.strokeDashoffset = String(Math.max(state.total - state.drawn, 0)); };
+    const build = () => {
+      const W = story.clientWidth, H = story.clientHeight;
+      if (!W || !H) return;
+      const s = story.getBoundingClientRect();
+      const box = (el) => { const r = el.getBoundingClientRect(); return { l: r.left - s.left, r: r.right - s.left, t: r.top - s.top, b: r.bottom - s.top, w: r.width, h: r.height, cx: r.left - s.left + r.width / 2, cy: r.top - s.top + r.height / 2 }; };
+      const t = box(title), l = box(lead), k = box(tokens), x = box(text);
+      const rx = Math.min(t.w * 0.56, W * 0.47);
+      const label = $('.eyebrow', story);
+      const top = Math.min(t.t - t.h * 0.3, label ? box(label).t - 18 : Infinity), bottom = t.b + t.h * 0.07;   // clears the label and accents above, the lead below
+      const side = (edge, dir) => Math.min(Math.max(edge + dir * Math.min(W * 0.09, 120), 14), W - 14);   // just outside a text block
+      const gap1 = (l.b + k.t) / 2, gap2 = (k.b + x.t) / 2, below = x.b + Math.min((H - x.b) * 0.28, 90);
+      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+      // The line only crosses the page in the gaps between blocks, so it never strikes through a line of text.
+      ribbon.setAttribute('d', spline([
+        [W + 60, top - t.h * 0.35],                                                              // in from the right
+        [t.cx + rx * 0.5, top], [t.cx - rx * 0.55, top + t.h * 0.05], [t.cx - rx * 1.03, t.cy],  // over the heading, round its left end
+        [t.cx - rx * 0.55, bottom], [t.cx + rx * 0.5, bottom + 2], [t.cx + rx * 1.04, t.cy],     // underneath, up the right end
+        [t.cx + rx * 0.6, top + t.h * 0.02], [t.cx - rx * 0.1, top - t.h * 0.12],               // close the loop
+        [t.cx - rx * 1.1, top + t.h * 0.3], [side(l.l, -1), l.cy],                              // out and down the left of the lead
+        [W * 0.3, gap1], [W * 0.72, gap1], [side(k.r, 1), k.cy],                                // across under the lead, round the tokens
+        [W * 0.7, gap2], [W * 0.28, gap2], [side(x.l, -1), x.cy],                               // back under the tokens, down the left of the text
+        [W * 0.34, below], [W * 0.7, below + (H - below) * 0.25],                               // under the text
+        [W * 0.6, below + (H - below) * 0.7], [W * 0.5, H + 90],                                // and down behind the dark block
+      ]));
+      state.total = ribbon.getTotalLength();
+      ribbon.style.strokeDasharray = String(state.total);
+      // how far the line has travelled down the section at each length along it
+      state.table = [];
+      let far = -Infinity;
+      for (let i = 0; i <= 320; i += 1) {
+        const len = (state.total * i) / 320;
+        far = Math.max(far, ribbon.getPointAtLength(len).y);
+        state.table.push([far, len]);
+      }
+      if (!motionOn) { state.drawn = state.total; apply(); } else follow(true);
+    };
+    // the tip keeps to the lower part of the screen; loops are caught up with a short tween
+    const follow = (instant) => {
+      const tip = window.innerHeight * 0.8 - story.getBoundingClientRect().top;
+      let target = 0;
+      for (let i = 0; i < state.table.length; i += 1) {
+        const [far, len] = state.table[i];
+        if (far > tip) {
+          if (i > 0) {
+            const [pFar, pLen] = state.table[i - 1];
+            target = pLen + (len - pLen) * Math.min(Math.max((tip - pFar) / Math.max(far - pFar, 0.001), 0), 1);
+          }
+          break;
+        }
+        target = len;
+      }
+      if (instant) { window.gsap.killTweensOf(state); state.drawn = target; apply(); return; }
+      window.gsap.to(state, { drawn: target, duration: 0.7, ease: 'power2.out', overwrite: true, onUpdate: apply });
+    };
+    build();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(build);
+    window.addEventListener('load', build);
+    let resizeTimer = 0;
+    window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(build, 150); });
+    if (motionOn) {
+      window.ScrollTrigger.create({ trigger: story, start: 'top bottom', end: 'bottom top', onUpdate: () => follow(false) });
+    }
+  }
+
   // Overlays pause the smooth scroll underneath them.
   const pauseScroll = (paused) => { if (lenis) { if (paused) lenis.stop(); else lenis.start(); } };
 

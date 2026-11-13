@@ -20,8 +20,8 @@
   <link rel="icon" href="favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
-  <link rel="preload" href="assets/fonts/sofia-sans-extra-condensed-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/fonts/sofia-sans-extra-condensed-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/league-gothic-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/league-gothic-latin-ext-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/inter-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/css/main.css">
@@ -127,13 +127,15 @@
         </div>
         <div class="hero-layer-title" data-parallax-layer="3">
           <div class="hero-copy">
-            <h1 class="hero-title"><span class="hero-title-main"><span>Krása je</span> <span>v&nbsp;detailech.</span></span> <span class="hero-title-accent">Péče v&nbsp;přístupu.</span></h1>
+            <p class="hero-chip">Salon krásy · Praha&nbsp;7</p>
+            <h1 class="hero-title"><span class="hero-title-main"><span>Krása je</span> <span class="hero-hl">v&nbsp;detailech.</span></span> <span class="hero-title-accent">Péče v&nbsp;přístupu.</span></h1>
             <p class="lead">DSTUDIO&nbsp;– salon krásy na Praze&nbsp;7, kde věnujeme pozornost vašim přáním i&nbsp;každému detailu výsledku.</p>
             <div class="hero-actions" data-bookbar-hide>
               <a class="btn" href="https://noona.app/dstudio" target="_blank" rel="noopener">Rezervovat online <span class="btn-arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span><span class="visually-hidden"> (otevře se na nové kartě)</span></a>
               <a class="link-arrow" href="#prace">Prohlédnout naše práce</a>
             </div>
           </div>
+          <a class="hero-scroll" href="#o-dstudio"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-arrow"/></svg>Posouvejte dál</a>
         </div>
         <div class="hero-layer hero-layer--front" data-parallax-layer="4">
           <img class="hero-prop hero-prop--hand" src="assets/img/hero/hand.webp" alt="" width="992" height="507" decoding="async">
@@ -145,13 +147,6 @@
   </section>
 
   <div class="wrap hero-foot">
-    <ul class="services-row" aria-label="Služby">
-      <li><a href="#cenik-nail-care">Manikúra</a></li>
-      <li><a href="#cenik-nail-care">Pedikúra</a></li>
-      <li><a href="#cenik-beauty">Obočí</a></li>
-      <li><a href="#cenik-beauty">Řasy</a></li>
-      <li><a href="#cenik-beauty">Líčení</a></li>
-    </ul>
     <div class="hero-meta">
       <p>Milady Horákové&nbsp;398/30 · Praha&nbsp;7 · ve dvoře</p>
       <p class="status" data-hours-status><span class="status-dot" aria-hidden="true"></span><span data-hours-text>Po–Pá 9:00–19:00</span></p>
@@ -159,14 +154,22 @@
   </div>
 
   <!-- ============ O DSTUDIO ============ -->
-  <section class="section about" id="o-dstudio">
-    <div class="wrap split">
-      <header class="split-head">
-        <p class="eyebrow">O&nbsp;DSTUDIO</p>
-        <h2 class="h2">Chvíle pro sebe</h2>
-      </header>
-      <div class="split-body prose">
-        <p class="lead">Někdy ke krásnějšímu dni stačí čerstvá manikúra, zvýrazněný pohled nebo líčení pro výjimečnou příležitost.</p>
+  <!-- Scrollová scéna: písmena nadpisu a štítky služeb se při rolování sjedou k sobě,
+       béžová linka se kreslí podle polohy stránky a vede dolů do tmavého bloku. -->
+  <section class="story" id="o-dstudio" data-story>
+    <svg class="story-ribbon" aria-hidden="true" focusable="false"><path data-ribbon d=""/></svg>
+    <div class="wrap story-inner">
+      <p class="eyebrow">O&nbsp;DSTUDIO</p>
+      <h2 class="story-title" data-converge="text"><span class="visually-hidden">Chvíle pro sebe</span><span aria-hidden="true"><span class="cvw"><span class="cv" data-cv>C</span><span class="cv" data-cv>h</span><span class="cv" data-cv>v</span><span class="cv" data-cv>í</span><span class="cv" data-cv>l</span><span class="cv" data-cv>e</span></span> <span class="cvw"><span class="cv" data-cv>p</span><span class="cv" data-cv>r</span><span class="cv" data-cv>o</span></span> <span class="cvw"><span class="cv" data-cv>s</span><span class="cv" data-cv>e</span><span class="cv" data-cv>b</span><span class="cv" data-cv>e</span></span></span></h2>
+      <p class="lead story-lead">Někdy ke krásnějšímu dni stačí čerstvá manikúra, zvýrazněný pohled nebo líčení pro výjimečnou příležitost.</p>
+      <ul class="story-tokens" data-converge="arc" aria-label="Služby">
+        <li data-cv><a class="token" href="#cenik-nail-care">Manikúra</a></li>
+        <li data-cv><a class="token" href="#cenik-nail-care">Pedikúra</a></li>
+        <li data-cv><a class="token" href="#cenik-beauty">Obočí</a></li>
+        <li data-cv><a class="token" href="#cenik-beauty">Řasy</a></li>
+        <li data-cv><a class="token" href="#cenik-beauty">Líčení</a></li>
+      </ul>
+      <div class="story-text prose">
         <p>V&nbsp;DSTUDIO spojujeme pečlivou práci s&nbsp;milým a&nbsp;pozorným přístupem. Vyslechneme vaše přání, pomůžeme vám s&nbsp;výběrem a&nbsp;postaráme se, abyste se u&nbsp;nás cítili příjemně po celou dobu návštěvy.</p>
         <p>Záleží nám na tom, aby výsledek ladil právě s&nbsp;vámi&nbsp;– s&nbsp;vaším stylem, náladou i&nbsp;životním rytmem.</p>
       </div>
@@ -174,11 +177,13 @@
   </section>
 
   <!-- ============ NAŠE FILOZOFIE ============ -->
-  <section class="section philosophy plane-chocolate on-dark" id="filozofie">
+  <section class="philosophy plane-chocolate on-dark" id="filozofie">
     <div class="wrap">
-      <p class="eyebrow">Naše filozofie</p>
-      <h2 class="statement">Naslouchat vám. <span>Pečovat o&nbsp;detaily.</span></h2>
-      <p class="lead philosophy-text">Každý má svou vlastní představu o&nbsp;kráse. Naše práce začíná tím, že porozumíme té vaší.</p>
+      <h2 class="statement">Naslouchat vám. <em>Pečovat o&nbsp;detaily.</em></h2>
+      <div class="philosophy-foot">
+        <p class="eyebrow">Naše filozofie</p>
+        <p class="lead philosophy-text">Každý má svou vlastní představu o&nbsp;kráse. Naše práce začíná tím, že porozumíme té vaší.</p>
+      </div>
     </div>
   </section>
 
@@ -590,7 +595,7 @@
   <!-- ============ ZÁVĚREČNÁ VÝZVA ============ -->
   <section class="section closing plane-emerald on-emerald" id="rezervace" data-bookbar-hide>
     <div class="wrap closing-inner">
-      <h2 class="statement">Dopřejte si čas pro sebe. <span>O&nbsp;detaily se postaráme my.</span></h2>
+      <h2 class="statement">Dopřejte si čas pro sebe. <em>O&nbsp;detaily se postaráme my.</em></h2>
       <div class="closing-action">
         <p class="lead">Vyberte si termín své příští návštěvy.</p>
         <a class="btn btn--white" href="https://noona.app/dstudio" target="_blank" rel="noopener">Rezervovat v&nbsp;DSTUDIO <span class="btn-arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span><span class="visually-hidden"> (otevře se na nové kartě)</span></a>

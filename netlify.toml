@@ -12,6 +12,8 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), interest-cohort=()"
     Cross-Origin-Opener-Policy = "same-origin"
+    # Demo: keeps the preview out of search engines. Delete this line for the public launch.
+    X-Robots-Tag = "noindex, nofollow"
 
 [[headers]]
   for = "/assets/fonts/*"

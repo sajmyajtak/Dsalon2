@@ -16,6 +16,9 @@ Pak otevřete `http://localhost:4173/`.
 Celý adresář se nahraje tak, jak je (drag & drop nebo ZIP). `netlify.toml` nastavuje
 bezpečnostní hlavičky (CSP, HSTS, …) a cache. `404.html` Netlify použije automaticky.
 
+Demo je označené hlavičkou `X-Robots-Tag: noindex, nofollow`, aby se neukázalo ve
+vyhledávačích. Před ostrým spuštěním tento řádek z `netlify.toml` smažte.
+
 ## Struktura
 
 | Soubor | Co v něm je |

@@ -26,7 +26,7 @@ bezpečnostní hlavičky (CSP, HSTS, …) a cache. `404.html` Netlify použije a
 | `assets/css/main.css` | Všechny styly; nahoře barvy a písma z brandbooku |
 | `assets/js/main.js` | Parallax úvodu, menu, otevírací doba, zvýraznění úrovně v ceníku, souhlas s mapou, poukaz |
 | `assets/js/vendor/` | GSAP + ScrollTrigger (parallax) a Lenis (plynulé rolování), hostované lokálně |
-| `assets/fonts/` | Inter a Cormorant Garamond (SIL OFL), hostované lokálně |
+| `assets/fonts/` | Inter, Cormorant Garamond a Sofia Sans Extra Condensed (SIL OFL), hostované lokálně |
 | `assets/logo/` | Logo vytažené z vektoru v brandbooku (čokoládová, krémová, bílá) |
 | `assets/img/hero/` | Vrstvy úvodní scény: zeď, dva závěsy, ruka s kyticí, flakony |
 
@@ -44,9 +44,15 @@ vyměnit soubory v `assets/img/hero/` (průhledné WebP, stejné názvy).
 
 ## Značka
 
-Web používá výhradně pět barev a dvě písma z Brandbooku 2.0. Inter nese text i běžné
-nadpisy; Cormorant Garamond je akcent (úvodní titulek, ceník, poukaz, dvě krátká hesla).
+Web používá výhradně pět barev z Brandbooku 2.0 a jeho dvě písma: Inter nese běžný
+text, Cormorant Garamond je akcent (kurzivní řádek pod titulky, ceník, poukaz).
 Logo se nikde nesází písmem — všude je vložený schválený vektor.
+
+Nad rámec brandbooku je přidané třetí písmo, **Sofia Sans Extra Condensed** (tučné,
+vysoké verzálky): úvodní titulek, nadpisy sekcí a dvě velká hesla. V CSS je to
+proměnná `--font-display`; kdyby se mělo vrátit k čistě brandbookové typografii,
+stačí ji přepsat na `var(--font-sans)` a u `.h2`, `.statement` a `.hero-title`
+zrušit `text-transform`.
 
 ## Co je potřeba doplnit
 

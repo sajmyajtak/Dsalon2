@@ -27,26 +27,33 @@ bezpečnostní hlavičky (CSP, HSTS, …) a cache. `404.html` Netlify použije a
 | `assets/js/main.js` | Parallax úvodu, scrollová scéna O DSTUDIO, linka přes stránku, menu, otevírací doba, zvýraznění úrovně v ceníku, souhlas s mapou, poukaz |
 | `assets/js/glass-carousel.js` | Carousel služeb za „tekutým sklem“ (WebGL, bez knihoven) |
 | `assets/js/vendor/` | GSAP + ScrollTrigger (parallax) a Lenis (plynulé rolování), hostované lokálně |
-| `assets/fonts/` | Inter, Cormorant Garamond a League Gothic (SIL OFL), hostované lokálně |
+| `assets/fonts/` | Inter, Cormorant Garamond, League Gothic, Instrument Serif a Pinyon Script (vše SIL OFL), hostované lokálně |
 | `assets/logo/` | Logo vytažené z vektoru v brandbooku (čokoládová, krémová, bílá) |
-| `assets/img/hero/` | Fotografie hedvábí pro úvod (na šířku a na výšku) |
+| `assets/img/hero/` | Scéna pro úvod (na šířku a na výšku) |
 | `assets/img/glass/` | Sedm ilustračních snímků služeb pro carousel (3 : 4, 768 × 1024) |
 
 ## Úvod (hero)
 
-Úvod vychází z návrhu s krémovým hedvábím: text je vlevo (na mobilu nahoře), sklady
-látky na druhé straně. Fotografie a text se při rolování posouvají různou rychlostí
-(GSAP ScrollTrigger), plynulé rolování zajišťuje Lenis; obojí je v `assets/js/vendor/`
-(GSAP: standardní bezplatná licence, Lenis: MIT). Při zapnutém „omezit pohyb“ zůstává
-vše v klidu a stránka se roluje běžně.
+Scéna přes celou první obrazovku a text dole uprostřed ve třech řádcích: drobný psaný
+řádek („Péče v přístupu“), pod ním velký patkový titulek („Krása je v detailech“) a krátký
+odstavec malými verzálkami. Rozložení textu vychází z hero „Refined Eyewear“ (Casa
+Lunara) z knihovny Supahero; pozadí je vlastní. V úvodu zatím nejsou žádná tlačítka,
+rezervace je v hlavičce.
 
-Obrázky jsou ilustrační: `assets/img/hero/silk.webp` (na šířku) a `silk-m.webp` (na
-výšku, pro mobily). Jiný motiv z návrhů (smaragdové hedvábí, květ, …) znamená jen
-vyměnit tyto dva soubory; světlejší nebo tmavší závoj pod textem je `.hero-veil` v CSS.
+- Písma úvodu: titulek **Instrument Serif**, psaný řádek **Pinyon Script** (obě SIL OFL;
+  soubor psaného písma obsahuje jen latinku s českou a slovenskou diakritikou).
+- Hlavička je nad scénou průhledná a její obsah krémový; v bílou lištu se změní, až scéna
+  odroluje (třída `site-header--over` v `index.html`, na podstránkách není).
+- Scéna a text se při rolování posouvají různou rychlostí (GSAP ScrollTrigger), plynulé
+  rolování zajišťuje Lenis; obojí je v `assets/js/vendor/` (GSAP: standardní bezplatná
+  licence, Lenis: MIT). Při zapnutém „omezit pohyb“ zůstává vše v klidu.
+- Obrázek scény je ilustrační: `assets/img/hero/scene.webp` (na šířku) a `scene-m.webp`
+  (na výšku, pro mobily). Výměna motivu = výměna těchto dvou souborů; ztmavení pod textem
+  je `.hero-shade` v CSS.
 
 ## Linka přes celou stránku
 
-Z hedvábí v úvodu vychází béžová linka a vede až na spodní okraj stránky. Kreslí se
+Zpod scény v úvodu vychází béžová linka a vede až na spodní okraj stránky. Kreslí se
 podle polohy stránky (`assets/js/main.js`, část „0c“):
 
 - v sekci O DSTUDIO obkrouží nadpis a proplete se mezerami mezi bloky textu,
@@ -95,7 +102,8 @@ roluje stránku. Klik na prostřední snímek ho zvětší (zavřít: tlačítko
 Efekty jsou přepsané do čistého JavaScriptu (web nemá React ani sestavovací krok):
 
 - parallax úvodu — Osmo „Parallax Scrolling“,
-- zvýrazněné slovo a nájezd textu v úvodu — Watermelon UI „Hero 17“,
+- rozložení textu v úvodu — hero „Refined Eyewear“ (Casa Lunara) z knihovny Supahero,
+- nájezd textu v úvodu — Watermelon UI „Hero 17“,
 - sbíhání písmen a štítků — **Skiper UI** „ScrollAnimation_002“ (autor @gurvinder-singh02),
 - linka kreslená rolováním — **Skiper UI** „Skiper 19“ (tamtéž; inspirováno comgio.ai),
 - carousel za tekutým sklem — **Componentry** „Liquid Glass Carousel“ (Harsh Jadhav,
@@ -110,11 +118,14 @@ text, Cormorant Garamond je akcent (kurzivní řádek pod titulky, ceník, pouka
 Logo se nikde nesází písmem — všude je vložený schválený vektor.
 
 Nad rámec brandbooku je přidané třetí písmo, **League Gothic** (vysoké úzké verzálky,
-volná licence SIL OFL): úvodní titulek, nadpisy sekcí, nadpis „Chvíle pro sebe“ a dvě
-velká hesla. Font má proměnnou šířku; web ho sází na 88 % (`--display-width` v CSS).
+volná licence SIL OFL): nadpisy sekcí, nadpis „Chvíle pro sebe“ a velká hesla v barevných
+blocích. Font má proměnnou šířku; web ho sází na 88 % (`--display-width` v CSS).
 Kdyby se mělo vrátit k čistě brandbookové typografii, stačí `--font-display` přepsat na
-`var(--font-sans)` a u `.h2`, `.statement`, `.story-title` a `.hero-title` zrušit
-`text-transform`.
+`var(--font-sans)` a u `.h2`, `.statement` a `.story-title` zrušit `text-transform`.
+
+Jen v úvodu jsou navíc dvě písma podle předlohy hero: **Instrument Serif** a **Pinyon
+Script** (`--font-hero`, `--font-script` v CSS). Čistě brandbooková varianta úvodu:
+obě proměnné přepsat na `var(--font-serif)`.
 
 ## Co je potřeba doplnit
 

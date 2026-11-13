@@ -97,7 +97,7 @@
 
   /* ------------------------------------------------------------------ *
    * 0c. The line
-   *     One line drawn by the scroll, from the silk in the hero to the foot
+   *     One line drawn by the scroll, from under the hero scene to the foot
    *     of the page (idea after Skiper UI 19). Its route is worked out from
    *     where things really are: it lassoes the story heading, threads the
    *     gaps between that section's blocks, goes behind the carousel and the
@@ -137,9 +137,7 @@
       const beside = (edge, dir) => Math.min(Math.max(edge + dir * Math.min(W * 0.09, 120), 12), W - 12);
       const gap1 = (l.b + k.t) / 2, gap2 = (k.b + x.t) / 2, below = x.b + Math.min((next.t - x.b) * 0.3, 90);
       const p = [
-        ...(W < 700                                                                              // out of the silk; on phones it keeps below the copy
-          ? [[W + 40, hero.t + hero.h * 0.56], [W * 0.72, hero.t + hero.h * 0.7], [W * 0.5, hero.t + hero.h * 0.9], [W * 0.9, foot.cy]]
-          : [[W + 60, hero.t + hero.h * 0.3], [W * 0.8, hero.t + hero.h * 0.48], [W * 0.58, hero.t + hero.h * 0.82], [W * 0.5, foot.cy]]),
+        [W * (W < 700 ? 0.78 : 0.5), hero.b - 120], [W * (W < 700 ? 0.9 : 0.5), foot.cy],       // straight down, out from under the hero scene
         [t.cx + rx * 0.5, top], [t.cx - rx * 0.55, top + t.h * 0.05], [t.cx - rx * 1.03, t.cy],  // over the heading, round its left end
         [t.cx - rx * 0.55, bottom], [t.cx + rx * 0.5, bottom + 2], [t.cx + rx * 1.04, t.cy],     // underneath, up the right end
         [t.cx + rx * 0.6, top + t.h * 0.02], [t.cx - rx * 0.1, top - t.h * 0.12],               // close the loop
@@ -252,7 +250,7 @@
    * ------------------------------------------------------------------ */
   const header = $('[data-header]');
   if (header) {
-    const sentinel = $('[data-header-sentinel]');
+    const sentinel = $('[data-header-hero]') || $('[data-header-sentinel]');   // home: the bar changes when the hero scene has gone
     if (sentinel && 'IntersectionObserver' in window) {
       new IntersectionObserver(([entry]) => {
         header.classList.toggle('is-stuck', !entry.isIntersecting);

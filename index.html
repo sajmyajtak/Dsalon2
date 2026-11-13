@@ -20,8 +20,10 @@
   <link rel="icon" href="favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
-  <link rel="preload" href="assets/fonts/league-gothic-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/fonts/league-gothic-latin-ext-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/instrument-serif-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/instrument-serif-latin-ext-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/pinyon-script-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/pinyon-script-latin-ext-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/inter-latin-ext-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/css/main.css">
@@ -82,7 +84,7 @@
 </svg>
 
 <div data-header-sentinel></div>
-<header class="site-header" data-header>
+<header class="site-header site-header--over" data-header>
   <div class="wrap header-inner">
     <a class="logo" href="#top" aria-label="DSTUDIO Beauty Salon – na začátek stránky">
       <svg viewBox="0 0 552.514 146.363" aria-hidden="true"><use href="#logo"/></svg>
@@ -117,29 +119,23 @@
 <main id="obsah">
 
   <!-- ============ ÚVOD ============ -->
-  <!-- Krémové hedvábí: klidná plocha pod textem, sklady na druhé straně. Fotografie a text
-       se při rolování posouvají různou rychlostí (GSAP ScrollTrigger, assets/js/main.js);
-       z hedvábí vychází béžová linka, která vede celou stránkou až do patičky. -->
+  <!-- Scéna přes celou obrazovku; dole uprostřed drobný psaný řádek, velký patkový titulek
+       a krátký odstavec verzálkami. Scéna a text se při rolování posouvají různou rychlostí
+       (GSAP ScrollTrigger, assets/js/main.js). Hlavička je nad scénou průhledná. -->
   <section class="hero" id="top">
-    <div class="hero-visuals">
-      <div class="hero-layers" data-parallax-layers>
-        <picture class="hero-layer hero-layer--silk" data-parallax-layer="1">
-          <source media="(max-aspect-ratio: 4/5)" srcset="assets/img/hero/silk-m.webp" width="1080" height="1890">
-          <img src="assets/img/hero/silk.webp" alt="" width="2000" height="1143" fetchpriority="high" decoding="async">
-        </picture>
-        <div class="hero-veil"></div>
-        <div class="hero-layer-title" data-parallax-layer="3">
-          <div class="hero-copy">
-            <h1 class="hero-title"><span class="hero-title-main"><span>Krása je</span> <span class="hero-hl">v&nbsp;detailech.</span></span> <span class="hero-title-accent">Péče v&nbsp;přístupu.</span></h1>
-            <p class="lead">DSTUDIO&nbsp;– salon krásy na Praze&nbsp;7, kde věnujeme pozornost vašim přáním i&nbsp;každému detailu výsledku.</p>
-            <div class="hero-actions" data-bookbar-hide>
-              <a class="btn" href="https://noona.app/dstudio" target="_blank" rel="noopener">Rezervovat online <span class="btn-arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span><span class="visually-hidden"> (otevře se na nové kartě)</span></a>
-              <a class="link-arrow" href="#prace">Prohlédnout naše práce</a>
-            </div>
-          </div>
+    <div class="hero-sentinel" data-header-hero></div>
+    <div class="hero-layers" data-parallax-layers>
+      <picture class="hero-layer" data-parallax-layer="1">
+        <source media="(max-aspect-ratio: 4/5)" srcset="assets/img/hero/scene-m.webp" width="1080" height="2174">
+        <img src="assets/img/hero/scene.webp" srcset="assets/img/hero/scene-1600.webp 1600w, assets/img/hero/scene.webp 2400w" sizes="max(100vw, 175vh)" alt="" width="2400" height="1371" fetchpriority="high" decoding="async">
+      </picture>
+      <div class="hero-shade"></div>
+      <div class="hero-layer-title" data-parallax-layer="3">
+        <div class="hero-copy" data-bookbar-hide>
+          <h1 class="hero-title"><span class="hero-title-main">Krása je <span>v&nbsp;detailech</span></span><span class="visually-hidden">. </span><span class="hero-title-script">Péče v&nbsp;přístupu</span></h1>
+          <p class="hero-lead">DSTUDIO&nbsp;– salon krásy na Praze&nbsp;7, kde věnujeme pozornost vašim přáním i&nbsp;každému detailu výsledku.</p>
         </div>
       </div>
-      <div class="hero-fade"></div>
     </div>
   </section>
 

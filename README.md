@@ -24,13 +24,14 @@ bezpečnostní hlavičky (CSP, HSTS, …) a cache. `404.html` Netlify použije a
 | `ochrana-osobnich-udaju.html` | Ochrana osobních údajů a cookies |
 | `404.html` | Stránka „nenalezeno“ |
 | `assets/css/main.css` | Všechny styly; nahoře barvy a písma z brandbooku |
-| `assets/js/main.js` | Parallax úvodu, scrollová scéna O DSTUDIO, linka přes stránku, menu, otevírací doba, zvýraznění úrovně v ceníku, souhlas s mapou, poukaz |
+| `assets/js/main.js` | Parallax úvodu, scrollová scéna O DSTUDIO, linka přes stránku, menu, otevírací doba, výběr úrovně v ceníku, souhlas s mapou, poukaz |
 | `assets/js/glass-carousel.js` | Carousel služeb za „tekutým sklem“ (WebGL, bez knihoven) |
 | `assets/js/vendor/` | GSAP + ScrollTrigger (parallax) a Lenis (plynulé rolování), hostované lokálně |
 | `assets/fonts/` | Inter, Cormorant Garamond, League Gothic, Instrument Serif a Pinyon Script (vše SIL OFL), hostované lokálně |
 | `assets/logo/` | Logo vytažené z vektoru v brandbooku (čokoládová, krémová, bílá) |
 | `assets/img/hero/` | Scéna pro úvod (na šířku a na výšku) |
 | `assets/img/glass/` | Sedm ilustračních snímků služeb pro carousel (3 : 4, 768 × 1024) |
+| `assets/img/shop/` | Osm produktových zátiší pro karty ceníku (4 : 3, 1152 × 864) |
 
 ## Úvod (hero)
 
@@ -134,7 +135,8 @@ jen tady:
 
 - **Naše práce** — pět rámečků 4:5 čeká na fotografie. Do `<li class="pane">` stačí
   vložit `<img src="…" alt="…">`; linky v rámečku fotografie překryje.
-- **Carousel služeb a úvod** — ilustrační snímky nahradit fotografiemi ze salonu.
+- **Carousel služeb, úvod a karty ceníku** — ilustrační snímky nahradit fotografiemi ze
+  salonu.
 - **Náš tým** — jména, portréty a úrovně specialistek.
 - **Recenze** — skutečné recenze klientek (teď je sekce jen blok s poděkováním).
 - **Kontakt** — fotografie vchodu, o které mluví úvodní text sekce.
@@ -146,9 +148,28 @@ jen tady:
 
 ## Ceník
 
-Ceník je běžná HTML tabulka v `index.html` (sekce `#cenik`), přepsaná z brandbooku.
-Změna ceny = přepsání čísla v příslušné buňce. Ceny se objevují ještě ve dvou odpovědích
-v sekci Časté otázky (řasy; pánská manikúra a pedikúra).
+Ceník je pojatý jako butik:
+
+- **Oddělení** jsou čtyři kategorie z brandbooku (velký nadpis s číslem a anglickým
+  názvem). Lišta pod hlavičkou na ně odkazuje a ukazuje u nich počet služeb.
+- **Produkt** je každá skupina služeb (Manikúra, Pedikúra, Gelové prodloužení, …): karta
+  s fotografií, řádkem úrovní, ve kterých se služba nabízí, názvem, tabulkou cen
+  a vlastním tlačítkem rezervace. Na mobilu je karta řádek s malou fotografií a kulatou
+  šipkou místo tlačítka (rezervaci tam nese lišta u spodního okraje).
+- **Úroveň** (Middle / Senior / Top) se v liště vybírá jako velikost. Výběr nic neskrývá:
+  jen zvýrazní sloupec zvolené úrovně a ostatní ztlumí. Volba se pamatuje do zavření
+  karty prohlížeče.
+
+Ceny jsou běžné HTML tabulky v `index.html` (sekce `#cenik`), přepsané z brandbooku.
+Změna ceny = přepsání čísla v příslušné buňce; počty služeb u oddělení a produktů jsou
+obyčejný text hned vedle. Ceny se objevují ještě ve dvou odpovědích v sekci Časté otázky
+(řasy; pánská manikúra a pedikúra).
+
+Fotografie produktů jsou ilustrační zátiší (`assets/img/shop/`, jeden soubor na
+produkt, poměr 4 : 3). Výměna = nahrazení souboru stejného jména.
+
+Zelená je v ceníku vyhrazená zvolené úrovni a hlavnímu tlačítku; tlačítka u produktů
+jsou proto jen v obrysu.
 
 ## Cookies a měření
 

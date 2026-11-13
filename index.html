@@ -236,161 +236,257 @@
   </section>
 
   <!-- ============ SLUŽBY A CENÍK ============ -->
+  <!-- Ceník jako butik: kategorie jsou oddělení, každá skupina služeb je „produkt“ s fotografií,
+       úroveň se vybírá jako velikost. Všechny ceny zůstávají na stránce; výběr úrovně jen
+       zvýrazní její sloupec. Řádky ceníku generuje sestavení z dat (viz README). -->
   <section class="section prices plane-cream" id="cenik" data-prices data-level="">
-    <div class="wrap prices-grid">
+    <div class="wrap">
       <header class="prices-head">
-        <p class="eyebrow">DSTUDIO <span aria-hidden="true">/</span> Ceny v&nbsp;<span class="keep-case">Kč</span></p>
-        <h2 class="h2">Služby a&nbsp;ceník</h2>
-        <p>Naše specialistky pracují ve třech úrovních: Middle, Senior a&nbsp;Top. Od úrovně se odvíjí cena služby. Úroveň si volíte při rezervaci&nbsp;– a&nbsp;pokud váháte, pomůžeme vám s&nbsp;výběrem.</p>
+        <div class="prices-title">
+          <p class="eyebrow">DSTUDIO <span aria-hidden="true">/</span> Ceny v&nbsp;<span class="keep-case">Kč</span></p>
+          <h2 class="h2">Služby a&nbsp;ceník</h2>
+        </div>
+        <p class="prices-intro">Naše specialistky pracují ve třech úrovních: Middle, Senior a&nbsp;Top. Od úrovně se odvíjí cena služby. Úroveň si volíte při rezervaci&nbsp;– a&nbsp;pokud váháte, pomůžeme vám s&nbsp;výběrem.</p>
       </header>
 
       <div class="prices-bar">
         <nav class="chapter-index" aria-label="Oddíly ceníku">
           <ol>
-            <li><a href="#cenik-nail-care" data-chapter-link="nail-care"><span class="chapter-no">01</span><span class="chapter-name">Manikúra &amp; pedikúra</span></a></li>
-            <li><a href="#cenik-gel-nails" data-chapter-link="gel-nails"><span class="chapter-no">02</span><span class="chapter-name">Modeláž nehtů</span></a></li>
-            <li><a href="#cenik-nail-art" data-chapter-link="nail-art"><span class="chapter-no">03</span><span class="chapter-name">Design nehtů</span></a></li>
-            <li><a href="#cenik-beauty" data-chapter-link="beauty"><span class="chapter-no">04</span><span class="chapter-name">Obočí, řasy &amp; líčení</span></a></li>
+            <li><a href="#cenik-nail-care" data-chapter-link="nail-care"><span class="chapter-no">01</span><span class="chapter-name">Manikúra &amp; pedikúra</span><span class="chapter-n"><span class="visually-hidden">, </span>18<span class="visually-hidden"> služeb</span></span></a></li>
+            <li><a href="#cenik-gel-nails" data-chapter-link="gel-nails"><span class="chapter-no">02</span><span class="chapter-name">Modeláž nehtů</span><span class="chapter-n"><span class="visually-hidden">, </span>10<span class="visually-hidden"> služeb</span></span></a></li>
+            <li><a href="#cenik-nail-art" data-chapter-link="nail-art"><span class="chapter-no">03</span><span class="chapter-name">Design nehtů</span><span class="chapter-n"><span class="visually-hidden">, </span>9<span class="visually-hidden"> služeb</span></span></a></li>
+            <li><a href="#cenik-beauty" data-chapter-link="beauty"><span class="chapter-no">04</span><span class="chapter-name">Obočí, řasy &amp; líčení</span><span class="chapter-n"><span class="visually-hidden">, </span>17<span class="visually-hidden"> služeb</span></span></a></li>
           </ol>
         </nav>
         <div class="levels" role="group" aria-labelledby="levels-label">
-          <span class="levels-label" id="levels-label">Zvýraznit úroveň</span>
+          <span class="levels-label" id="levels-label">Úroveň</span>
           <div class="levels-switch">
             <button type="button" aria-pressed="false" data-level-btn="middle">Middle</button>
             <button type="button" aria-pressed="false" data-level-btn="senior">Senior</button>
             <button type="button" aria-pressed="false" data-level-btn="top">Top</button>
           </div>
         </div>
-        <a class="btn prices-cta" href="https://noona.app/dstudio" target="_blank" rel="noopener">Vybrat službu a&nbsp;termín <span class="btn-arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span><span class="visually-hidden"> (otevře se na nové kartě)</span></a>
       </div>
 
       <div class="prices-main">
         <p class="visually-hidden" aria-live="polite" data-level-live></p>
-      <article class="chapter" id="cenik-nail-care" aria-labelledby="h-nail-care" data-chapter="nail-care">
-        <header class="chapter-head"><p class="chapter-tag">01 <span aria-hidden="true">/</span> Nail care</p><h3 class="chapter-title" id="h-nail-care">Manikúra &amp; pedikúra</h3></header>
-        <table class="price-table" data-levels="middle senior top">
-          <caption>Manikúra</caption>
-          <thead><tr><th scope="col"><span class="visually-hidden">Služba</span></th><th scope="col" data-l="middle">Middle</th><th scope="col" data-l="senior">Senior</th><th scope="col" data-l="top">Top</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">Manikúra</th><td data-l="middle">790</td><td data-l="senior">890</td><td data-l="top">990</td></tr>
-            <tr><th scope="row">P-Shine</th><td data-l="middle">890</td><td data-l="senior">990</td><td data-l="top">1090</td></tr>
-            <tr><th scope="row">Manikúra + klasický lak</th><td data-l="middle">890</td><td data-l="senior">990</td><td data-l="top">1090</td></tr>
-            <tr><th scope="row">Manikúra + gel lak S</th><td data-l="middle">990</td><td data-l="senior">1090</td><td data-l="top">1290</td></tr>
-            <tr><th scope="row">Manikúra + gel lak M</th><td data-l="middle">1090</td><td data-l="senior">1190</td><td data-l="top">1390</td></tr>
-            <tr><th scope="row">Manikúra + gel lak L</th><td data-l="middle">1190</td><td data-l="senior">1290</td><td data-l="top">1490</td></tr>
-            <tr><th scope="row">Pánská manikúra</th><td data-l="middle">890</td><td data-l="senior">990</td><td data-l="top">1090</td></tr>
-            <tr><th scope="row">Odstranění bez lakování</th><td data-l="middle">200</td><td data-l="senior">200</td><td data-l="top">200</td></tr>
-            <tr><th scope="row">Oprava 1 nehtu</th><td data-l="middle">50</td><td data-l="senior">50</td><td data-l="top">50</td></tr>
-            <tr><th scope="row">Prodloužení 1 nehtu</th><td data-l="middle">100</td><td data-l="senior">150</td><td data-l="top">150</td></tr>
-          </tbody>
-        </table>
-        <p class="price-note price-note--row" data-l="senior">Zkrácení nehtů · Senior 100&nbsp;Kč</p>
-        <table class="price-table price-table--two" data-levels="middle top">
-          <caption>Pedikúra</caption>
-          <thead><tr><th scope="col"><span class="visually-hidden">Služba</span></th><th scope="col" data-l="middle">Middle</th><th scope="col" data-l="top">Top</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">Pedikúra</th><td data-l="middle">890</td><td data-l="top">990</td></tr>
-            <tr><th scope="row">Prsty</th><td data-l="middle">740</td><td data-l="top">840</td></tr>
-            <tr><th scope="row">Prsty + klasický lak</th><td data-l="middle">890</td><td data-l="top">990</td></tr>
-            <tr><th scope="row">Prsty + gel lak</th><td data-l="middle">990</td><td data-l="top">1090</td></tr>
-            <tr><th scope="row">Pedikúra + klasický lak</th><td data-l="middle">990</td><td data-l="top">1090</td></tr>
-            <tr><th scope="row">Pedikúra + gel lak</th><td data-l="middle">1090</td><td data-l="top">1190</td></tr>
-            <tr><th scope="row">Paty</th><td data-l="middle">290</td><td data-l="top">390</td></tr>
-            <tr><th scope="row">Pánská pedikúra</th><td data-l="middle">990</td><td data-l="top">1090</td></tr>
-          </tbody>
-        </table>
-        <p class="price-note price-note--levels">Pedikúru nabízíme v&nbsp;úrovních Middle a&nbsp;Top.</p>
-        <p class="chapter-foot" aria-hidden="true"><span>DSTUDIO / Ceny v&nbsp;<span class="keep-case">Kč</span></span><span>01</span></p>
-      </article>
-      <article class="chapter" id="cenik-gel-nails" aria-labelledby="h-gel-nails" data-chapter="gel-nails">
-        <header class="chapter-head"><p class="chapter-tag">02 <span aria-hidden="true">/</span> Gel nails</p><h3 class="chapter-title" id="h-gel-nails">Modeláž nehtů</h3></header>
-        <table class="price-table" data-levels="middle senior top">
-          <caption>Gelové prodloužení</caption>
-          <thead><tr><th scope="col"><span class="visually-hidden">Služba</span></th><th scope="col" data-l="middle">Middle</th><th scope="col" data-l="senior">Senior</th><th scope="col" data-l="top">Top</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">Délka 1</th><td data-l="middle">1190</td><td data-l="senior">1290</td><td data-l="top">1390</td></tr>
-            <tr><th scope="row">Délka 2</th><td data-l="middle">1290</td><td data-l="senior">1390</td><td data-l="top">1490</td></tr>
-            <tr><th scope="row">Délka 3</th><td data-l="middle">1390</td><td data-l="senior">1490</td><td data-l="top">1590</td></tr>
-            <tr><th scope="row">Délka 4</th><td data-l="middle">1490</td><td data-l="senior">1690</td><td data-l="top">1790</td></tr>
-            <tr><th scope="row">Délka více než 5</th><td data-l="middle">1690</td><td data-l="senior">1890</td><td data-l="top">2090</td></tr>
-          </tbody>
-        </table>
-        <table class="price-table" data-levels="middle senior top">
-          <caption>Doplnění gelu</caption>
-          <thead><tr><th scope="col"><span class="visually-hidden">Služba</span></th><th scope="col" data-l="middle">Middle</th><th scope="col" data-l="senior">Senior</th><th scope="col" data-l="top">Top</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">Délka 1</th><td data-l="middle">1090</td><td data-l="senior">1190</td><td data-l="top">1290</td></tr>
-            <tr><th scope="row">Délka 2</th><td data-l="middle">1190</td><td data-l="senior">1290</td><td data-l="top">1390</td></tr>
-            <tr><th scope="row">Délka 3</th><td data-l="middle">1290</td><td data-l="senior">1390</td><td data-l="top">1490</td></tr>
-            <tr><th scope="row">Délka 4</th><td data-l="middle">1390</td><td data-l="senior">1590</td><td data-l="top">1690</td></tr>
-            <tr><th scope="row">Délka více než 5</th><td data-l="middle">1690</td><td data-l="senior">1890</td><td data-l="top">2090</td></tr>
-          </tbody>
-        </table>
-        <p class="chapter-quote">Váš styl. Vaše délka.</p>
-        <p class="chapter-foot" aria-hidden="true"><span>DSTUDIO / Ceny v&nbsp;<span class="keep-case">Kč</span></span><span>02</span></p>
-      </article>
-      <article class="chapter" id="cenik-nail-art" aria-labelledby="h-nail-art" data-chapter="nail-art">
-        <header class="chapter-head"><p class="chapter-tag">03 <span aria-hidden="true">/</span> Nail art</p><h3 class="chapter-title" id="h-nail-art">Design nehtů</h3></header>
-        <table class="price-table" data-levels="middle senior top">
-          <caption>Detaily, které tvoří celek</caption>
-          <thead><tr><th scope="col"><span class="visually-hidden">Služba</span></th><th scope="col" data-l="middle">Middle</th><th scope="col" data-l="senior">Senior</th><th scope="col" data-l="top">Top</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">Ruční design</th><td data-l="middle">25</td><td data-l="senior">30–250</td><td data-l="top">45–400</td></tr>
-            <tr><th scope="row">Francouzská manikúra</th><td data-l="middle">200</td><td data-l="senior">250</td><td data-l="top">300</td></tr>
-            <tr><th scope="row">Klasické ombre</th><td data-l="middle">25–200</td><td data-l="senior">35–300</td><td data-l="top">35–300</td></tr>
-            <tr><th scope="row">Složité ombre</th><td data-l="middle" class="na"><span aria-hidden="true">—</span><span class="visually-hidden">není v&nbsp;nabídce dané úrovně</span></td><td data-l="senior">40–350</td><td data-l="top">450</td></tr>
-            <tr><th scope="row">Kamínky</th><td data-l="middle">10</td><td data-l="senior">10</td><td data-l="top">10</td></tr>
-            <tr><th scope="row">Cat eye</th><td data-l="middle">20–150</td><td data-l="senior">25–200</td><td data-l="top">25–300</td></tr>
-            <tr><th scope="row">Fólie</th><td data-l="middle">20</td><td data-l="senior">20</td><td data-l="top">20</td></tr>
-            <tr><th scope="row">Perlový efekt</th><td data-l="middle">25–200</td><td data-l="senior">30–250</td><td data-l="top">35–300</td></tr>
-            <tr><th scope="row">Stamping / nálepka</th><td data-l="middle">30–250</td><td data-l="senior">35–300</td><td data-l="top">35–300</td></tr>
-          </tbody>
-        </table>
-        <p class="price-note">Rozpětí ceny závisí na rozsahu designu.</p>
-        <p class="price-note price-note--legend">— služba není v&nbsp;nabídce dané úrovně</p>
-        <p class="chapter-foot" aria-hidden="true"><span>DSTUDIO / Ceny v&nbsp;<span class="keep-case">Kč</span></span><span>03</span></p>
-      </article>
-      <article class="chapter" id="cenik-beauty" aria-labelledby="h-beauty" data-chapter="beauty">
-        <header class="chapter-head"><p class="chapter-tag">04 <span aria-hidden="true">/</span> Beauty</p><h3 class="chapter-title" id="h-beauty">Obočí, řasy &amp; líčení</h3></header>
-        <table class="price-table price-table--single" data-levels="">
-          <caption>Obočí</caption>
-          <thead class="visually-hidden"><tr><th scope="col">Služba</th><th scope="col">Cena v&nbsp;Kč</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">Úprava obočí</th><td>350</td></tr>
-            <tr><th scope="row">Barvení obočí</th><td>350</td></tr>
-            <tr><th scope="row">Úprava + barvení</th><td>590</td></tr>
-            <tr><th scope="row">Laminace obočí</th><td>690</td></tr>
-            <tr><th scope="row">Laminace + úprava nebo barvení</th><td>790</td></tr>
-            <tr><th scope="row">Laminace + úprava + barvení</th><td>990</td></tr>
-            <tr><th scope="row">Odbarvení obočí</th><td>690</td></tr>
-            <tr><th scope="row">Proředění obočí</th><td>290</td></tr>
-            <tr><th scope="row">Depilace nad horním rtem</th><td>100</td></tr>
-          </tbody>
-        </table>
-        <table class="price-table price-table--single" data-levels="">
-          <caption>Řasy</caption>
-          <thead class="visually-hidden"><tr><th scope="col">Služba</th><th scope="col">Cena v&nbsp;Kč</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">Laminace řas</th><td>950</td></tr>
-            <tr><th scope="row">Barvení řas</th><td>300</td></tr>
-            <tr><th scope="row">Laminace + barvení řas</th><td>1250</td></tr>
-          </tbody>
-        </table>
-        <table class="price-table price-table--single" data-levels="">
-          <caption>Líčení</caption>
-          <thead class="visually-hidden"><tr><th scope="col">Služba</th><th scope="col">Cena v&nbsp;Kč</th></tr></thead>
-          <tbody>
-            <tr><th scope="row">Expresní líčení</th><td>1090</td></tr>
-            <tr><th scope="row">Denní líčení</th><td>1190</td></tr>
-            <tr><th scope="row">Večerní líčení</th><td>1390</td></tr>
-            <tr><th scope="row">Svatební líčení</th><td>1790</td></tr>
-            <tr><th scope="row">Zkouška svatebního líčení</th><td>1190</td></tr>
-          </tbody>
-        </table>
-        <p class="price-note">Obočí, řasy a&nbsp;líčení mají jednu cenu bez rozlišení úrovní. Prodlužování řas nenabízíme.</p>
-        <p class="chapter-foot" aria-hidden="true"><span>DSTUDIO / Ceny v&nbsp;<span class="keep-case">Kč</span></span><span>04</span></p>
-      </article>
-        <p class="prices-foot">Vaše přání i&nbsp;cenu si s&nbsp;vámi potvrdíme před začátkem procedury. Aktuální ceny a&nbsp;volné termíny najdete vždy také v&nbsp;<a href="https://noona.app/dstudio" target="_blank" rel="noopener">rezervaci Noona<span class="visually-hidden"> (otevře se na nové kartě)</span></a>.</p>
+      <div class="chapter" id="cenik-nail-care" role="group" aria-labelledby="h-nail-care" data-chapter="nail-care">
+        <header class="chapter-head">
+          <p class="chapter-tag">01 <span aria-hidden="true">/</span> Nail care</p>
+          <h3 class="chapter-title" id="h-nail-care">Manikúra &amp; pedikúra</h3>
+        </header>
+        <div class="products products--2">
+          <article class="product" id="cenik-manikura" aria-labelledby="p-manikura">
+            <div class="product-media"><img src="assets/img/shop/manikura.webp" alt="" width="1152" height="864" loading="lazy" decoding="async"></div>
+            <header class="product-head">
+              <p class="product-sizes"><span class="visually-hidden">Úrovně: </span>Middle · Senior · Top</p>
+              <h4 class="product-name" id="p-manikura">Manikúra</h4>
+              <p class="product-meta">10 služeb</p>
+            </header>
+            <table class="price-table" data-levels="middle senior top">
+              <caption class="visually-hidden">Manikúra, ceny v&nbsp;Kč</caption>
+              <thead><tr><th scope="col"><span class="visually-hidden">Služba</span></th><th scope="col" data-l="middle">Middle</th><th scope="col" data-l="senior">Senior</th><th scope="col" data-l="top">Top</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Manikúra</th><td data-l="middle">790</td><td data-l="senior">890</td><td data-l="top">990</td></tr>
+                <tr><th scope="row">P-Shine</th><td data-l="middle">890</td><td data-l="senior">990</td><td data-l="top">1090</td></tr>
+                <tr><th scope="row">Manikúra + klasický lak</th><td data-l="middle">890</td><td data-l="senior">990</td><td data-l="top">1090</td></tr>
+                <tr><th scope="row">Manikúra + gel lak S</th><td data-l="middle">990</td><td data-l="senior">1090</td><td data-l="top">1290</td></tr>
+                <tr><th scope="row">Manikúra + gel lak M</th><td data-l="middle">1090</td><td data-l="senior">1190</td><td data-l="top">1390</td></tr>
+                <tr><th scope="row">Manikúra + gel lak L</th><td data-l="middle">1190</td><td data-l="senior">1290</td><td data-l="top">1490</td></tr>
+                <tr><th scope="row">Pánská manikúra</th><td data-l="middle">890</td><td data-l="senior">990</td><td data-l="top">1090</td></tr>
+                <tr><th scope="row">Odstranění bez lakování</th><td data-l="middle">200</td><td data-l="senior">200</td><td data-l="top">200</td></tr>
+                <tr><th scope="row">Oprava 1 nehtu</th><td data-l="middle">50</td><td data-l="senior">50</td><td data-l="top">50</td></tr>
+                <tr><th scope="row">Prodloužení 1 nehtu</th><td data-l="middle">100</td><td data-l="senior">150</td><td data-l="top">150</td></tr>
+              </tbody>
+            </table>
+            <p class="price-note price-note--row" data-l="senior">Zkrácení nehtů · Senior 100&nbsp;Kč</p>
+            <a class="product-cta" href="https://noona.app/dstudio" target="_blank" rel="noopener"><span class="product-cta-label">Rezervovat manikúru</span> <span class="btn-arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span><span class="visually-hidden"> (otevře se na nové kartě)</span></a>
+          </article>
+          <article class="product" id="cenik-pedikura" aria-labelledby="p-pedikura">
+            <div class="product-media"><img src="assets/img/shop/pedikura.webp" alt="" width="1152" height="864" loading="lazy" decoding="async"></div>
+            <header class="product-head">
+              <p class="product-sizes"><span class="visually-hidden">Úrovně: </span>Middle · Top</p>
+              <h4 class="product-name" id="p-pedikura">Pedikúra</h4>
+              <p class="product-meta">8 služeb</p>
+            </header>
+            <table class="price-table price-table--two" data-levels="middle top">
+              <caption class="visually-hidden">Pedikúra, ceny v&nbsp;Kč</caption>
+              <thead><tr><th scope="col"><span class="visually-hidden">Služba</span></th><th scope="col" data-l="middle">Middle</th><th scope="col" data-l="top">Top</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Pedikúra</th><td data-l="middle">890</td><td data-l="top">990</td></tr>
+                <tr><th scope="row">Prsty</th><td data-l="middle">740</td><td data-l="top">840</td></tr>
+                <tr><th scope="row">Prsty + klasický lak</th><td data-l="middle">890</td><td data-l="top">990</td></tr>
+                <tr><th scope="row">Prsty + gel lak</th><td data-l="middle">990</td><td data-l="top">1090</td></tr>
+                <tr><th scope="row">Pedikúra + klasický lak</th><td data-l="middle">990</td><td data-l="top">1090</td></tr>
+                <tr><th scope="row">Pedikúra + gel lak</th><td data-l="middle">1090</td><td data-l="top">1190</td></tr>
+                <tr><th scope="row">Paty</th><td data-l="middle">290</td><td data-l="top">390</td></tr>
+                <tr><th scope="row">Pánská pedikúra</th><td data-l="middle">990</td><td data-l="top">1090</td></tr>
+              </tbody>
+            </table>
+            <p class="price-note price-note--levels">Pedikúru nabízíme v&nbsp;úrovních Middle a&nbsp;Top.</p>
+            <a class="product-cta" href="https://noona.app/dstudio" target="_blank" rel="noopener"><span class="product-cta-label">Rezervovat pedikúru</span> <span class="btn-arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span><span class="visually-hidden"> (otevře se na nové kartě)</span></a>
+          </article>
+        </div>
+      </div>
+      <div class="chapter" id="cenik-gel-nails" role="group" aria-labelledby="h-gel-nails" data-chapter="gel-nails">
+        <header class="chapter-head">
+          <p class="chapter-tag">02 <span aria-hidden="true">/</span> Gel nails</p>
+          <h3 class="chapter-title" id="h-gel-nails">Modeláž nehtů</h3>
+          <p class="chapter-aside"><em class="chapter-line">Váš styl. Vaše délka.</em></p>
+        </header>
+        <div class="products products--2">
+          <article class="product" id="cenik-prodlouzeni" aria-labelledby="p-prodlouzeni">
+            <div class="product-media"><img src="assets/img/shop/prodlouzeni.webp" alt="" width="1152" height="864" loading="lazy" decoding="async"></div>
+            <header class="product-head">
+              <p class="product-sizes"><span class="visually-hidden">Úrovně: </span>Middle · Senior · Top</p>
+              <h4 class="product-name" id="p-prodlouzeni">Gelové prodloužení</h4>
+              <p class="product-meta">5 služeb</p>
+            </header>
+            <table class="price-table" data-levels="middle senior top">
+              <caption class="visually-hidden">Gelové prodloužení, ceny v&nbsp;Kč</caption>
+              <thead><tr><th scope="col"><span class="visually-hidden">Služba</span></th><th scope="col" data-l="middle">Middle</th><th scope="col" data-l="senior">Senior</th><th scope="col" data-l="top">Top</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Délka 1</th><td data-l="middle">1190</td><td data-l="senior">1290</td><td data-l="top">1390</td></tr>
+                <tr><th scope="row">Délka 2</th><td data-l="middle">1290</td><td data-l="senior">1390</td><td data-l="top">1490</td></tr>
+                <tr><th scope="row">Délka 3</th><td data-l="middle">1390</td><td data-l="senior">1490</td><td data-l="top">1590</td></tr>
+                <tr><th scope="row">Délka 4</th><td data-l="middle">1490</td><td data-l="senior">1690</td><td data-l="top">1790</td></tr>
+                <tr><th scope="row">Délka více než 5</th><td data-l="middle">1690</td><td data-l="senior">1890</td><td data-l="top">2090</td></tr>
+              </tbody>
+            </table>
+            <a class="product-cta" href="https://noona.app/dstudio" target="_blank" rel="noopener"><span class="product-cta-label">Rezervovat prodloužení</span> <span class="btn-arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span><span class="visually-hidden"> (otevře se na nové kartě)</span></a>
+          </article>
+          <article class="product" id="cenik-doplneni" aria-labelledby="p-doplneni">
+            <div class="product-media"><img src="assets/img/shop/doplneni.webp" alt="" width="1152" height="864" loading="lazy" decoding="async"></div>
+            <header class="product-head">
+              <p class="product-sizes"><span class="visually-hidden">Úrovně: </span>Middle · Senior · Top</p>
+              <h4 class="product-name" id="p-doplneni">Doplnění gelu</h4>
+              <p class="product-meta">5 služeb</p>
+            </header>
+            <table class="price-table" data-levels="middle senior top">
+              <caption class="visually-hidden">Doplnění gelu, ceny v&nbsp;Kč</caption>
+              <thead><tr><th scope="col"><span class="visually-hidden">Služba</span></th><th scope="col" data-l="middle">Middle</th><th scope="col" data-l="senior">Senior</th><th scope="col" data-l="top">Top</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Délka 1</th><td data-l="middle">1090</td><td data-l="senior">1190</td><td data-l="top">1290</td></tr>
+                <tr><th scope="row">Délka 2</th><td data-l="middle">1190</td><td data-l="senior">1290</td><td data-l="top">1390</td></tr>
+                <tr><th scope="row">Délka 3</th><td data-l="middle">1290</td><td data-l="senior">1390</td><td data-l="top">1490</td></tr>
+                <tr><th scope="row">Délka 4</th><td data-l="middle">1390</td><td data-l="senior">1590</td><td data-l="top">1690</td></tr>
+                <tr><th scope="row">Délka více než 5</th><td data-l="middle">1690</td><td data-l="senior">1890</td><td data-l="top">2090</td></tr>
+              </tbody>
+            </table>
+            <a class="product-cta" href="https://noona.app/dstudio" target="_blank" rel="noopener"><span class="product-cta-label">Rezervovat doplnění gelu</span> <span class="btn-arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span><span class="visually-hidden"> (otevře se na nové kartě)</span></a>
+          </article>
+        </div>
+      </div>
+      <div class="chapter" id="cenik-nail-art" role="group" aria-labelledby="h-nail-art" data-chapter="nail-art">
+        <header class="chapter-head">
+          <p class="chapter-tag">03 <span aria-hidden="true">/</span> Nail art</p>
+          <h3 class="chapter-title" id="h-nail-art">Design nehtů</h3>
+          <p class="chapter-aside"><em class="chapter-line">Detaily, které tvoří celek.</em></p>
+        </header>
+        <div class="products products--1">
+          <article class="product" id="cenik-design" aria-labelledby="p-design">
+            <div class="product-media"><img src="assets/img/shop/design.webp" alt="" width="1152" height="864" loading="lazy" decoding="async"></div>
+            <header class="product-head">
+              <p class="product-sizes"><span class="visually-hidden">Úrovně: </span>Middle · Senior · Top</p>
+              <h4 class="product-name visually-hidden" id="p-design">Design nehtů: přehled cen</h4>
+              <p class="product-meta">9 služeb</p>
+            </header>
+            <table class="price-table" data-levels="middle senior top">
+              <caption class="visually-hidden">Design nehtů, ceny v&nbsp;Kč</caption>
+              <thead><tr><th scope="col"><span class="visually-hidden">Služba</span></th><th scope="col" data-l="middle">Middle</th><th scope="col" data-l="senior">Senior</th><th scope="col" data-l="top">Top</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Ruční design</th><td data-l="middle">25</td><td data-l="senior">30–250</td><td data-l="top">45–400</td></tr>
+                <tr><th scope="row">Francouzská manikúra</th><td data-l="middle">200</td><td data-l="senior">250</td><td data-l="top">300</td></tr>
+                <tr><th scope="row">Klasické ombre</th><td data-l="middle">25–200</td><td data-l="senior">35–300</td><td data-l="top">35–300</td></tr>
+                <tr><th scope="row">Složité ombre</th><td data-l="middle" class="na"><span aria-hidden="true">—</span><span class="visually-hidden">není v&nbsp;nabídce dané úrovně</span></td><td data-l="senior">40–350</td><td data-l="top">450</td></tr>
+                <tr><th scope="row">Kamínky</th><td data-l="middle">10</td><td data-l="senior">10</td><td data-l="top">10</td></tr>
+                <tr><th scope="row">Cat eye</th><td data-l="middle">20–150</td><td data-l="senior">25–200</td><td data-l="top">25–300</td></tr>
+                <tr><th scope="row">Fólie</th><td data-l="middle">20</td><td data-l="senior">20</td><td data-l="top">20</td></tr>
+                <tr><th scope="row">Perlový efekt</th><td data-l="middle">25–200</td><td data-l="senior">30–250</td><td data-l="top">35–300</td></tr>
+                <tr><th scope="row">Stamping / nálepka</th><td data-l="middle">30–250</td><td data-l="senior">35–300</td><td data-l="top">35–300</td></tr>
+              </tbody>
+            </table>
+            <p class="price-note">Rozpětí ceny závisí na rozsahu designu.</p>
+            <p class="price-note price-note--legend">— služba není v&nbsp;nabídce dané úrovně</p>
+            <a class="product-cta" href="https://noona.app/dstudio" target="_blank" rel="noopener"><span class="product-cta-label">Rezervovat design nehtů</span> <span class="btn-arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span><span class="visually-hidden"> (otevře se na nové kartě)</span></a>
+          </article>
+        </div>
+      </div>
+      <div class="chapter" id="cenik-beauty" role="group" aria-labelledby="h-beauty" data-chapter="beauty">
+        <header class="chapter-head">
+          <p class="chapter-tag">04 <span aria-hidden="true">/</span> Beauty</p>
+          <h3 class="chapter-title" id="h-beauty">Obočí, řasy &amp; líčení</h3>
+        </header>
+        <div class="products products--3">
+          <article class="product" id="cenik-oboci" aria-labelledby="p-oboci">
+            <div class="product-media"><img src="assets/img/shop/oboci.webp" alt="" width="1152" height="864" loading="lazy" decoding="async"></div>
+            <header class="product-head">
+              <p class="product-sizes"><span class="visually-hidden">Úrovně: </span>Jedna cena</p>
+              <h4 class="product-name" id="p-oboci">Obočí</h4>
+              <p class="product-meta">9 služeb</p>
+            </header>
+            <table class="price-table price-table--single" data-levels="">
+              <caption class="visually-hidden">Obočí, ceny v&nbsp;Kč</caption>
+              <thead class="visually-hidden"><tr><th scope="col">Služba</th><th scope="col">Cena v&nbsp;Kč</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Úprava obočí</th><td>350</td></tr>
+                <tr><th scope="row">Barvení obočí</th><td>350</td></tr>
+                <tr><th scope="row">Úprava + barvení</th><td>590</td></tr>
+                <tr><th scope="row">Laminace obočí</th><td>690</td></tr>
+                <tr><th scope="row">Laminace + úprava nebo barvení</th><td>790</td></tr>
+                <tr><th scope="row">Laminace + úprava + barvení</th><td>990</td></tr>
+                <tr><th scope="row">Odbarvení obočí</th><td>690</td></tr>
+                <tr><th scope="row">Proředění obočí</th><td>290</td></tr>
+                <tr><th scope="row">Depilace nad horním rtem</th><td>100</td></tr>
+              </tbody>
+            </table>
+            <a class="product-cta" href="https://noona.app/dstudio" target="_blank" rel="noopener"><span class="product-cta-label">Rezervovat obočí</span> <span class="btn-arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span><span class="visually-hidden"> (otevře se na nové kartě)</span></a>
+          </article>
+          <article class="product" id="cenik-rasy" aria-labelledby="p-rasy">
+            <div class="product-media"><img src="assets/img/shop/rasy.webp" alt="" width="1152" height="864" loading="lazy" decoding="async"></div>
+            <header class="product-head">
+              <p class="product-sizes"><span class="visually-hidden">Úrovně: </span>Jedna cena</p>
+              <h4 class="product-name" id="p-rasy">Řasy</h4>
+              <p class="product-meta">3 služby</p>
+            </header>
+            <table class="price-table price-table--single" data-levels="">
+              <caption class="visually-hidden">Řasy, ceny v&nbsp;Kč</caption>
+              <thead class="visually-hidden"><tr><th scope="col">Služba</th><th scope="col">Cena v&nbsp;Kč</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Laminace řas</th><td>950</td></tr>
+                <tr><th scope="row">Barvení řas</th><td>300</td></tr>
+                <tr><th scope="row">Laminace + barvení řas</th><td>1250</td></tr>
+              </tbody>
+            </table>
+            <a class="product-cta" href="https://noona.app/dstudio" target="_blank" rel="noopener"><span class="product-cta-label">Rezervovat řasy</span> <span class="btn-arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span><span class="visually-hidden"> (otevře se na nové kartě)</span></a>
+          </article>
+          <article class="product" id="cenik-liceni" aria-labelledby="p-liceni">
+            <div class="product-media"><img src="assets/img/shop/liceni.webp" alt="" width="1152" height="864" loading="lazy" decoding="async"></div>
+            <header class="product-head">
+              <p class="product-sizes"><span class="visually-hidden">Úrovně: </span>Jedna cena</p>
+              <h4 class="product-name" id="p-liceni">Líčení</h4>
+              <p class="product-meta">5 služeb</p>
+            </header>
+            <table class="price-table price-table--single" data-levels="">
+              <caption class="visually-hidden">Líčení, ceny v&nbsp;Kč</caption>
+              <thead class="visually-hidden"><tr><th scope="col">Služba</th><th scope="col">Cena v&nbsp;Kč</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Expresní líčení</th><td>1090</td></tr>
+                <tr><th scope="row">Denní líčení</th><td>1190</td></tr>
+                <tr><th scope="row">Večerní líčení</th><td>1390</td></tr>
+                <tr><th scope="row">Svatební líčení</th><td>1790</td></tr>
+                <tr><th scope="row">Zkouška svatebního líčení</th><td>1190</td></tr>
+              </tbody>
+            </table>
+            <a class="product-cta" href="https://noona.app/dstudio" target="_blank" rel="noopener"><span class="product-cta-label">Rezervovat líčení</span> <span class="btn-arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span><span class="visually-hidden"> (otevře se na nové kartě)</span></a>
+          </article>
+        </div>
+        <p class="price-note chapter-note">Obočí, řasy a&nbsp;líčení mají jednu cenu bez rozlišení úrovní. Prodlužování řas nenabízíme.</p>
+      </div>
+        <div class="prices-foot">
+          <p>Vaše přání i&nbsp;cenu si s&nbsp;vámi potvrdíme před začátkem procedury. Aktuální ceny a&nbsp;volné termíny najdete vždy také v&nbsp;<a href="https://noona.app/dstudio" target="_blank" rel="noopener">rezervaci Noona<span class="visually-hidden"> (otevře se na nové kartě)</span></a>.</p>
+          <a class="btn prices-cta" href="https://noona.app/dstudio" target="_blank" rel="noopener">Vybrat službu a&nbsp;termín <span class="btn-arrow" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span><span class="visually-hidden"> (otevře se na nové kartě)</span></a>
+        </div>
       </div>
     </div>
   </section>

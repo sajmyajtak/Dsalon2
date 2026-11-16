@@ -9,90 +9,53 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   /* ------------------------------------------------------------------ *
-   * 0. Parallax hero and smooth scrolling
-   *    A plain-JS port of the reference component: one scrubbed GSAP
-   *    timeline moves the four layers by different amounts while the
-   *    hero scrolls away (layers a page does not use are skipped); Lenis
-   *    smooths wheel scrolling. Skipped for
-   *    people who prefer reduced motion, and if the libraries are absent.
+   * 0. Scroll effects: the hero parallax and the story's converging letters
+   *    Where the browser has CSS scroll-driven animations (Chrome, Edge,
+   *    Safari), CSS runs both on the compositor and this part only gives
+   *    each converging item its distance from the middle (--d). Elsewhere
+   *    one requestAnimationFrame loop does the same maths while scrolling.
+   *    Converge is modelled on Skiper UI "ScrollAnimation_002" by
+   *    @gurvinder-singh02. Nothing moves for reduced motion.
    * ------------------------------------------------------------------ */
-  let lenis = null;
-  if (!reduceMotion.matches && window.gsap && window.ScrollTrigger) {
-    const { gsap, ScrollTrigger } = window;
-    gsap.registerPlugin(ScrollTrigger);
-
-    const layersRoot = $('[data-parallax-layers]');
-    if (layersRoot) {
-      const timeline = gsap.timeline({
-        scrollTrigger: { trigger: layersRoot, start: '0% 0%', end: '100% 0%', scrub: 0 },
-      });
-      [['1', 70], ['2', 55], ['3', 40], ['4', 10]].forEach(([layer, yPercent]) => {
-        const layers = $$(`[data-parallax-layer="${layer}"]`, layersRoot);
-        if (layers.length) timeline.to(layers, { yPercent, ease: 'none' }, 0);
-      });
-    }
-
-    if (window.Lenis) {
-      lenis = new window.Lenis();
-      lenis.on('scroll', ScrollTrigger.update);
-      gsap.ticker.add((time) => { lenis.raf(time * 1000); });
-      gsap.ticker.lagSmoothing(0);
-
-      // In-page links: glide to the section and stop below the sticky header, the same
-      // place a native jump would land (scroll-padding on <html>, scroll-margin on the
-      // target). The position is measured from the real scroll offset at click time.
-      document.addEventListener('click', (event) => {
-        if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-        const link = event.target.closest('a[href^="#"]');
-        if (!link) return;
-        const id = decodeURIComponent(link.getAttribute('href').slice(1));
-        const target = id ? document.getElementById(id) : document.body;
-        if (!target) return;
-        event.preventDefault();
-        const offset = (parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0)
-          + (parseFloat(getComputedStyle(target).scrollMarginTop) || 0);
-        const y = Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset);
-        lenis.scrollTo(window.scrollY, { immediate: true, force: true });   // start from where the page really is
-        lenis.scrollTo(y, { force: true, duration: 1.1 });
-        if (id && location.hash !== `#${id}`) {
-          try { history.pushState(null, '', `#${id}`); } catch (error) { /* embedded previews may forbid it */ }
-        }
-        // keyboard and screen-reader users continue from the section they asked for
-        if (target !== document.body) {
-          if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
-          target.focus({ preventScroll: true });
-        }
-      });
-    }
-  }
-  /* ------------------------------------------------------------------ *
-   * 0b. Story section
-   *     Converge: the heading's letters and the service tokens start spread
-   *     out from their middle and come together while the block scrolls from
-   *     the bottom of the screen to its centre (effect modelled on Skiper UI
-   *     "ScrollAnimation_002" by @gurvinder-singh02).
-   * ------------------------------------------------------------------ */
-  const motionOn = !reduceMotion.matches && window.gsap && window.ScrollTrigger;
-  if (motionOn) {
-    const { gsap } = window;
-    $$('[data-converge]').forEach((box) => {
-      const items = $$('[data-cv]', box);
-      if (!items.length) return;
-      const centre = Math.floor(items.length / 2);
-      const arc = box.dataset.converge === 'arc';
-      const unit = () => Math.max(0.42, Math.min(window.innerWidth, 1440) / 1440);   // spread follows the screen
-      const tl = gsap.timeline({
-        defaults: { ease: 'none' },
-        scrollTrigger: { trigger: box, start: 'top bottom', end: 'center 56%', scrub: 0, invalidateOnRefresh: true },
-      });
-      items.forEach((el, i) => {
-        const d = i - centre;
-        const from = arc
-          ? { x: () => d * 90 * unit(), y: () => -Math.abs(d) * 22 * unit(), rotate: d * 34, scale: 0.75 }
-          : { x: () => d * 50 * unit(), rotateX: d * 50, transformPerspective: 500 };
-        tl.fromTo(el, from, { x: 0, y: 0, rotate: 0, rotateX: 0, scale: 1 }, 0);
-      });
+  const motionOn = !reduceMotion.matches;
+  const cssScroll = !!(window.CSS && CSS.supports && CSS.supports('animation-timeline: scroll()'));
+  const converge = $$('[data-converge]').map((box) => {
+    const items = $$('[data-cv]', box);
+    const centre = Math.floor(items.length / 2);
+    items.forEach((el, i) => {
+      el.style.setProperty('--d', String(i - centre));
+      el.style.setProperty('--ad', String(Math.abs(i - centre)));
     });
+    return { box, items, centre, arc: box.dataset.converge === 'arc' };
+  });
+  if (motionOn && !cssScroll) {
+    const hero = $('.hero');
+    const layers = [['1', 0.7], ['3', 0.4]].map(([n, k]) => [$(`[data-parallax-layer="${n}"]`), k]).filter(([el]) => el);
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const vh = window.innerHeight;
+      if (hero) {
+        const p = Math.min(Math.max(window.scrollY / Math.max(hero.offsetHeight, 1), 0), 1);
+        layers.forEach(([el, k]) => { el.style.transform = `translate3d(0, ${(p * k * el.offsetHeight).toFixed(1)}px, 0)`; });
+      }
+      const unit = Math.max(0.42, Math.min(window.innerWidth, 1440) / 1440);
+      converge.forEach(({ box, items, centre, arc }) => {
+        const r = box.getBoundingClientRect();
+        if (r.bottom < -vh || r.top > vh * 2) return;
+        const q = 1 - Math.min(Math.max((vh - r.top) / Math.max(0.44 * vh + r.height / 2, 1), 0), 1);
+        items.forEach((el, i) => {
+          const d = i - centre;
+          el.style.transform = arc
+            ? `translate(${(d * 90 * unit * q).toFixed(1)}px, ${(-Math.abs(d) * 22 * unit * q).toFixed(1)}px) rotate(${(d * 34 * q).toFixed(2)}deg) scale(${(1 - 0.25 * q).toFixed(3)})`
+            : `perspective(500px) translateX(${(d * 50 * unit * q).toFixed(1)}px) rotateX(${(d * 50 * q).toFixed(2)}deg)`;
+        });
+      });
+    };
+    const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
+    update();
+    window.addEventListener('scroll', queue, { passive: true });
+    window.addEventListener('resize', queue, { passive: true });
   }
 
   /* ------------------------------------------------------------------ *
@@ -126,8 +89,8 @@
       const hero = at($('.hero')), foot = at($('.hero-foot')), column = at($('.story-inner'));
       const t = at(storyTitle), label = at($('.story .eyebrow')), l = at($('.story-lead')), k = at($('.story-tokens')), x = at($('.story-text'));
       const story = at($('.story'));
-      const rest = $$('main > section').filter((el) => !el.classList.contains('glass') && at(el).t >= story.b - 5).concat($('.site-footer') || []);
-      const glassEl = $('.glass-stage'), glass = glassEl ? at(glassEl) : null;
+      const rest = $$('main > section').filter((el) => !el.classList.contains('gallery') && at(el).t >= story.b - 5).concat($('.site-footer') || []);
+      const glassEl = $('.gallery-track'), glass = glassEl ? at(glassEl) : null;
       const next = glass || (rest.length ? at(rest[0]) : { t: H });          // what the line goes behind first
       const marks = {};                                                      // point index -> colour the line takes from there
       const lane = Math.max(Math.min(column.l * 0.5, column.l - 12), 8);        // where the line runs beside the content
@@ -152,7 +115,7 @@
       let side = 'r';
       rest.forEach((el) => {
         const b = at(el);
-        if (el.classList.contains('block')) {
+        if (el.classList.contains('block') || el.classList.contains('site-footer')) {
           p.push([W * 0.56, b.t + 24]);
           if (el.dataset.line) marks[p.length] = el.dataset.line;           // the change happens out of sight
           p.push([W * 0.5, b.cy], [W * 0.6, b.b - 24]);
@@ -190,10 +153,29 @@
       while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (t[mid][0] <= tip) lo = mid; else hi = mid; }
       return t[lo][1] + (t[hi][1] - t[lo][1]) * Math.min(Math.max((tip - t[lo][0]) / Math.max(t[hi][0] - t[lo][0], 0.001), 0), 1);
     };
-    const follow = (seconds) => {
+    // One requestAnimationFrame loop: the drawn length eases towards the target and the
+    // loop stops as soon as it has arrived, so a still page costs nothing.
+    let raf = 0, intro = null;
+    const step = (now) => {
+      raf = 0;
+      const goal = target();
+      if (intro) {
+        const t = Math.min((now - intro.t0) / intro.ms, 1);
+        line.drawn = goal * (1 - Math.pow(1 - t, 3));
+        if (t >= 1) intro = null;
+      } else {
+        const diff = goal - line.drawn;
+        line.drawn = Math.abs(diff) < 0.75 ? goal : line.drawn + diff * 0.2;
+      }
+      apply();
+      if (intro || line.drawn !== goal) raf = requestAnimationFrame(step);
+    };
+    const kick = () => { if (!raf) raf = requestAnimationFrame(step); };
+    const follow = (mode) => {
       if (!motionOn) { line.drawn = line.total; apply(); return; }
-      if (!seconds) { window.gsap.killTweensOf(line); line.drawn = target(); apply(); return; }
-      window.gsap.to(line, { drawn: target(), duration: seconds, ease: 'power2.out', overwrite: true, onUpdate: apply });
+      if (mode === 'now') { intro = null; line.drawn = target(); apply(); return; }
+      if (mode === 'intro') intro = { t0: performance.now(), ms: 1800 };
+      kick();
     };
     const build = () => {
       const W = document.documentElement.clientWidth, H = document.body.offsetHeight;
@@ -229,8 +211,7 @@
         from += len;
       }
       line.total = from;
-      const keep = line.first ? 0 : null;
-      if (line.first) { line.first = false; line.drawn = 0; apply(); follow(1.8); } else follow(keep);
+      if (line.first) { line.first = false; line.drawn = 0; apply(); follow('intro'); } else follow('now');
     };
     build();
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(build);
@@ -239,11 +220,11 @@
     const later = () => { clearTimeout(rebuild); rebuild = setTimeout(build, 180); };
     window.addEventListener('resize', later);
     if (window.ResizeObserver) new ResizeObserver(later).observe(document.body);   // the page grows when an answer opens, the map loads…
-    if (motionOn) window.addEventListener('scroll', () => follow(0.7), { passive: true });
+    if (motionOn) window.addEventListener('scroll', () => follow(), { passive: true });
   }
 
   // Overlays pause the smooth scroll underneath them.
-  const pauseScroll = (paused) => { if (lenis) { if (paused) lenis.stop(); else lenis.start(); } };
+  const pauseScroll = () => {};   // native scrolling: overlays only need overflow: hidden on <html>
 
   /* ------------------------------------------------------------------ *
    * 1. Header: hairline once the page has moved, and the mobile menu
@@ -379,44 +360,21 @@
   }
 
   /* ------------------------------------------------------------------ *
-   * 3. Price list: every chapter and every level is always on the page.
-   *    The buttons only re-ink one level's column; the index follows
-   *    the chapter being read.
+   * 3. Price list: the department being read is marked in the pinned bar
+   *    (and scrolled into view there on phones).
    * ------------------------------------------------------------------ */
   const priceRoot = $('[data-prices]');
   if (priceRoot) {
-    const buttons = $$('[data-level-btn]', priceRoot);
-    const live = $('[data-level-live]', priceRoot);
-    const store = {
-      get(key) { try { return sessionStorage.getItem(key); } catch (e) { return null; } },
-      set(key, val) { try { sessionStorage.setItem(key, val); } catch (e) { /* private mode */ } },
-    };
-    const title = (level) => level.charAt(0).toUpperCase() + level.slice(1);
-
-    const applyLevel = (level, announce) => {
-      priceRoot.dataset.level = level;
-      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.levelBtn === level)));
-      store.set('dstudio-level', level);
-      if (announce && live) {
-        live.textContent = level ? `V ceníku je zvýrazněna úroveň ${title(level)}.` : 'Zvýraznění úrovně je vypnuté.';
-      }
-    };
-    buttons.forEach((button) => {
-      button.addEventListener('click', () => {
-        const level = button.dataset.levelBtn;
-        applyLevel(priceRoot.dataset.level === level ? '' : level, true);
-      });
-    });
-    priceRoot.classList.add('is-enhanced');
-    const saved = store.get('dstudio-level');
-    if (saved && buttons.some((b) => b.dataset.levelBtn === saved)) applyLevel(saved, false);
-
     const links = $$('[data-chapter-link]', priceRoot);
     const chapters = $$('[data-chapter]', priceRoot);
+    const index = $('.chapter-index', priceRoot);
     if (links.length && 'IntersectionObserver' in window) {
       const setCurrent = (id) => links.forEach((link) => {
-        if (link.dataset.chapterLink === id) link.setAttribute('aria-current', 'location');
-        else link.removeAttribute('aria-current');
+        if (link.dataset.chapterLink !== id) { link.removeAttribute('aria-current'); return; }
+        link.setAttribute('aria-current', 'location');
+        if (index && index.scrollWidth > index.clientWidth + 1) {
+          index.scrollTo({ left: link.offsetLeft - 16, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+        }
       });
       const io = new IntersectionObserver((entries) => {
         entries.forEach((entry) => { if (entry.isIntersecting) setCurrent(entry.target.dataset.chapter); });
@@ -470,7 +428,11 @@
     frame.loading = 'lazy';
     frame.referrerPolicy = 'no-referrer-when-downgrade';
     frame.setAttribute('allowfullscreen', '');
-    ($('[data-map-slot]', map) || map).appendChild(frame);
+    const slot = $('[data-map-slot]', map) || map;
+    slot.classList.add('sk');
+    slot.classList.remove('is-loaded');
+    frame.addEventListener('load', () => slot.classList.add('is-loaded'), { once: true });
+    slot.appendChild(frame);
     map.dataset.loaded = 'true';
   }
   function unloadMap(map) {
@@ -584,17 +546,58 @@
   }
 
   /* ------------------------------------------------------------------ *
-   * 7. Gallery strip: a keyboard stop only while it really scrolls
-   *    (phones and tablets); on wide screens all panes are in view.
+   * 7. Sideways rows (work panes, team photographs): a keyboard stop only
+   *    while they really scroll (phones and tablets); on wide screens
+   *    everything in them is in view.
    * ------------------------------------------------------------------ */
-  const scroller = $('[data-scroller]');
-  if (scroller) {
-    const sync = () => {
+  const scrollers = $$('[data-scroller]');
+  if (scrollers.length) {
+    const sync = () => scrollers.forEach((scroller) => {
       if (scroller.scrollWidth > scroller.clientWidth + 1) scroller.tabIndex = 0;
       else scroller.removeAttribute('tabindex');
-    };
+    });
     sync();
     window.addEventListener('resize', sync, { passive: true });
+  }
+
+  /* ------------------------------------------------------------------ *
+   * 7b. Skeletons: a picture's placeholder gives way once it has loaded
+   * ------------------------------------------------------------------ */
+  $$('.sk, [data-fade]').forEach((box) => {
+    const img = $('img', box);
+    if (!img) return;
+    const done = () => box.classList.add('is-loaded');
+    if (img.complete && img.naturalWidth) done();
+    else { img.addEventListener('load', done, { once: true }); img.addEventListener('error', done, { once: true }); }
+  });
+
+  /* ------------------------------------------------------------------ *
+   * 7c. Carousel: the two buttons move the row by what fits on screen
+   * ------------------------------------------------------------------ */
+  const track = $('[data-gallery]');
+  const galleryNav = $('[data-gallery-nav]');
+  if (track && galleryNav) {
+    const prev = $('[data-gallery-prev]', galleryNav), next = $('[data-gallery-next]', galleryNav);
+    galleryNav.hidden = false;
+    const stepWidth = () => {
+      const item = $('.gallery-item', track);
+      const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+      const one = item ? item.getBoundingClientRect().width + gap : track.clientWidth * 0.8;
+      return Math.max(one, Math.floor((track.clientWidth - one * 0.5) / one) * one);
+    };
+    const go = (dir) => track.scrollBy({ left: dir * stepWidth(), behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+    prev.addEventListener('click', () => go(-1));
+    next.addEventListener('click', () => go(1));
+    let queuedNav = false;
+    const syncNav = () => {
+      queuedNav = false;
+      prev.disabled = track.scrollLeft < 4;
+      next.disabled = track.scrollLeft + track.clientWidth > track.scrollWidth - 4;
+    };
+    const queueNav = () => { if (!queuedNav) { queuedNav = true; requestAnimationFrame(syncNav); } };
+    track.addEventListener('scroll', queueNav, { passive: true });
+    window.addEventListener('resize', queueNav, { passive: true });
+    syncNav();
   }
 
   /* ------------------------------------------------------------------ *

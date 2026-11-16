@@ -27,14 +27,13 @@ vyhledávačích. Před ostrým spuštěním tento řádek z `netlify.toml` sma�
 | `ochrana-osobnich-udaju.html` | Ochrana osobních údajů a cookies |
 | `404.html` | Stránka „nenalezeno“ |
 | `assets/css/main.css` | Všechny styly; nahoře barvy a písma z brandbooku |
-| `assets/js/main.js` | Parallax úvodu, scrollová scéna O DSTUDIO, linka přes stránku, menu, otevírací doba, výběr úrovně v ceníku, souhlas s mapou, poukaz |
-| `assets/js/glass-carousel.js` | Carousel služeb za „tekutým sklem“ (WebGL, bez knihoven) |
-| `assets/js/vendor/` | GSAP + ScrollTrigger (parallax) a Lenis (plynulé rolování), hostované lokálně |
+| `assets/js/main.js` | Jediný skript webu (bez knihoven): záložní parallax, linka přes stránku, menu, otevírací doba, ceník, souhlas s mapou, carousel, skeletony, poukaz |
 | `assets/fonts/` | Inter, Cormorant Garamond, League Gothic, Instrument Serif a Pinyon Script (vše SIL OFL), hostované lokálně |
 | `assets/logo/` | Logo vytažené z vektoru v brandbooku (čokoládová, krémová, bílá) |
 | `assets/img/hero/` | Scéna pro úvod (na šířku a na výšku) |
 | `assets/img/glass/` | Sedm ilustračních snímků služeb pro carousel (3 : 4, 768 × 1024) |
 | `assets/img/shop/` | Osm produktových zátiší pro karty ceníku (4 : 3, 1152 × 864) |
+| `assets/img/team/` | Tři ilustrační fotografie pro sekci Náš tým (4 : 5, 960 × 1200) |
 
 ## Úvod (hero)
 
@@ -48,28 +47,41 @@ rezervace je v hlavičce.
   soubor psaného písma obsahuje jen latinku s českou a slovenskou diakritikou).
 - Hlavička je nad scénou průhledná a její obsah krémový; v bílou lištu se změní, až scéna
   odroluje (třída `site-header--over` v `index.html`, na podstránkách není).
-- Scéna a text se při rolování posouvají různou rychlostí (GSAP ScrollTrigger), plynulé
-  rolování zajišťuje Lenis; obojí je v `assets/js/vendor/` (GSAP: standardní bezplatná
-  licence, Lenis: MIT). Při zapnutém „omezit pohyb“ zůstává vše v klidu.
+- Scéna a text se při rolování posouvají různou rychlostí. Běží to jako CSS animace
+  řízené rolováním (Chrome, Edge, Safari) přímo na grafické kartě, takže se nic neseká ani
+  při zatížené stránce; ve Firefoxu totéž počítá `main.js`. Rolování je nativní (žádná
+  knihovna pro „plynulé“ rolování). Při zapnutém „omezit pohyb“ zůstává vše v klidu.
+- Text sedí v dolní třetině obrazovky; výška je `padding-bottom` u `.hero-layer-title`.
 - Obrázek scény je ilustrační: `assets/img/hero/scene.webp` (na šířku) a `scene-m.webp`
   (na výšku, pro mobily). Výměna motivu = výměna těchto dvou souborů; ztmavení pod textem
   je `.hero-shade` v CSS.
 
+## Výkon a načítání
+
+- Web nemá žádnou JavaScriptovou knihovnu; celý skript má asi 30 kB. Animace při rolování
+  používají jen `transform` a `opacity` (běží na grafické kartě), hlavička pod sebou nic
+  nerozmazává.
+- **Skeletony:** rámečky obrázků (carousel, ceník, tým, mapa) ukazují do načtení klidnou
+  plochu s přejíždějícím světlem; pak se obrázek plynule objeví (třída `sk` v HTML,
+  `is-loaded` přidá `main.js`). Úvodní scéna se vynoří ze smaragdové plochy.
+- Obrázky pod prvním displejem se načítají až u sekce (`loading="lazy"`), obrázek úvodu
+  se stahuje přednostně.
+
 ## Linka přes celou stránku
 
-Zpod scény v úvodu vychází béžová linka a vede až na spodní okraj stránky. Kreslí se
-podle polohy stránky (`assets/js/main.js`, část „0c“):
+Zpod scény v úvodu vychází tenká béžová linka a vede až do patičky. Kreslí se podle
+polohy stránky (`assets/js/main.js`, část „0c“):
 
 - v sekci O DSTUDIO obkrouží nadpis a proplete se mezerami mezi bloky textu,
-- projde za plochou carouselu a za barevnými bloky; z každého bloku vyjede v jeho
-  barvě (čokoládová, smaragdová — atribut `data-line` na bloku),
+- projde za carouselem a za barevnými bloky; z každého bloku vyjede v jeho barvě
+  (čokoládová, smaragdová — atribut `data-line` na bloku),
 - dál běží okrajem stránky vedle obsahu a stranu mění jen v mezeře mezi dvěma sekcemi,
-  takže nikde nevede přes text,
+  takže nikde nevede přes text; končí za patičkou,
 - leží nad pozadím sekcí a pod jejich obsahem (CSS, část „The line“).
 
 Bloky jsou sekce s třídou `block` (velké heslo na zaoblené barevné ploše): filozofie
-(čokoládová), recenze (smaragdová) a závěrečná výzva (čokoládová). Další blok vznikne
-stejným zápisem v `index.html`; linka si ho najde sama.
+(čokoládová) a recenze (smaragdová). Další blok vznikne stejným zápisem v `index.html`;
+linka si ho najde sama.
 
 Trasa se počítá ze skutečného rozložení stránky a přepočítá se při změně velikosti okna
 i výšky stránky (otevřená otázka, načtená mapa). Při „omezit pohyb“ je linka vykreslená
@@ -77,7 +89,8 @@ celá. Barva a tloušťka: `.ribbon path` v CSS.
 
 ## Scrollová scéna „O DSTUDIO“
 
-Hned pod úvodem (vše v `assets/js/main.js`, část „0b“):
+Hned pod úvodem (CSS animace řízené rolováním; `main.js` jen dodá každému písmenu jeho
+vzdálenost od středu a ve Firefoxu animaci počítá sám):
 
 - písmena nadpisu „Chvíle pro sebe“ a pět štítků služeb začínají rozhozené a sjedou se
   k sobě, než blok dojede doprostřed obrazovky,
@@ -87,31 +100,26 @@ Hned pod úvodem (vše v `assets/js/main.js`, část „0b“):
 Text nadpisu se v `index.html` rozkládá na písmena až při sestavení; čitelná podoba
 zůstává ve stránce pro čtečky a vyhledávače.
 
-## Carousel služeb („tekuté sklo“)
+## Carousel služeb
 
-Za sekcí O DSTUDIO je zaoblená plocha s nekonečným pásem snímků, přes který leží
-skleněná čočka: na jejím okraji se obraz vlní a rozkládá do barev. Pás se posouvá tažením,
-šipkami na klávesnici, tlačítky po stranách nebo vodorovným gestem; kolečko myši dál
-roluje stránku. Klik na prostřední snímek ho zvětší (zavřít: tlačítko, Esc nebo klik).
+Obyčejný carousel: řada sedmi snímků (3 : 4) s popiskem, která se posouvá do strany
+prstem, touchpadem, šipkami na klávesnici (řada je zaměřitelná) nebo dvěma tlačítky
+nahoře vpravo. Snímky se zarovnávají k levému okraji obsahu a řada běží až k okraji
+obrazovky.
 
 - Snímky a jejich názvy jsou obyčejný seznam v `index.html` (sekce „SLUŽBY V OBRAZE“);
   stačí vyměnit soubory v `assets/img/glass/` nebo upravit položky seznamu.
-- Vykreslování je v `assets/js/glass-carousel.js` (čisté WebGL, načítá se až u sekce).
-- Bez WebGL nebo skriptů zůstane seznam jako obyčejná řada obrázků, která se posouvá do
-  strany. Při „omezit pohyb“ odpadá úvodní nájezd a třpyt čočky.
 - Současné snímky jsou ilustrační; až budou fotografie ze salonu, stačí je vyměnit.
 
 ### Předlohy efektů
 
-Efekty jsou přepsané do čistého JavaScriptu (web nemá React ani sestavovací krok):
+Efekty jsou přepsané do čistého CSS a JavaScriptu (web nemá React ani sestavovací krok):
 
-- parallax úvodu — Osmo „Parallax Scrolling“,
+- parallax úvodu — Osmo „Parallax Scrolling“ (dnes jako CSS animace řízené rolováním),
 - rozložení textu v úvodu — hero „Refined Eyewear“ (Casa Lunara) z knihovny Supahero,
 - nájezd textu v úvodu — Watermelon UI „Hero 17“,
 - sbíhání písmen a štítků — **Skiper UI** „ScrollAnimation_002“ (autor @gurvinder-singh02),
 - linka kreslená rolováním — **Skiper UI** „Skiper 19“ (tamtéž; inspirováno comgio.ai),
-- carousel za tekutým sklem — **Componentry** „Liquid Glass Carousel“ (Harsh Jadhav,
-  licence MIT); shader čočky je převzatý, zbytek je přepsaný bez Reactu a three.js.
 
 Bezplatná verze Skiper UI vyžaduje uvedení autora; je uveden zde a v komentáři v kódu.
 
@@ -138,11 +146,17 @@ jen tady:
 
 - **Naše práce** — pět rámečků 4:5 čeká na fotografie. Do `<li class="pane">` stačí
   vložit `<img src="…" alt="…">`; linky v rámečku fotografie překryje.
-- **Carousel služeb, úvod a karty ceníku** — ilustrační snímky nahradit fotografiemi ze
-  salonu.
-- **Náš tým** — jména, portréty a úrovně specialistek.
-- **Recenze** — skutečné recenze klientek (teď je sekce jen blok s poděkováním).
-- **Kontakt** — fotografie vchodu, o které mluví úvodní text sekce.
+- **Carousel služeb, úvod, karty ceníku a tým** — ilustrační snímky nahradit fotografiemi
+  ze salonu.
+- **Náš tým** — portréty, jména a úrovně specialistek: soubory v `assets/img/team/`
+  vyměnit a do `<figcaption>` napsat jméno a úroveň.
+- **E-mail salonu** — zatím neznámý, proto na webu není. Po doplnění se přidá řádek
+  „E-mail“ do kontaktů a adresa do patičky.
+- **Sleva 10 % na první návštěvu** — na webu je bez dalších podmínek; pokud nějaké platí
+  (které služby, kombinace s poukazem…), je potřeba je doplnit ke slevě v ceníku.
+- **Hodnocení na Google** — v kontaktu je napsané ručně (4,9 z 5, 32 recenzí podle profilu
+  salonu v Mapách Google k 16. 11. 2026). Při změně přepsat číslo, počet recenzí
+  a šířku vyplněných hvězd (`--rating` u `.rating-stars` v CSS: 98 % = 4,9).
 - **Patička** — sídlo společnosti a zápis v obchodním rejstříku (soud, oddíl, vložka).
   Řádek s těmito údaji byl z patičky odstraněn, dokud nejsou známé; obchodní
   společnost je má na webu uvádět.
@@ -154,14 +168,15 @@ jen tady:
 Ceník je pojatý jako butik:
 
 - **Oddělení** jsou čtyři kategorie z brandbooku (velký nadpis s číslem a anglickým
-  názvem). Lišta pod hlavičkou na ně odkazuje a ukazuje u nich počet služeb.
+  názvem). Lišta pod hlavičkou na ně odkazuje a ukazuje u nich počet služeb; na mobilu
+  se dá posouvat do strany.
 - **Produkt** je každá skupina služeb (Manikúra, Pedikúra, Gelové prodloužení, …): karta
-  s fotografií, řádkem úrovní, ve kterých se služba nabízí, názvem, tabulkou cen
-  a vlastním tlačítkem rezervace. Na mobilu je karta řádek s malou fotografií a kulatou
-  šipkou místo tlačítka (rezervaci tam nese lišta u spodního okraje).
-- **Úroveň** (Middle / Senior / Top) se v liště vybírá jako velikost. Výběr nic neskrývá:
-  jen zvýrazní sloupec zvolené úrovně a ostatní ztlumí. Volba se pamatuje do zavření
-  karty prohlížeče.
+  s fotografií, názvem, tabulkou cen a vlastním tlačítkem rezervace. Na mobilu je karta
+  řádek s malou fotografií a kulatou šipkou místo tlačítka.
+- **Úrovně** (Middle / Senior / Top) jsou napsané přímo nad sloupci cen u každé tabulky,
+  na všech velikostech obrazovky.
+- **Sleva 10 % na první návštěvu** je zvýrazněná smaragdovou visačkou v hlavičce ceníku
+  a znovu v liště, která se při procházení ceníku drží nahoře.
 
 Ceny jsou běžné HTML tabulky v `index.html` (sekce `#cenik`), přepsané z brandbooku.
 Změna ceny = přepsání čísla v příslušné buňce; počty služeb u oddělení a produktů jsou
@@ -171,8 +186,19 @@ obyčejný text hned vedle. Ceny se objevují ještě ve dvou odpovědích v sek
 Fotografie produktů jsou ilustrační zátiší (`assets/img/shop/`, jeden soubor na
 produkt, poměr 4 : 3). Výměna = nahrazení souboru stejného jména.
 
-Zelená je v ceníku vyhrazená zvolené úrovni a hlavnímu tlačítku; tlačítka u produktů
-jsou proto jen v obrysu.
+## Dárkový poukaz, kontakt, patička
+
+- **Poukaz** je záměrně méně uhlazený: krémový lístek s béžovým ústřižkem za perforací,
+  vyseknutými zářezy a kulatou samolepkou, položený nakřivo na smaragdové obálce. Pole
+  Pro / Hodnota / Platnost do odpovídají tištěnému poukazu z brandbooku.
+- **Odkazy v textu** jsou smaragdové a podtržené; samostatné odkazy (Instagram, recenze,
+  trasa v mapách) jsou nenápadná tlačítka v obrysu.
+- **Kontakt:** adresa, telefon, Instagram, rezervace a otevírací doba; vedle hodnocení
+  na Google a mapa. Mapa i odkazy „Trasa v aplikaci“ ukazují na profil salonu v Mapách
+  Google (špendlík ve dvoře, ne na čísle domu na ulici). „Jak se k nám dostanete“ jsou
+  tři kroky pod mapou.
+- **Patička** je jeden čokoládový celek: výzva k rezervaci, čtyři sloupce (adresa,
+  kontakt, otevírací doba, provozovatel), logo přes celou šířku a spodní lišta s odkazy.
 
 ## Cookies a měření
 

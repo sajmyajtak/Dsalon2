@@ -303,14 +303,28 @@ a[href^="tel:"] { white-space: nowrap; }
 .btn--small { min-height: 2.75rem; padding: 0.4rem 1.25rem 0.4rem 1.1rem; font-size: 0.875rem; gap: 0.8rem; }
 .btn--block { display: flex; width: 100%; }
 
+/* Low-key button: the D silhouette in outline, for links that stand on their own */
 .link-arrow {
-  display: inline-flex; align-items: center; gap: 0.6rem;
-  min-height: 2.75rem;
-  font-weight: 500; font-size: 0.9375rem;
-  text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.4em;
+  display: inline-flex; align-items: center; justify-content: space-between; gap: 0.85rem;
+  min-height: 2.75rem; padding: 0.5rem 1.15rem 0.5rem 1rem;
+  border: 1px solid currentColor; border-radius: 0 999px 999px 0;
+  font-weight: 500; font-size: 0.875rem; line-height: 1.25; text-decoration: none;
+  transition: background-color 0.25s var(--ease-soft), color 0.25s var(--ease-soft), border-color 0.25s var(--ease-soft);
 }
 .link-arrow svg { flex: none; width: 0.95rem; height: 0.95rem; transition: transform 0.45s var(--ease); }
+.link-arrow:hover, .link-arrow:focus-visible { background: var(--chocolate); border-color: var(--chocolate); color: var(--cream); }
 .link-arrow:hover svg, .link-arrow:focus-visible svg { transform: translateX(0.25rem); }
+
+/* Links in running text: emerald and clearly underlined; the line darkens on hover */
+main a:not([class]), .consent a:not([class]), .consent-dialog a:not([class]), .legal a:not([class]) {
+  color: var(--emerald); font-weight: 500;
+  text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 0.24em;
+  text-decoration-color: rgb(15 76 58 / 0.4);
+  transition: text-decoration-color 0.2s var(--ease-soft);
+}
+main a:not([class]):hover, .consent a:not([class]):hover, .consent-dialog a:not([class]):hover, .legal a:not([class]):hover,
+main a:not([class]):focus-visible { text-decoration-color: currentColor; }
+.on-dark a:not([class]), .on-emerald a:not([class]) { color: var(--cream); text-decoration-color: rgb(244 239 234 / 0.5); }
 
 /* ---------- Header ---------- */
 .site-header {
@@ -318,13 +332,12 @@ a[href^="tel:"] { white-space: nowrap; }
   border-bottom: 1px solid transparent;
   transition: border-color 0.3s var(--ease-soft);
 }
-/* Frosted while it floats over the hero scene, solid once the page has scrolled.
-   The blur sits on a pseudo-element: on the header itself it would trap the
-   fixed-position mobile menu inside the bar. */
+/* A plain white bar (clear over the hero scene on the home page). No backdrop blur: it
+   would have to be recomputed for every frame of scrolling. The background sits on a
+   pseudo-element so that it can fade without touching the bar's contents. */
 .site-header::before {
   content: ''; position: absolute; inset: 0; z-index: -1;
-  background: rgb(255 255 255 / 0.62);
-  -webkit-backdrop-filter: blur(18px) saturate(1.2); backdrop-filter: blur(18px) saturate(1.2);
+  background: var(--white);
   transition: background-color 0.3s var(--ease-soft);
 }
 .site-header.is-stuck::before, html.menu-open .site-header::before { background: var(--white); }
@@ -332,7 +345,7 @@ a[href^="tel:"] { white-space: nowrap; }
 /* Home page (.site-header--over): while the bar lies over the hero scene it is clear and
    its contents are cream; it turns into the white bar when the scene has scrolled away. */
 .logo { transition: color 0.3s var(--ease-soft); }
-html.js:not(.menu-open) .site-header--over:not(.is-stuck)::before { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; }
+html.js:not(.menu-open) .site-header--over:not(.is-stuck)::before { background: transparent; }
 html.js:not(.menu-open) .site-header--over:not(.is-stuck) .logo { color: var(--cream); }
 html.js:not(.menu-open) .site-header--over:not(.is-stuck) .menu-toggle .bars::before,
 html.js:not(.menu-open) .site-header--over:not(.is-stuck) .menu-toggle .bars::after { background: var(--cream); }
@@ -431,7 +444,7 @@ html:not(.js) .hero { margin-top: 0; }
 }
 .hero-layer {
   position: absolute; inset: 0;          /* it moves down more slowly than the page, so it never uncovers the hero */
-  pointer-events: none; will-change: transform;
+  pointer-events: none;
 }
 .hero-layer img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
 /* very wide or very low windows crop the scene from the top, so the flowers stay above the words */
@@ -450,7 +463,7 @@ html:not(.js) .hero { margin-top: 0; }
 .hero-layer-title {
   position: absolute; inset: 0; z-index: 2;
   display: flex; align-items: flex-end; justify-content: center;
-  padding: calc(var(--header-h) + 1rem) var(--gutter) clamp(1.5rem, 4.6svh, 3.25rem); will-change: transform;
+  padding: calc(var(--header-h) + 1rem) var(--gutter) clamp(4.5rem, 15svh, 9.5rem);
 }
 .hero-copy { position: relative; display: grid; justify-items: center; gap: clamp(1rem, 2.6svh, 1.75rem); text-align: center; }
 .hero-title {
@@ -460,7 +473,7 @@ html:not(.js) .hero { margin-top: 0; }
 }
 .hero-title-main {
   font-family: var(--font-hero); line-height: 0.86; letter-spacing: -0.035em;
-  text-shadow: 0 0.02em 0.5em rgb(43 30 26 / 0.35);
+  text-shadow: 0 0.02em 0.3em rgb(43 30 26 / 0.3);
 }
 .hero-title-main > span { display: block; }
 /* the handwritten line comes second in the markup (it is the second half of the claim)
@@ -469,7 +482,7 @@ html:not(.js) .hero { margin-top: 0; }
   order: -1; position: relative; z-index: 1;
   font-family: var(--font-script); font-size: 0.4em; line-height: 1; letter-spacing: 0;
   margin-bottom: -0.1em; padding-inline: 0.3em;
-  text-shadow: 0 0 0.6em rgb(43 30 26 / 0.45);
+  text-shadow: 0 0 0.4em rgb(43 30 26 / 0.4);
 }
 .hero-lead {
   max-width: 31em;
@@ -486,14 +499,30 @@ html:not(.js) .hero { margin-top: 0; }
 }
 /* On load the scene settles from a slight zoom and the words rise out of a blur.
    Pure CSS, so nothing waits for scripts. */
+/* The picture fades in once it has arrived (the emerald field is its placeholder). */
+html.js .hero-layer[data-fade] img { opacity: 0; transition: opacity 0.9s var(--ease-soft); }
+html.js .hero-layer[data-fade].is-loaded img { opacity: 1; }
 @media (prefers-reduced-motion: no-preference) {
-  .hero-layer img { animation: hero-scene 2.2s cubic-bezier(0.22, 0.7, 0.2, 1) both; }
-  .hero-title-main { animation: hero-rise 1.1s 0.2s var(--ease) both; }
-  .hero-title-script { animation: hero-rise 1.1s 0.5s var(--ease) both; }
-  .hero-lead { animation: hero-rise 1.1s 0.65s var(--ease) both; }
+  .hero-layer.is-loaded img { animation: hero-scene 2.2s cubic-bezier(0.22, 0.7, 0.2, 1) both; }
+  .hero-title-main { animation: hero-rise 1s 0.15s var(--ease) both; }
+  .hero-title-script { animation: hero-rise 1s 0.4s var(--ease) both; }
+  .hero-lead { animation: hero-rise 1s 0.55s var(--ease) both; }
 }
-@keyframes hero-rise { from { opacity: 0; transform: translateY(1.25rem); filter: blur(8px); } }
-@keyframes hero-scene { from { scale: 1.07; } }
+/* only opacity and transform: both run on the compositor */
+@keyframes hero-rise { from { opacity: 0; transform: translateY(1.25rem); } }
+@keyframes hero-scene { from { transform: scale(1.06); } }
+
+/* Parallax: while the hero scrolls away the scene moves down by 70 % of its height and
+   the words by 40 %, so both leave more slowly than the page. Where the browser has
+   scroll-driven animations this runs on the compositor; elsewhere main.js does it. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    html.js .hero-layer[data-parallax-layer="1"] { animation: hero-par-1 linear both; animation-timeline: scroll(root block); animation-range: 0 100svh; }
+    html.js .hero-layer-title[data-parallax-layer="3"] { animation: hero-par-3 linear both; animation-timeline: scroll(root block); animation-range: 0 100svh; }
+  }
+}
+@keyframes hero-par-1 { to { transform: translateY(70%); } }
+@keyframes hero-par-3 { to { transform: translateY(40%); } }
 
 /* rows of actions elsewhere on the page (contact) */
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.75rem; }
@@ -507,13 +536,8 @@ html:not(.js) .hero { margin-top: 0; }
 }
 .status[data-state="open"] .status-dot { background: currentColor; }
 
-/* Lenis (smooth wheel scrolling) takes over from the browser's own smooth scroll. */
-html.lenis { scroll-behavior: auto; }
 /* sections that receive focus after an in-page jump are not controls: no ring */
 section[tabindex="-1"]:focus, main[tabindex="-1"]:focus, div[tabindex="-1"]:focus { outline: none; }
-html.lenis, html.lenis body { height: auto; }
-.lenis.lenis-stopped { overflow: clip; }
-.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
 
 /* ---------- The line ----------
    One beige line runs from under the hero to the foot of the page and is drawn by
@@ -523,7 +547,7 @@ html.lenis, html.lenis body { height: auto; }
    keeps to the page margin and crosses over only in the space between two sections. */
 body { position: relative; }
 .ribbon { position: absolute; top: 0; left: 0; z-index: 1; width: 100%; height: 100%; pointer-events: none; }
-.ribbon path { fill: none; stroke: var(--beige); stroke-width: clamp(4px, 0.8vw, 12px); stroke-linecap: round; stroke-linejoin: round; }
+.ribbon path { fill: none; stroke: var(--beige); stroke-width: clamp(1.75px, 0.2vw, 3px); stroke-linecap: round; stroke-linejoin: round; }
 main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2; }
 
 /* ---------- Story: O DSTUDIO as a scroll scene ----------
@@ -534,14 +558,13 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
 .story-inner { position: relative; z-index: 1; display: grid; justify-items: center; text-align: center; }
 .story-title {
   font-family: var(--font-display); font-weight: 400; font-stretch: var(--display-width); font-synthesis: none; text-transform: uppercase;
-  font-size: min(21.3vw, 19.6rem); line-height: 0.86; letter-spacing: 0.012em;
-  margin-top: 0.2em; perspective: 500px;
+  font-size: clamp(3.4rem, 12.6vw, 11.5rem); line-height: 0.88; letter-spacing: 0.012em;
+  margin-top: 0.3em;
 }
 .cvw { display: inline-block; white-space: nowrap; }
-.cv { display: inline-block; will-change: transform; }
+.cv { display: inline-block; }
 .story-lead { margin-top: clamp(2rem, 4vw, 3.25rem); max-width: 31em; }
 .story-tokens { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem 0.7rem; margin-top: clamp(3.5rem, 8vw, 6rem); }
-.story-tokens li { will-change: transform; }
 .token {
   display: inline-flex; align-items: center; min-height: 3.25rem; padding: 0 1.5rem;
   border: 1px solid var(--beige); border-radius: 999px; background: var(--white);
@@ -552,65 +575,79 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
 .story-text { margin-top: clamp(3.5rem, 8vw, 6rem); max-width: 34em; font-size: 1.0625rem; }
 .story-text p { max-width: none; }
 
-/* ---------- Liquid glass carousel ----------
-   A rounded white stage with an endless row of pictures drawn in WebGL behind a
-   liquid-glass lens (assets/js/glass-carousel.js). Until the script takes over — or if
-   it cannot — the pictures are an ordinary row that scrolls sideways. */
-.glass { position: relative; padding-bottom: clamp(0.5rem, 1.6vw, 1.5rem); }
-.glass-stage {
-  overflow: hidden; isolation: isolate;
-  margin-inline: clamp(0.5rem, 1.6vw, 1.5rem); border-radius: clamp(1.5rem, 3.2vw, 2.75rem);
-  height: clamp(27rem, 84svh, 50rem); background: var(--white); border: 1px solid rgb(215 188 149 / 0.6);
+/* Converge (after Skiper UI "ScrollAnimation_002"): the heading's letters and the five
+   tokens start spread out from their middle (--d = distance from the middle item, set by
+   main.js) and meet while the block scrolls from the bottom of the screen to just below
+   its centre. Scroll-driven where supported; main.js covers the rest. */
+.story-title, .story-tokens { --ux: max(21px, min(3.4722vw, 50px)); --ax: max(37.8px, min(6.25vw, 90px)); --ay: max(9.24px, min(1.5278vw, 22px)); }
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    html.js [data-converge] { view-timeline: --converge block; }
+    html.js [data-converge="text"] [data-cv] { animation: cv-text linear both; animation-timeline: --converge; animation-range: cover 0% cover 45%; }
+    html.js [data-converge="arc"] [data-cv] { animation: cv-arc linear both; animation-timeline: --converge; animation-range: cover 0% cover 45%; }
+  }
 }
-.glass-stage:focus-visible { outline: 2px solid var(--emerald); outline-offset: 4px; }
-.glass-stage canvas {
-  position: absolute; inset: 0; display: block; width: 100%; height: 100%;
-  touch-action: pan-y; -webkit-user-select: none; user-select: none;
+@keyframes cv-text {
+  from { transform: perspective(500px) translateX(calc(var(--d, 0) * var(--ux))) rotateX(calc(var(--d, 0) * 50deg)); }
+  to { transform: perspective(500px) translateX(0) rotateX(0deg); }
 }
-.glass-list {
-  display: flex; align-items: center; gap: 0.75rem; height: 100%; padding-inline: 8vw;
-  overflow-x: auto; scroll-snap-type: x mandatory;
+@keyframes cv-arc {
+  from { transform: translate(calc(var(--d, 0) * var(--ax)), calc(var(--ad, 0) * var(--ay) * -1)) rotate(calc(var(--d, 0) * 34deg)) scale(0.75); }
+  to { transform: translate(0, 0) rotate(0deg) scale(1); }
 }
-.glass-list li { flex: none; scroll-snap-align: center; }
-.glass-list figure { display: grid; gap: 0.6rem; justify-items: center; }
-.glass-list img { width: auto; height: min(52svh, 28rem); aspect-ratio: 3 / 4; object-fit: cover; }
-.glass-list figcaption { font-size: 0.875rem; font-weight: 500; }
-.glass-list:focus-visible { outline: 2px solid var(--emerald); outline-offset: -4px; }
-.glass-stage.is-live .glass-list { position: absolute; inset: 0; overflow: hidden; opacity: 0; pointer-events: none; }
-.glass-title, .glass-count {
-  position: absolute; left: 50%; z-index: 3; translate: -50% 0; pointer-events: none;
-  font-weight: 500; line-height: 1; opacity: 0;
-  transition: opacity 0.9s var(--ease-soft), translate 0.4s var(--ease);
+
+/* ---------- Carousel: services in pictures ----------
+   A plain row of pictures that scrolls sideways and snaps to each picture: by touch,
+   trackpad, the keyboard (the row is focusable) or the two buttons (assets/js/main.js).
+   The first picture lines up with the page column; the row runs to the screen edge. */
+.gallery { position: relative; padding-block: clamp(1rem, 3vw, 2.5rem) clamp(3rem, 7vw, 5.5rem); }
+.gallery-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: clamp(1rem, 2vw, 1.5rem); }
+.gallery-nav { display: flex; gap: 0.5rem; }
+.gallery-btn {
+  display: grid; place-items: center; width: 2.75rem; height: 2.75rem;
+  border: 1px solid var(--chocolate); border-radius: 50%; background: var(--white);
+  transition: background-color 0.25s var(--ease-soft), color 0.25s var(--ease-soft), opacity 0.25s var(--ease-soft);
 }
-.glass-title { top: 5%; font-size: clamp(0.9375rem, 0.85rem + 0.3vw, 1.125rem); letter-spacing: -0.01em; }
-.glass-count { bottom: 5.5%; font-size: 0.875rem; }
-.glass-stage.is-ready .glass-title, .glass-stage.is-ready .glass-count { opacity: 1; }
-.glass-stage.is-focused .glass-title { translate: -50% -0.5rem; }
-.glass-stage.is-focused .glass-count { opacity: 0; }
-.glass-nav {
-  position: absolute; top: 50%; z-index: 3; translate: 0 -50%; display: none; place-items: center;
-  width: 3rem; height: 3rem; border-radius: 50%; border: 1px solid rgb(43 30 26 / 0.18);
-  background: rgb(255 255 255 / 0.62); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-  transition: background-color 0.3s var(--ease-soft), color 0.3s var(--ease-soft);
+.gallery-btn svg { width: 1rem; height: 1rem; }
+.gallery-btn--prev svg { rotate: 180deg; }
+.gallery-btn:hover:not(:disabled), .gallery-btn:focus-visible { background: var(--chocolate); color: var(--cream); }
+.gallery-btn:disabled { opacity: 0.3; cursor: default; }
+.gallery .gallery-track {
+  --edge: max(var(--gutter), (100vw - var(--max)) / 2);
+  display: flex; gap: clamp(0.75rem, 1.6vw, 1.25rem);
+  margin: 0; padding: 0 var(--edge) 0.25rem; list-style: none;
+  overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory; scroll-padding-inline: var(--edge);
+  scrollbar-width: none;
 }
-.glass-stage.is-live .glass-nav { display: grid; }
-.glass-nav:hover, .glass-nav:focus-visible { background: var(--chocolate); color: var(--cream); }
-.glass-nav svg { width: 1rem; height: 1rem; }
-.glass-nav--prev { left: clamp(0.6rem, 2.6vw, 2.25rem); }
-.glass-nav--prev svg { rotate: 180deg; }
-.glass-nav--next { right: clamp(0.6rem, 2.6vw, 2.25rem); }
-.glass-close {
-  position: absolute; top: 3.2%; right: 3.5%; z-index: 3; min-height: 2.75rem; padding-inline: 0.75rem;
-  font-size: 0.875rem; font-weight: 500; text-decoration: underline; text-underline-offset: 0.35em;
+.gallery-track::-webkit-scrollbar { display: none; }
+.gallery-track:focus-visible { outline: 2px solid var(--emerald); outline-offset: 4px; }
+.gallery-item { flex: 0 0 clamp(13.5rem, 62vw, 21rem); scroll-snap-align: start; }
+@media (min-width: 48em) { .gallery-item { flex-basis: clamp(15rem, 25vw, 21rem); } }
+.gallery-media { aspect-ratio: 3 / 4; }
+.gallery-media img { width: 100%; height: 100%; object-fit: cover; }
+.gallery-item figcaption { display: flex; align-items: baseline; gap: 0.6rem; padding-top: 0.75rem; font-size: 0.9375rem; font-weight: 500; }
+.gallery-no { font-size: 0.75rem; letter-spacing: 0.08em; }
+
+/* ---------- Skeletons: placeholders while pictures load ----------
+   A picture's frame shows a calm beige plane with a light sweeping across it until the
+   picture has arrived; then the picture fades in (main.js adds .is-loaded). Without
+   scripts pictures simply appear. With reduced motion the sweep stays still. */
+.sk { --sk-base: var(--cream); --sk-sweep: rgb(255 255 255 / 0.7); position: relative; overflow: hidden; background: var(--sk-base); isolation: isolate; }
+.plane-cream .sk { --sk-base: var(--white); --sk-sweep: rgb(244 239 234 / 0.9); }
+.sk::after {
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(100deg, transparent 30%, var(--sk-sweep) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: opacity 0.4s var(--ease-soft);
 }
-.glass-cursor {
-  position: absolute; top: 0; left: 0; z-index: 3; pointer-events: none;
-  padding: 0.4rem 0.75rem; border-radius: 999px; background: var(--chocolate); color: var(--cream);
-  font-size: 0.75rem; font-weight: 500; line-height: 1; opacity: 0; scale: 0.6;
-  transition: opacity 0.25s var(--ease-soft), scale 0.3s var(--ease);
+html.js .sk img { opacity: 0; transition: opacity 0.6s var(--ease-soft); }
+html.js .sk.is-loaded img, html:not(.js) .sk img { opacity: 1; }
+.sk.is-loaded::after, html:not(.js) .sk::after { opacity: 0; animation: none; }
+@media (prefers-reduced-motion: no-preference) {
+  html.js .sk:not(.is-loaded)::after { animation: sk-sweep 1.4s ease-in-out infinite; }
 }
-.glass-cursor.is-on { opacity: 1; scale: 1; }
-@media (hover: none) { .glass-cursor { display: none; } }
+@keyframes sk-sweep { to { transform: translateX(100%); } }
 
 /* ---------- Blocks: large, rounded, coloured ----------
    A statement set very large on a chocolate or emerald block that sits inset from the
@@ -621,17 +658,17 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
   margin-inline: clamp(0.5rem, 1.6vw, 1.5rem); border-radius: clamp(1.5rem, 3.2vw, 2.75rem);
   padding-block: clamp(2.75rem, 6vw, 5rem) clamp(2rem, 4vw, 3.25rem);
 }
-.block + .section, .section + .block, .glass + .block { margin-top: 0; }
+.block + .section, .section + .block, .gallery + .block { margin-top: 0; }
 .section + .block { margin-top: clamp(0.5rem, 1.6vw, 1.5rem); }
 .block + .site-footer, .block { margin-bottom: clamp(0.5rem, 1.6vw, 1.5rem); }
-.block .statement { font-size: 26.6vw; line-height: 0.9; text-align: center; text-wrap: balance; }
-.block .statement > em { font-size: 0.27em; margin-top: 0.14em; }
-.block--long .statement { font-size: 24vw; }
+.block .statement { font-size: 15.4vw; line-height: 0.92; text-align: center; text-wrap: balance; }
+.block .statement > em { font-size: 0.4em; margin-top: 0.14em; }
+.block--long .statement { font-size: 13.4vw; }
 @media (min-width: 48em) {
-  .block .statement { font-size: min(18.2vw, 17.2rem); line-height: 0.98; }
-  .block .statement > em { font-size: 0.28em; margin-top: 0.08em; }
-  .block--long .statement { font-size: min(15vw, 14.25rem); }
-  .block--long .statement > em { font-size: 0.32em; }
+  .block .statement { font-size: min(10.4vw, 9.75rem); line-height: 0.98; }
+  .block .statement > em { font-size: 0.36em; margin-top: 0.1em; }
+  .block--long .statement { font-size: min(8.8vw, 8.25rem); }
+  .block--long .statement > em { font-size: 0.4em; }
 }
 .block-foot { display: grid; gap: 1rem; margin-top: clamp(2.5rem, 7vw, 6rem); padding-top: 1.5rem; border-top: 1px solid rgb(244 239 234 / 0.22); }
 .block-foot--action { justify-items: start; gap: 1.25rem; }
@@ -652,46 +689,51 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
 
 /* ---------- Price list: the boutique ----------
    The list is laid out like a designer shop. Categories are departments; each group of
-   services is a product card: a still-life photograph, the levels it comes in, the name,
-   its prices, and a booking button of its own. The level picker works like a
-   size picker. Nothing is folded away: every price is on the page, and choosing a level
-   only re-inks its column. Emerald is kept for the chosen level and the main action. */
-.prices { --col: clamp(3.125rem, 16.2vw, 5.5rem); --dim: rgb(43 30 26 / 0.7); }
+   services is a product card: a still-life photograph, the name, its prices with the
+   levels (Middle / Senior / Top) named right above the columns, and a booking button of
+   its own. The 10 % discount on the first visit is the one loud element: an emerald
+   stamp in the head of the list, repeated small in the pinned bar. */
+.prices { --col: clamp(3.125rem, 16.2vw, 5.5rem); }
 .prices-head { display: grid; gap: 1.25rem; }
 .prices-title { display: grid; gap: 1.25rem; }
 .prices-intro { max-width: 30em; text-wrap: pretty; }
+.prices-offer {
+  display: flex; align-items: center; gap: 1.1rem; justify-self: start;
+  margin-top: 0.5rem; padding: 0.9rem 1.6rem 0.9rem 1.1rem;
+  background: var(--emerald); color: var(--white);
+  border-radius: 0 999px 999px 0;
+}
+.prices-offer-value {
+  font-family: var(--font-display); font-weight: 400; font-stretch: var(--display-width); font-synthesis: none;
+  font-size: clamp(3rem, 2.5rem + 2.2vw, 4.25rem); line-height: 0.85; letter-spacing: 0.01em; white-space: nowrap;
+}
+.prices-offer-text { display: grid; gap: 0.15rem; font-size: 0.9375rem; line-height: 1.35; max-width: 17em; }
+.prices-offer-text strong { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--beige); }
 
-/* The shop bar: departments on the left, the level picker on the right. It stays under
-   the header. On phones its three boxes sit exactly above the three price columns. */
+/* The shop bar: the departments, and on wider screens the discount once more. It stays
+   under the header; on phones the departments scroll sideways. */
 .prices-bar {
   position: sticky; top: var(--header-h); z-index: 5;
-  display: flex; align-items: center; justify-content: space-between; gap: 0.25rem;
-  margin: 1.75rem calc(var(--gutter) * -1) 0; padding: 0.3rem var(--gutter);
+  display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+  margin: 1.75rem calc(var(--gutter) * -1) 0; padding: 0 var(--gutter);
   background: var(--cream); border-bottom: 1px solid var(--beige);
 }
-.chapter-index { flex: 1 1 auto; max-width: 11.5rem; }
-.chapter-index ol { display: flex; margin: 0; padding: 0; list-style: none; }
-.chapter-index li { flex: 1 1 0; }
+.chapter-index { position: relative; flex: 1 1 auto; min-width: 0; overflow-x: auto; scrollbar-width: none; }   /* positioned: hidden labels stay inside the scroller */
+.chapter-index::-webkit-scrollbar { display: none; }
+.chapter-index ol { display: flex; gap: 1.4rem; margin: 0; padding: 0; list-style: none; }
+.chapter-index li { flex: none; }
 .chapter-index a {
-  display: grid; place-items: center; min-width: 1.75rem; min-height: 2.75rem;
-  font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.04em; font-variant-numeric: tabular-nums;
-  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 0.3rem; min-height: 3rem;
+  font-size: 0.8125rem; font-weight: 500; letter-spacing: 0.01em; white-space: nowrap; text-decoration: none;
+  box-shadow: inset 0 -2px 0 transparent; transition: box-shadow 0.3s var(--ease-soft);
 }
-.chapter-no { padding-block: 0.2rem; border-bottom: 2px solid transparent; }
-.chapter-index a[aria-current] .chapter-no { border-bottom-color: var(--emerald); font-weight: 700; }
-.chapter-name, .chapter-n { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.levels { display: flex; align-items: center; gap: 1rem; }
-.levels-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.levels-switch { display: grid; grid-template-columns: repeat(3, var(--col)); }
-.levels-switch button {
-  min-height: 2.75rem; padding: 0 0.25rem; margin-left: -1px;
-  border: 1px solid var(--chocolate);
-  font-size: 0.75rem; font-weight: 500; letter-spacing: 0.03em; text-align: center;
-  transition: background-color 0.25s var(--ease-soft), color 0.25s var(--ease-soft), border-color 0.25s var(--ease-soft);
-}
-.levels-switch button[aria-pressed="true"] { position: relative; background: var(--emerald); border-color: var(--emerald); color: var(--white); font-weight: 600; }
-@media (hover: hover) { .levels-switch button:hover:not([aria-pressed="true"]) { background: var(--white); } }
-.prices:not(.is-enhanced) .levels { display: none; }
+.chapter-no { display: none; }
+.chapter-n { align-self: flex-start; margin-top: 0.75rem; font-size: 0.6875rem; font-variant-numeric: tabular-nums; }
+.chapter-index a:hover { box-shadow: inset 0 -2px 0 var(--beige); }
+.chapter-index a[aria-current] { box-shadow: inset 0 -2px 0 var(--emerald); }
+.prices-bar .chapter-index a { color: inherit; text-decoration: none; }   /* navigation, not a link in running text */
+.prices-bar-offer { display: none; flex: none; font-size: 0.8125rem; font-weight: 500; white-space: nowrap; }
+.prices-bar-offer strong { display: inline-block; margin-right: 0.35rem; padding: 0.2rem 0.55rem; border-radius: 999px; background: var(--emerald); color: var(--white); font-weight: 600; }
 
 /* Department */
 .chapter { padding-top: clamp(2.75rem, 6.5vw, 5rem); scroll-margin-top: calc(var(--header-h) + 3rem); }
@@ -712,7 +754,6 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
 .product-media { grid-column: 1; grid-row: 1; aspect-ratio: 4 / 5; overflow: hidden; background: var(--white); }
 .product-media img { width: 100%; height: 100%; object-fit: cover; }
 .product-head { grid-column: 2; grid-row: 1; align-self: end; display: grid; gap: 0.3rem; }
-.product-sizes { font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; }
 .product-name { font-family: var(--font-serif); font-weight: 500; font-size: clamp(1.75rem, 1.5rem + 1.1vw, 2.25rem); line-height: 1.08; }
 .product-meta { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em; }
 
@@ -720,7 +761,7 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
 .price-table th, .price-table td { padding: 0.72rem 0; border-bottom: 1px solid var(--beige); vertical-align: baseline; }
 .price-table thead th {
   padding-block: 0.3rem 0.5rem; border-bottom-color: var(--chocolate);
-  font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; text-align: right;
+  font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-align: right;
 }
 .price-table tbody th { text-align: left; font-weight: 400; padding-right: 0.5rem; }
 .price-table td, .price-table thead th[data-l] {
@@ -761,16 +802,6 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
 .prices-foot p { font-size: 0.875rem; max-width: 40em; text-wrap: pretty; }
 .prices-cta { justify-self: start; }
 
-/* Choosing a level re-inks its column everywhere; nothing moves, nothing hides. */
-.prices[data-level="middle"] .price-table[data-levels~="middle"] td[data-l]:not([data-l="middle"]),
-.prices[data-level="senior"] .price-table[data-levels~="senior"] td[data-l]:not([data-l="senior"]),
-.prices[data-level="top"] .price-table[data-levels~="top"] td[data-l]:not([data-l="top"]) { font-weight: 400; color: var(--dim); }
-.prices[data-level="middle"] .price-table [data-l="middle"],
-.prices[data-level="senior"] .price-table [data-l="senior"],
-.prices[data-level="top"] .price-table [data-l="top"] { font-weight: 700; color: var(--emerald); }
-.prices[data-level="senior"] .price-note[data-l="senior"],
-.prices[data-level="senior"] .price-note--levels { font-weight: 600; }
-
 @media (max-width: 39.99em) {
   /* phones: the booking button of a product is a round arrow beside its name (the bar at
      the foot of the screen already says "Rezervovat"); its label stays for screen readers */
@@ -778,25 +809,17 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
   .product-cta { grid-column: 3; grid-row: 1; align-self: end; justify-content: center; width: 2.75rem; height: 2.75rem; min-height: 0; margin: 0; padding: 0; border-radius: 50%; }
   .product-cta-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 }
-@media (max-width: 47.99em) {
-  /* one column of products: the pinned bar already carries the level labels on the same axes */
-  .prices.is-enhanced .price-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-  .prices.is-enhanced .price-table tbody tr:first-child th,
-  .prices.is-enhanced .price-table tbody tr:first-child td { border-top: 1px solid var(--chocolate); }
-}
 @media (min-width: 40em) {
   .product { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto; }
   .product-media, .product-head { grid-column: 1; grid-row: auto; }
   .product-media { aspect-ratio: 4 / 3; }
   .product-head { align-self: start; padding-top: 1.1rem; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 0.4rem 1.5rem; }
-  .product-sizes { grid-column: 1 / -1; }
   .product-meta { text-align: right; padding-bottom: 0.3rem; }
   .product-head .visually-hidden + .product-meta { grid-column: 1 / -1; text-align: left; padding-bottom: 0; }
 }
 @media (min-width: 48em) {
   .prices { --col: clamp(3.25rem, 6.2vw, 5.5rem); }
-  .levels-switch { grid-template-columns: repeat(3, minmax(4.5rem, auto)); }
-  .levels-switch button { padding-inline: 1rem; }
+  .prices-bar-offer { display: block; }
   .chapter-head { grid-template-columns: minmax(0, 1fr) auto; align-items: end; }
   .chapter-tag { grid-column: 1 / -1; }
   .chapter-aside { text-align: right; padding-bottom: 0.5rem; }
@@ -811,17 +834,11 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
   .prices-head { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 1.5rem; align-items: end; }
   .prices-title { grid-column: 1 / 8; }
   .prices-intro { grid-column: 8 / -1; padding-bottom: 0.6rem; }
-  .prices-bar { margin-inline: 0; padding: 0; gap: 1.5rem; }
-  .chapter-index { flex: 0 1 auto; max-width: none; }
-  .chapter-index li { flex: none; }
+  .prices-offer { grid-column: 8 / -1; }
+  .prices-bar { margin-inline: 0; padding: 0; }
   .chapter-index ol { gap: clamp(1.1rem, 2.3vw, 2.5rem); }
-  .chapter-index a { display: inline-flex; align-items: center; gap: 0.3rem; min-height: 3.5rem; font-size: 0.8125rem; letter-spacing: 0.02em; white-space: nowrap; box-shadow: inset 0 -2px 0 transparent; transition: box-shadow 0.3s var(--ease-soft); }
-  .chapter-no { display: none; }
-  .chapter-name, .chapter-n { position: static; width: auto; height: auto; overflow: visible; clip-path: none; }
-  .chapter-n { align-self: flex-start; margin-top: 0.95rem; font-size: 0.6875rem; font-variant-numeric: tabular-nums; }
-  .chapter-index a:hover { box-shadow: inset 0 -2px 0 var(--beige); }
-  .chapter-index a[aria-current] { box-shadow: inset 0 -2px 0 var(--emerald); }
-  .levels-switch button { min-height: 2.5rem; font-size: 0.8125rem; }
+  .chapter-index a { min-height: 3.5rem; }
+  .chapter-n { margin-top: 0.95rem; }
   .products--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   /* a department with one product: photograph and list side by side */
   .products--1 .product { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); column-gap: clamp(2rem, 4vw, 4rem); grid-template-rows: auto auto auto auto 1fr; }
@@ -831,7 +848,6 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
   .products--1 .product-cta { justify-self: start; min-width: 22rem; }
 }
 @media (min-width: 72em) {
-  .levels-label { position: static; width: auto; height: auto; overflow: visible; clip-path: none; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; }
   .chapter-index a { font-size: 0.875rem; }
 }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
@@ -874,62 +890,108 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
   .work-foot { grid-template-columns: 1fr auto; align-items: center; }
 }
 
-/* ---------- Team ---------- */
-.team .prose a { font-weight: 500; }
-.team .btn { margin-top: 2rem; }
+/* ---------- Team: room for photographs ----------
+   Heading and text above; under them a row of large portrait photographs of different
+   widths, set off from one another in height like prints laid out on a table. On phones
+   the row scrolls sideways and snaps to each photograph. */
+.team-head { display: grid; gap: 1.5rem; }
+.team-title { display: grid; gap: 1.25rem; }
+.team-intro { display: grid; gap: 1.1rem; justify-items: start; max-width: 36em; }
+.team-intro .btn { margin-top: 0.75rem; }
+.team .team-photos {
+  --edge: max(var(--gutter), (100vw - var(--max)) / 2);
+  display: flex; gap: clamp(0.75rem, 1.6vw, 1.5rem); align-items: flex-start;
+  margin: clamp(2.5rem, 5vw, 4rem) 0 0; padding: 0 var(--edge) 0.25rem; list-style: none;
+  overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--edge);
+  scrollbar-width: none;
+}
+.team-photos::-webkit-scrollbar { display: none; }
+.team-photos:focus-visible { outline: 2px solid var(--emerald); outline-offset: 4px; }
+.team-photo { flex: 0 0 78vw; scroll-snap-align: start; }
+.team-media { aspect-ratio: 4 / 5; }
+.team-media img { width: 100%; height: 100%; object-fit: cover; }
+.team-photo figcaption { padding-top: 0.75rem; font-size: 0.875rem; font-weight: 500; }
+@media (min-width: 48em) {
+  .team-photo { flex-basis: 44vw; }
+}
+@media (min-width: 60em) {
+  .team-head { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 1.5rem; align-items: end; }
+  .team-title { grid-column: 1 / 7; }
+  .team-intro { grid-column: 7 / -1; }
+  /* all photographs in view: one large, two smaller, each a step lower */
+  .team .team-photos { overflow: visible; padding-inline: 0; width: min(100% - 2 * var(--gutter), var(--max)); margin-inline: auto; }
+  .team-photo { flex: 1 1 0; min-width: 0; }
+  .team-photo:nth-child(1) { flex-grow: 5; }
+  .team-photo:nth-child(2) { flex-grow: 4; margin-top: clamp(3rem, 8vw, 7rem); }
+  .team-photo:nth-child(3) { flex-grow: 3.2; margin-top: clamp(1.5rem, 4vw, 3.5rem); }
+}
 
-
-/* ---------- Gift voucher: the cream card drawn out of the emerald envelope ---------- */
+/* ---------- Gift voucher: a ticket on the envelope ----------
+   Deliberately less polished than the rest: a cream ticket with a beige stub behind a
+   dashed perforation, two punched notches, tilted over the emerald envelope, and a round
+   sticker slapped on its corner. Flat brandbook colours, hard edges, no shadows. All
+   sizes inside follow the width of the scene (container units). */
 .voucher-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.5rem; align-items: center; }
 .voucher-copy { display: grid; gap: 1.25rem; justify-items: start; }
 .voucher-copy > p:not(.eyebrow) { max-width: 32em; text-wrap: pretty; }
 
-/* Phones: both pieces close to full width; the card is drawn up out of the envelope. */
-.voucher-scene { container-type: inline-size; }
+.voucher-scene { position: relative; container-type: inline-size; aspect-ratio: 100 / 74; }
 .voucher-envelope {
-  position: relative; z-index: 2; width: 90%; aspect-ratio: 186 / 106; margin-top: -6%;
-  background: var(--emerald); color: var(--white); display: grid; place-items: center;
+  position: absolute; left: 7%; top: 21%; width: 86%; aspect-ratio: 186 / 106;
+  background: var(--emerald); rotate: 5deg;
 }
-.voucher-envelope svg { width: 46%; fill: currentColor; }
-.voucher-card {
-  --from: translate(-9%, 84%);
-  --to: translate(0, 0);
-  position: relative; z-index: 1; width: 87.1%; aspect-ratio: 180 / 100;
-  margin: 0 0 0 12.9%;
-  transform: var(--to);
-  background: var(--cream); color: var(--chocolate);
-  display: grid; align-content: center; justify-items: center; gap: 1.5cqw;
-  /* the lower edge sits inside the envelope */
-  padding: 3cqw 6cqw 6.5cqw; text-align: center;
+.voucher-ticket {
+  --perf: 79%; --notch: 2.6cqw;
+  --from: translate(-5%, 12%) rotate(-7deg);
+  --to: translate(0, 0) rotate(0deg);
+  position: absolute; left: 4%; top: 9%; width: 88%; aspect-ratio: 180 / 100;
+  display: grid; grid-template-columns: var(--perf) 1fr;
+  rotate: -4deg; transform: var(--to);
+  /* two punched notches where the stub tears off */
+  -webkit-mask: radial-gradient(circle at var(--perf) 0, #0000 var(--notch), #000 calc(var(--notch) + 0.5px)), radial-gradient(circle at var(--perf) 100%, #0000 var(--notch), #000 calc(var(--notch) + 0.5px));
+  -webkit-mask-composite: source-in;
+  mask: radial-gradient(circle at var(--perf) 0, #0000 var(--notch), #000 calc(var(--notch) + 0.5px)), radial-gradient(circle at var(--perf) 100%, #0000 var(--notch), #000 calc(var(--notch) + 0.5px));
+  mask-composite: intersect;
 }
-.voucher-logo { width: 30%; fill: currentColor; }
-.voucher-title { font-family: var(--font-serif); font-weight: 500; font-size: 7.4cqw; line-height: 1; margin-top: 1cqw; }
-.voucher-sub { font-size: 3cqw; line-height: 1.2; }
-.voucher-fields { display: grid; gap: 2.1cqw; width: 100%; margin-top: 1.4cqw; }
-.voucher-fields > div { display: flex; align-items: flex-end; gap: 2cqw; font-size: 3.1cqw; line-height: 1; }
-.voucher-fields i { flex: 1; border-bottom: 1px solid var(--chocolate); height: 0.9em; }
-/* Wider screens: side by side, the card slid out to the right as in the brandbook. */
-@media (min-width: 48em) {
-  .voucher-scene { position: relative; aspect-ratio: 100 / 34; }
-  .voucher-envelope, .voucher-card { position: absolute; top: 50%; left: 0; margin: 0; }
-  .voucher-envelope { width: 52%; margin-top: 0; transform: translateY(-50%); }
-  .voucher-card {
-    --from: translate(0, -50%);
-    --to: translate(83%, -50%);
-    width: 50.3%; left: 0.85%; gap: 1.1cqw;
-    /* the left tenth stays inside the envelope, so the content is centred on what shows */
-    padding: 2.6cqw 3.4cqw 2.6cqw 12.8cqw;
-  }
-  .voucher-logo { width: 30%; }
-  .voucher-title { font-size: 4.4cqw; margin-top: 0.6cqw; }
-  .voucher-sub { font-size: 1.35cqw; }
-  .voucher-fields { gap: 1.5cqw; margin-top: 1.2cqw; }
-  .voucher-fields > div { gap: 1.2cqw; font-size: 1.2cqw; }
+.voucher-main {
+  display: grid; align-content: space-between; gap: 2cqw;
+  padding: 4.2cqw 4.4cqw 4cqw; background: var(--cream); color: var(--chocolate);
+  border: 2px solid var(--chocolate); border-right: 0;
 }
+.voucher-top { display: flex; align-items: center; justify-content: space-between; gap: 2cqw; }
+.voucher-logo { width: 22cqw; fill: currentColor; }
+.voucher-no { display: flex; align-items: flex-end; gap: 0.8cqw; font-size: 2.1cqw; font-weight: 600; letter-spacing: 0.08em; }
+.voucher-no i { width: 9cqw; height: 0.9em; border-bottom: 2px solid var(--chocolate); }
+.voucher-title {
+  font-family: var(--font-display); font-weight: 400; font-stretch: var(--display-width); font-synthesis: none; text-transform: uppercase;
+  font-size: 11.5cqw; line-height: 0.84; letter-spacing: 0.01em;
+}
+.voucher-fields { display: grid; gap: 1.9cqw; }
+.voucher-fields > div { display: flex; align-items: flex-end; gap: 1.4cqw; font-size: 1.9cqw; font-weight: 600; line-height: 1; letter-spacing: 0.1em; text-transform: uppercase; }
+.voucher-fields i { flex: 1; height: 0.9em; border-bottom: 2px solid var(--chocolate); }
+.voucher-stub {
+  display: grid; place-items: end center; padding-bottom: 4.5cqw; background: var(--beige); color: var(--chocolate);
+  border: 2px solid var(--chocolate); border-left: 2px dashed var(--chocolate);
+}
+.voucher-stub span {
+  writing-mode: vertical-rl; rotate: 180deg; white-space: nowrap;
+  font-family: var(--font-display); font-weight: 400; font-stretch: var(--display-width); font-synthesis: none; text-transform: uppercase;
+  font-size: 4.4cqw; line-height: 1; letter-spacing: 0.05em;
+}
+.voucher-sticker {
+  --from: scale(0.4) rotate(-50deg);
+  --to: scale(1) rotate(0deg);
+  position: absolute; right: 2%; top: 0; width: 22cqw; aspect-ratio: 1;
+  display: grid; place-content: center; justify-items: center; gap: 0.4cqw;
+  border-radius: 50%; background: var(--emerald); color: var(--cream);
+  rotate: 12deg; transform: var(--to);
+}
+.voucher-sticker-small { font-size: 1.8cqw; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; }
+.voucher-sticker-script { font-family: var(--font-script); font-size: 6cqw; line-height: 0.9; }
 @media (min-width: 60em) {
   .voucher-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 1.5rem; }
   .voucher-copy { grid-column: 1 / 5; }
-  .voucher-scene { grid-column: 5 / -1; }
+  .voucher-scene { grid-column: 6 / -1; }
 }
 
 /* ---------- FAQ ---------- */
@@ -964,70 +1026,108 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
 .hours .is-today th, .hours .is-today td { font-weight: 600; }
 .contact-list .status { margin-top: 0.5rem; font-size: 0.875rem; }
 
-.way { display: grid; gap: 1.5rem; align-content: start; }
-.way-title { font-weight: 600; font-size: 1.125rem; line-height: 1.3; letter-spacing: -0.01em; }
-.way-sign { container-type: inline-size; width: 100%; align-self: start; }
-.way-sign-plate {
-  display: grid; justify-items: center; align-content: center; gap: 4.2cqw;
-  aspect-ratio: 2 / 1; padding: 5cqw;
-  background: var(--beige); color: var(--chocolate);
+/* Google rating: the score set large, stars filled to the score, a low-key link out */
+.contact-side { display: grid; gap: 2rem; align-content: start; min-width: 0; }
+.rating {
+  display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 0.35rem 1.25rem;
+  padding: clamp(1.25rem, 3vw, 1.75rem); background: var(--white); border: 1px solid var(--beige);
 }
-.way-sign-logo { width: 42%; fill: currentColor; }
-.way-sign-rule { width: 14%; height: 1px; background: currentColor; }
-.way-sign-main {
-  display: flex; align-items: center; gap: 3.5cqw;
-  font-weight: 600; font-size: 7.2cqw; line-height: 1; letter-spacing: 0.04em; text-transform: uppercase;
+.rating-source { grid-column: 1 / -1; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
+.rating-score { grid-row: 2 / 4; display: flex; align-items: baseline; gap: 0.4rem; }
+.rating-value {
+  font-family: var(--font-display); font-weight: 400; font-stretch: var(--display-width); font-synthesis: none;
+  font-size: clamp(4.25rem, 3.4rem + 3vw, 5.75rem); line-height: 0.85;
 }
-.way-sign-main svg { width: 9cqw; height: 9cqw; transform: rotate(180deg); }
-.way-sign-sub { font-size: 2.9cqw; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; line-height: 1; margin-top: -1cqw; }
-.way-steps { counter-reset: step; display: grid; }
-.way-steps li {
-  counter-increment: step; display: grid; grid-template-columns: 2.25rem 1fr; align-items: baseline;
-  padding-block: 0.8rem; border-top: 1px solid var(--beige);
-}
-.way-steps li:last-child { border-bottom: 1px solid var(--beige); }
-.way-steps li::before { content: counter(step); font-weight: 600; font-size: 0.8125rem; font-variant-numeric: tabular-nums lining-nums; }
+.rating-of { font-size: 0.9375rem; font-weight: 500; }
+.rating-stars { --rating: 98%; position: relative; justify-self: start; align-self: end; line-height: 0; }
+.rating-stars-row { display: flex; gap: 0.2rem; color: var(--beige); }
+.rating-stars-row svg { flex: none; width: 1.35rem; height: 1.35rem; fill: currentColor; }
+.rating-stars-fill { position: absolute; inset: 0 auto 0 0; width: var(--rating); overflow: hidden; color: var(--emerald); }
+.rating-count { align-self: start; font-size: 0.875rem; line-height: 1.4; }
+.rating .link-arrow { grid-column: 1 / -1; justify-self: start; margin-top: 0.9rem; }
 
-.map { display: grid; gap: 0.75rem; align-content: start; }
+/* How to find us: a strip of three steps under the contact block */
+.way { display: grid; gap: 1.25rem; margin-top: clamp(2.5rem, 5vw, 4rem); padding-top: 1.5rem; border-top: 1px solid var(--chocolate); }
+.way-title { font-weight: 600; font-size: 1.125rem; line-height: 1.3; letter-spacing: -0.01em; }
+.way-steps { display: grid; gap: 0; }
+.way-steps li { display: grid; grid-template-columns: 2.5rem 1fr; align-items: baseline; padding-block: 0.85rem; border-top: 1px solid var(--beige); }
+.way-steps li:first-child { border-top: 0; }
+.way-no { font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.06em; }
+@media (min-width: 48em) {
+  .way-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+  .way-steps li { grid-template-columns: 1fr; gap: 0.6rem; padding: 0; border: 0; }
+}
+@media (min-width: 60em) {
+  .way { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 1.5rem; align-items: start; }
+  .way-title { grid-column: 1 / 5; }
+  .way-steps { grid-column: 5 / -1; }
+}
+
+.map { display: grid; gap: 0.9rem; align-content: start; }
 .map-slot { position: relative; aspect-ratio: 4 / 3; background: var(--white); overflow: hidden; }
-.map-slot iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.map-slot iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; transition: opacity 0.5s var(--ease-soft); }
+.map-slot.sk:not(.is-loaded) iframe { opacity: 0; }
 .map[data-loaded] .map-gate { display: none; }
-.map-gate { position: absolute; inset: 0; display: grid; align-content: center; justify-items: start; gap: 1.1rem; padding: clamp(1.25rem, 4vw, 2.5rem); }
+.map-gate { position: absolute; inset: 0; z-index: 2; display: grid; align-content: center; justify-items: start; gap: 1.1rem; padding: clamp(1.25rem, 4vw, 2.5rem); background: var(--white); }
 .map-address { font-weight: 500; font-size: var(--step-1); line-height: 1.4; font-variant-numeric: lining-nums; }
 .map-legal { font-size: 0.75rem; line-height: 1.5; max-width: 38em; }
-.map-links { font-size: 0.875rem; }
-.map-links a { font-weight: 500; }
+.map-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; font-size: 0.875rem; }
+.map-links > span { margin-right: 0.25rem; font-weight: 500; }
 @media (min-width: 60em) {
   .contact-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 1.5rem; }
   .contact-main { grid-column: 1 / 6; }
-  .way { grid-column: 7 / -1; }
+  .contact-side { grid-column: 7 / -1; }
 }
 
 
-/* ---------- Footer: the door plate ---------- */
-.site-footer { padding-block: clamp(2.5rem, 6vw, 5rem) 1.5rem; }
-.plate {
-  display: grid; justify-items: center; gap: clamp(1.9rem, 5.2vw, 3.6rem);
-  padding: clamp(2.75rem, 7vw, 5rem) clamp(1.25rem, 4vw, 3rem) clamp(2.25rem, 5vw, 3.75rem);
-  background: var(--cream); text-align: center;
+/* ---------- Footer: the finale ----------
+   One chocolate plane, inset from the screen edge like the coloured blocks and rounded
+   at the top: the call to action, four short columns, the logo across the full width
+   and a quiet bottom bar. It lies above the page line, which ends behind it. */
+.site-footer {
+  position: relative; z-index: 2;
+  margin: clamp(0.5rem, 1.6vw, 1.5rem) clamp(0.5rem, 1.6vw, 1.5rem) 0;
+  padding-block: clamp(3.5rem, 8vw, 6.5rem) 1.25rem;
+  border-radius: clamp(1.5rem, 3.2vw, 2.75rem) clamp(1.5rem, 3.2vw, 2.75rem) 0 0;
+  background: var(--chocolate); color: var(--cream);
 }
-.plate-logo { color: var(--chocolate); }
-.plate-logo svg { width: clamp(11rem, 30vw, 21rem); fill: currentColor; }
-.plate-rule { width: 4rem; height: 1px; background: var(--chocolate); }
-.plate-cols { display: grid; gap: 1.75rem; width: 100%; max-width: 54rem; font-size: 0.9375rem; line-height: 1.6; }
-.plate-cols > div { display: grid; gap: 0.6rem; align-content: start; }
-.plate-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; }
-.plate-cols a { text-decoration: none; }
-.plate-cols a:hover { text-decoration: underline; }
+main + .site-footer { margin-top: clamp(0.5rem, 1.6vw, 1.5rem); }
+.site-footer a { text-decoration-color: rgb(244 239 234 / 0.45); }
+.site-footer a:hover { text-decoration-color: currentColor; }
+.site-footer :focus-visible { outline-color: var(--beige); }
+.footer-cta { display: grid; gap: clamp(1.75rem, 4vw, 2.75rem); padding-bottom: clamp(2.5rem, 6vw, 4.5rem); border-bottom: 1px solid rgb(244 239 234 / 0.22); }
+.footer-cta-title {
+  font-family: var(--font-display); font-weight: 400; font-stretch: var(--display-width); font-synthesis: none; text-transform: uppercase;
+  font-size: clamp(3rem, 1.9rem + 6.2vw, 7.25rem); line-height: 0.94; letter-spacing: 0.012em; text-wrap: balance;
+}
+.footer-cta-title em {
+  display: block; margin-top: 0.12em;
+  font-family: var(--font-serif); font-style: italic; font-weight: 500; text-transform: none; letter-spacing: -0.01em;
+  font-size: 0.42em; line-height: 1.05; color: var(--beige);
+}
+.footer-cta-action { display: grid; gap: 1.1rem; justify-items: start; }
+.footer-cta-action p { font-size: var(--step-1); }
+.footer-grid {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 1.5rem;
+  padding-block: clamp(2.25rem, 5vw, 3.5rem); font-size: 0.9375rem; line-height: 1.6;
+}
+.footer-col { display: grid; gap: 0.5rem; align-content: start; }
+.footer-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--beige); }
+.footer-col a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.25em; }
+.footer-logo { display: block; color: var(--cream); padding-block: clamp(1rem, 3vw, 2rem); }
+.footer-logo svg { width: 100%; fill: currentColor; }
+.footer-bar {
+  display: grid; gap: 0.5rem; padding-top: 1.25rem;
+  border-top: 1px solid rgb(244 239 234 / 0.22); font-size: 0.8125rem;
+}
+.footer-links { display: flex; flex-wrap: wrap; gap: 0 1.5rem; }
+.footer-links a, .footer-links button { display: inline-flex; align-items: center; min-height: 2.75rem; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.3em; text-decoration-color: rgb(244 239 234 / 0.45); }
 @media (min-width: 48em) {
-  .plate-cols { grid-template-columns: repeat(3, 1fr); gap: 0; }
-  .plate-cols > div { padding-inline: 1.5rem; }
-  .plate-cols > div + div { border-left: 1px solid var(--chocolate); }
+  .footer-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
-.footer-bar { display: grid; gap: 1rem; padding-top: 1.5rem; font-size: 0.8125rem; }
-.footer-links { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; }
-.footer-links a, .footer-links button { display: inline-flex; align-items: center; min-height: 2.75rem; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.3em; }
 @media (min-width: 60em) {
+  .footer-cta { grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); align-items: end; column-gap: 1.5rem; }
+  .footer-cta-action { justify-items: end; text-align: right; }
   .footer-bar { grid-template-columns: 1fr auto; align-items: center; }
 }
 @media (max-width: 59.99em) {
@@ -1113,17 +1213,20 @@ html.menu-open .bookbar, html.has-consent-banner .bookbar { display: none; }
 
 /* ---------- Motion (only for people who have not asked for less) ---------- */
 @media (prefers-reduced-motion: no-preference) {
-  /* Voucher: drawn out of the envelope as the section arrives. */
-  .js .voucher-card { transform: var(--from); transition: transform 1.5s var(--ease) 0.15s; }
-  .js .voucher-scene.is-out .voucher-card { transform: var(--to); }
+  /* Voucher: the ticket settles onto the envelope and the sticker is slapped on as the
+     section arrives (scroll-driven where supported, otherwise once on arrival). */
+  .js .voucher-ticket, .js .voucher-sticker { transform: var(--from); transition: transform 1.2s var(--ease) 0.1s; }
+  .js .voucher-sticker { transition-delay: 0.45s; }
+  .js .voucher-scene.is-out .voucher-ticket, .js .voucher-scene.is-out .voucher-sticker { transform: var(--to); }
   @supports (animation-timeline: view()) {
-    .js .voucher-scene .voucher-card {
+    .js .voucher-scene .voucher-ticket, .js .voucher-scene .voucher-sticker {
       transition: none;
-      animation: voucher-out linear both;
+      animation: voucher-in linear both;
       animation-timeline: view();
-      animation-range: entry 30% cover 30%;
+      animation-range: entry 25% cover 38%;
     }
-    @keyframes voucher-out { from { transform: var(--from); } to { transform: var(--to); } }
+    .js .voucher-scene .voucher-sticker { animation-range: entry 70% cover 45%; }
+    @keyframes voucher-in { from { transform: var(--from); } to { transform: var(--to); } }
   }
 
   @view-transition { navigation: none; }
@@ -1137,7 +1240,7 @@ html.menu-open .bookbar, html.has-consent-banner .bookbar { display: none; }
 
 /* ---------- Print: the page becomes a price sheet ---------- */
 @media print {
-  .site-header, .bookbar, .consent, .consent-dialog, .ribbon, .glass, .prices-bar, .product-media, .product-cta, .panes-scroller, .map-slot, .closing, .hero-actions, .btn { display: none !important; }
+  .site-header, .bookbar, .consent, .consent-dialog, .ribbon, .gallery-nav, .prices-bar, .product-media, .product-cta, .panes-scroller, .map-slot, .footer-cta, .footer-logo, .hero-actions, .btn { display: none !important; }
   .section { padding-block: 1.5rem; }
   body { font-size: 11pt; }
 }

@@ -563,41 +563,226 @@
   /* ------------------------------------------------------------------ *
    * 7b. Skeletons: a picture's placeholder gives way once it has loaded
    * ------------------------------------------------------------------ */
-  $$('.sk, [data-fade]').forEach((box) => {
+  const settle = (box) => {
     const img = $('img', box);
     if (!img) return;
     const done = () => box.classList.add('is-loaded');
     if (img.complete && img.naturalWidth) done();
     else { img.addEventListener('load', done, { once: true }); img.addEventListener('error', done, { once: true }); }
-  });
+  };
+  $$('.sk, [data-fade]').forEach(settle);
 
   /* ------------------------------------------------------------------ *
-   * 7c. Carousel: the two buttons move the row by what fits on screen
+   * 7c. Carousel: an endless row that moves on by itself every 3 seconds
+   *     The pictures are copied once in front of and twice behind the real
+   *     ones, and the position is always brought back onto the real ones,
+   *     so the row never runs out. It moves by transform only, eased in one
+   *     requestAnimationFrame loop that runs only while it moves. The wait
+   *     for the next move is the fill of the current line under the row (a
+   *     Web Animation): pausing the fill pauses the carousel. It holds while
+   *     the mouse rests on it, while it has keyboard focus or a finger on
+   *     it, and while it is off screen; the stop button stops it for good.
+   *     With reduced motion it does not start by itself and moves at once.
    * ------------------------------------------------------------------ */
-  const track = $('[data-gallery]');
-  const galleryNav = $('[data-gallery-nav]');
-  if (track && galleryNav) {
-    const prev = $('[data-gallery-prev]', galleryNav), next = $('[data-gallery-next]', galleryNav);
-    galleryNav.hidden = false;
-    const stepWidth = () => {
-      const item = $('.gallery-item', track);
-      const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
-      const one = item ? item.getBoundingClientRect().width + gap : track.clientWidth * 0.8;
-      return Math.max(one, Math.floor((track.clientWidth - one * 0.5) / one) * one);
+  const gallery = $('[data-gallery]');
+  const viewport = gallery && $('[data-gallery-viewport]', gallery);
+  const row = gallery && $('[data-gallery-track]', gallery);
+  const controls = gallery && $('[data-gallery-controls]', gallery);
+  const real = row ? $$('.gallery-item', row) : [];
+  if (gallery && viewport && controls && real.length > 1) {
+    const N = real.length;
+    const DWELL = 3000;
+    const canWait = typeof Element.prototype.animate === 'function';
+    const names = real.map((el) => {
+      const cap = $('figcaption', el).cloneNode(true);
+      $$('.gallery-no', cap).forEach((no) => no.remove());
+      return cap.textContent.trim();
+    });
+    const copies = () => real.map((el) => {
+      const copy = el.cloneNode(true);
+      copy.setAttribute('aria-hidden', 'true');
+      copy.inert = true;
+      $$('.sk', copy).forEach(settle);
+      return copy;
+    });
+    row.prepend(...copies());
+    row.append(...copies(), ...copies());
+    const items = $$('.gallery-item', row);                // N copies, the N real pictures, 2N copies
+    const dots = $$('[data-gallery-dot]', controls);
+    const playBtn = $('[data-gallery-play]', controls);
+    const count = $('[data-gallery-count]', controls);
+    const status = $('[data-gallery-status]', controls);
+    const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+    const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(2 - 2 * t, 3) / 2);
+
+    let step = 0;            // px from one picture to the next
+    let pos = N, target = N; // in pictures, counted along the whole row
+    let tween = null, raf = 0, drag = null, current = -1;
+
+    const render = () => { row.style.transform = `translate3d(${(-pos * step).toFixed(2)}px, 0, 0)`; };
+    // the current picture: its number turns green, its line fills, the counter follows
+    const mark = (announce) => {
+      const i = Math.round(target), n = ((i % N) + N) % N;
+      items.forEach((el, k) => el.classList.toggle('is-active', k === i));
+      if (n === current) return;
+      current = n;
+      dots.forEach((dot, k) => { if (k === n) dot.setAttribute('aria-current', 'true'); else dot.removeAttribute('aria-current'); });
+      if (count) count.textContent = String(n + 1).padStart(2, '0');
+      if (announce && status) status.textContent = `Snímek ${n + 1} ze ${N}: ${names[n]}`;
     };
-    const go = (dir) => track.scrollBy({ left: dir * stepWidth(), behavior: reduceMotion.matches ? 'auto' : 'smooth' });
-    prev.addEventListener('click', () => go(-1));
-    next.addEventListener('click', () => go(1));
-    let queuedNav = false;
-    const syncNav = () => {
-      queuedNav = false;
-      prev.disabled = track.scrollLeft < 4;
-      next.disabled = track.scrollLeft + track.clientWidth > track.scrollWidth - 4;
+    // stay on the real pictures: the copies on either side look the same
+    const wrap = () => {
+      const shift = pos < N - 0.5 ? N : pos >= 2 * N - 0.5 ? -N : 0;
+      if (!shift) return;
+      pos += shift; target += shift;
+      if (tween) { tween.from += shift; tween.to += shift; }
+      if (drag) drag.base += shift;
+      mark(false);
     };
-    const queueNav = () => { if (!queuedNav) { queuedNav = true; requestAnimationFrame(syncNav); } };
-    track.addEventListener('scroll', queueNav, { passive: true });
-    window.addEventListener('resize', queueNav, { passive: true });
-    syncNav();
+    const frame = (now) => {
+      raf = 0;
+      if (tween) {
+        const t = Math.min((now - tween.t0) / tween.ms, 1);
+        pos = tween.from + (tween.to - tween.from) * tween.ease(t);
+        if (t >= 1) tween = null;
+      }
+      wrap();
+      render();
+      if (tween) raf = requestAnimationFrame(frame);
+    };
+    const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
+    const moveTo = (to, how) => {
+      target = to;
+      mark(how !== 'auto');
+      if (!motionOn) { tween = null; pos = to; wrap(); render(); return; }
+      tween = how === 'auto'
+        ? { from: pos, to, t0: performance.now(), ms: 900, ease: easeInOut }
+        : { from: pos, to, t0: performance.now(), ms: 650, ease: easeOut };
+      kick();
+    };
+
+    // the wait for the next move
+    const holds = new Set(['offscreen']);
+    let auto = motionOn && canWait, wait = null;
+    const restart = () => {
+      if (wait) { wait.cancel(); wait = null; }
+      if (!auto || current < 0) return;
+      const fill = $('.gallery-dot-fill', dots[current]);
+      const a = fill.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: DWELL, easing: 'linear', fill: 'forwards' });
+      a.onfinish = () => { a.cancel(); if (wait === a) wait = null; go(1, 'auto'); };
+      if (holds.size) a.pause();
+      wait = a;
+    };
+    const hold = (why, on) => {
+      if (on) holds.add(why); else holds.delete(why);
+      if (wait) { if (holds.size) wait.pause(); else wait.play(); }
+    };
+    const go = (dir, how = 'user') => { moveTo(Math.round(target) + dir, how); restart(); };
+    const setAuto = (on) => {
+      auto = on && canWait;
+      playBtn.setAttribute('aria-label', auto ? 'Zastavit automatické posouvání' : 'Spustit automatické posouvání');
+      $('use', playBtn).setAttribute('href', auto ? '#i-pause' : '#i-play');
+      restart();
+    };
+
+    // buttons, lines and keyboard arrows
+    playBtn.hidden = !canWait;
+    playBtn.addEventListener('click', () => {
+      if (!auto) { holds.delete('focus'); holds.delete('hover'); }   // asked to run: run now
+      setAuto(!auto);
+    });
+    $('[data-gallery-prev]', controls).addEventListener('click', () => go(-1));
+    $('[data-gallery-next]', controls).addEventListener('click', () => go(1));
+    dots.forEach((dot, k) => dot.addEventListener('click', () => {
+      let diff = k - current;
+      if (diff > N / 2) diff -= N;
+      if (diff < -N / 2) diff += N;                                  // the shorter way round
+      if (diff) go(diff);
+    }));
+    gallery.addEventListener('keydown', (e) => {
+      if ((e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') || e.altKey || e.metaKey || e.ctrlKey) return;
+      e.preventDefault();
+      go(e.key === 'ArrowRight' ? 1 : -1);
+    });
+
+    // mouse over it, keyboard focus in it, off screen, tab in the background: hold
+    gallery.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') hold('hover', true); });
+    gallery.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') hold('hover', false); });
+    gallery.addEventListener('focusin', (e) => {
+      let keyboard = true;
+      try { keyboard = e.target.matches(':focus-visible'); } catch (_) { /* older browsers: treat as keyboard */ }
+      if (keyboard) hold('focus', true);
+    });
+    gallery.addEventListener('focusout', (e) => { if (!gallery.contains(e.relatedTarget)) hold('focus', false); });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([entry]) => hold('offscreen', !entry.isIntersecting || entry.intersectionRatio < 0.35), { threshold: [0, 0.35, 0.7] }).observe(viewport);
+    } else holds.delete('offscreen');
+    document.addEventListener('visibilitychange', () => hold('hidden', document.hidden));
+
+    // drag with the mouse, swipe with a finger or pen (vertical swipes still scroll the page)
+    viewport.addEventListener('dragstart', (e) => e.preventDefault());
+    viewport.addEventListener('pointerdown', (e) => {
+      if ((e.pointerType === 'mouse' && e.button !== 0) || !step) return;
+      drag = { id: e.pointerId, x0: e.clientX, base: pos, trail: [[e.timeStamp, e.clientX]], moved: false };
+      try { viewport.setPointerCapture(e.pointerId); } catch (_) { /* pointer already gone */ }
+      hold('drag', true);
+    });
+    viewport.addEventListener('pointermove', (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      if (!drag.moved) {
+        if (Math.abs(e.clientX - drag.x0) < 5) return;
+        drag.moved = true; drag.base = pos; drag.x0 = e.clientX; tween = null;   // catch the row where it is
+        gallery.classList.add('is-dragging');
+      }
+      pos = drag.base - (e.clientX - drag.x0) / step;
+      drag.trail.push([e.timeStamp, e.clientX]);
+      while (drag.trail.length > 2 && drag.trail[0][0] < e.timeStamp - 120) drag.trail.shift();
+      kick();
+    });
+    const release = (e) => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const d = drag;
+      drag = null;
+      gallery.classList.remove('is-dragging');
+      holds.delete('drag');
+      if (!d.moved) { hold('drag', false); return; }
+      // a quick flick goes on to the next picture in its direction, otherwise the nearest
+      // one; the speed is that of the last 120 ms before letting go
+      const trail = d.trail.concat([[e.timeStamp, e.clientX]]).filter(([t]) => t >= e.timeStamp - 120);
+      const [t0, x0] = trail[0], [t1, x1] = trail[trail.length - 1];
+      const speed = trail.length > 2 && t1 > t0 ? (x1 - x0) / (t1 - t0) : 0;
+      let to = Math.round(pos);
+      if (e.type === 'pointerup' && Math.abs(speed) > 0.3) to = speed < 0 ? Math.ceil(pos - 0.02) : Math.floor(pos + 0.02);
+      moveTo(to, 'user');
+      restart();
+    };
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach((type) => viewport.addEventListener(type, release));
+
+    // a sideways trackpad swipe (or Shift + wheel) moves one picture per gesture
+    let wheelSum = 0, wheelLock = false, wheelQuiet = 0;
+    viewport.addEventListener('wheel', (e) => {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      e.preventDefault();
+      clearTimeout(wheelQuiet);
+      wheelQuiet = setTimeout(() => { wheelLock = false; wheelSum = 0; }, 180);
+      if (wheelLock) return;
+      wheelSum += e.deltaX;
+      if (Math.abs(wheelSum) > 40) { wheelLock = true; go(wheelSum > 0 ? 1 : -1); }
+    }, { passive: false });
+
+    // start
+    const measure = () => {
+      const a = items[N].getBoundingClientRect(), b = items[2 * N].getBoundingClientRect();
+      step = (b.left - a.left) / N;
+      render();
+    };
+    viewport.removeAttribute('tabindex');
+    gallery.classList.add('is-live');
+    controls.hidden = false;
+    measure();
+    window.addEventListener('resize', measure, { passive: true });
+    mark(false);
+    setAuto(auto);
   }
 
   /* ------------------------------------------------------------------ *

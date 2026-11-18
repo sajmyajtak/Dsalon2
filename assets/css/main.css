@@ -597,37 +597,63 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
 }
 
 /* ---------- Carousel: services in pictures ----------
-   A plain row of pictures that scrolls sideways and snaps to each picture: by touch,
-   trackpad, the keyboard (the row is focusable) or the two buttons (assets/js/main.js).
-   The first picture lines up with the page column; the row runs to the screen edge. */
+   An endless row of pictures. Every 3 seconds it moves on by one picture by itself; it
+   also moves with the arrow buttons, the keyboard arrows, by dragging with the mouse,
+   by swiping and with a sideways trackpad swipe, and each line under the row jumps to
+   its picture (assets/js/main.js, part 7c). It holds still while the mouse rests on it,
+   while it has keyboard focus or a finger on it, and while it is off screen; the first
+   button stops it for good. The current picture lines up with the page column and the
+   row runs out to both screen edges. Without scripts it is a plain sideways-scrolling
+   row. */
 .gallery { position: relative; padding-block: clamp(1rem, 3vw, 2.5rem) clamp(3rem, 7vw, 5.5rem); }
-.gallery-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: clamp(1rem, 2vw, 1.5rem); }
-.gallery-nav { display: flex; gap: 0.5rem; }
-.gallery-btn {
-  display: grid; place-items: center; width: 2.75rem; height: 2.75rem;
-  border: 1px solid var(--chocolate); border-radius: 50%; background: var(--white);
-  transition: background-color 0.25s var(--ease-soft), color 0.25s var(--ease-soft), opacity 0.25s var(--ease-soft);
-}
-.gallery-btn svg { width: 1rem; height: 1rem; }
-.gallery-btn--prev svg { rotate: 180deg; }
-.gallery-btn:hover:not(:disabled), .gallery-btn:focus-visible { background: var(--chocolate); color: var(--cream); }
-.gallery-btn:disabled { opacity: 0.3; cursor: default; }
-.gallery .gallery-track {
+.gallery-head { margin-bottom: clamp(1rem, 2vw, 1.5rem); }
+.gallery-viewport {
   --edge: max(var(--gutter), (100vw - var(--max)) / 2);
-  display: flex; gap: clamp(0.75rem, 1.6vw, 1.25rem);
-  margin: 0; padding: 0 var(--edge) 0.25rem; list-style: none;
   overflow-x: auto; overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory; scroll-padding-inline: var(--edge);
   scrollbar-width: none;
 }
-.gallery-track::-webkit-scrollbar { display: none; }
-.gallery-track:focus-visible { outline: 2px solid var(--emerald); outline-offset: 4px; }
+.gallery-viewport::-webkit-scrollbar { display: none; }
+.gallery-viewport:focus-visible { outline: 2px solid var(--emerald); outline-offset: 4px; }
+.gallery .gallery-track { display: flex; gap: clamp(0.75rem, 1.6vw, 1.25rem); width: max-content; padding: 0 var(--edge) 0.25rem; }
 .gallery-item { flex: 0 0 clamp(13.5rem, 62vw, 21rem); scroll-snap-align: start; }
 @media (min-width: 48em) { .gallery-item { flex-basis: clamp(15rem, 25vw, 21rem); } }
 .gallery-media { aspect-ratio: 3 / 4; }
 .gallery-media img { width: 100%; height: 100%; object-fit: cover; }
 .gallery-item figcaption { display: flex; align-items: baseline; gap: 0.6rem; padding-top: 0.75rem; font-size: 0.9375rem; font-weight: 500; }
-.gallery-no { font-size: 0.75rem; letter-spacing: 0.08em; }
+.gallery-no { font-size: 0.75rem; letter-spacing: 0.08em; transition: color 0.4s var(--ease-soft); }
+.gallery-item.is-active .gallery-no { color: var(--emerald); }
+/* with the script the row is moved as a whole, by transform only */
+.gallery.is-live .gallery-viewport {
+  overflow: hidden; scroll-snap-type: none; touch-action: pan-y pinch-zoom;
+  cursor: grab; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+}
+.gallery.is-dragging .gallery-viewport { cursor: grabbing; }
+.gallery.is-live .gallery-track { will-change: transform; }
+.gallery.is-live .gallery-item img { -webkit-user-drag: none; }
+/* under the row: stop/start, one line per picture (the current one fills while it
+   waits for the next move), the counter and the arrows */
+.gallery-controls { display: flex; align-items: center; gap: 0.5rem; margin-top: clamp(1.25rem, 2.5vw, 2rem); background: var(--white); }
+.gallery-dots { flex: 1 1 auto; display: flex; min-width: 0; margin-inline: 0.25rem; }
+.gallery-dot { flex: 1 1 0; min-width: 0; height: 2.75rem; padding: 0 2px; display: grid; align-content: center; }
+.gallery-dot-line { display: block; height: 2px; overflow: hidden; border-radius: 1px; background: rgb(43 30 26 / 0.16); transition: background-color 0.25s var(--ease-soft); }
+.gallery-dot-fill { display: block; height: 100%; background: var(--chocolate); transform: scaleX(0); transform-origin: left center; }
+.gallery-dot[aria-current="true"] .gallery-dot-fill { transform: scaleX(1); }
+.gallery-dot:hover .gallery-dot-line { background: rgb(43 30 26 / 0.34); }
+.gallery-count { display: none; min-width: 4.5rem; margin: 0; text-align: center; font-size: 0.8125rem; letter-spacing: 0.08em; }
+.gallery-nav { display: flex; gap: 0.5rem; }
+.gallery-btn {
+  flex: none; display: grid; place-items: center; width: 2.75rem; height: 2.75rem;
+  border: 1px solid var(--chocolate); border-radius: 50%; background: var(--white);
+  transition: background-color 0.25s var(--ease-soft), color 0.25s var(--ease-soft);
+}
+.gallery-btn svg { width: 1rem; height: 1rem; }
+.gallery-btn--prev svg { rotate: 180deg; }
+.gallery-btn:hover, .gallery-btn:focus-visible { background: var(--chocolate); color: var(--cream); }
+@media (min-width: 48em) {
+  .gallery-count { display: block; }
+  .gallery-dots { margin-inline: 0.75rem 0.25rem; }
+}
 
 /* ---------- Skeletons: placeholders while pictures load ----------
    A picture's frame shows a calm beige plane with a light sweeping across it until the
@@ -1240,7 +1266,7 @@ html.menu-open .bookbar, html.has-consent-banner .bookbar { display: none; }
 
 /* ---------- Print: the page becomes a price sheet ---------- */
 @media print {
-  .site-header, .bookbar, .consent, .consent-dialog, .ribbon, .gallery-nav, .prices-bar, .product-media, .product-cta, .panes-scroller, .map-slot, .footer-cta, .footer-logo, .hero-actions, .btn { display: none !important; }
+  .site-header, .bookbar, .consent, .consent-dialog, .ribbon, .gallery-controls, .prices-bar, .product-media, .product-cta, .panes-scroller, .map-slot, .footer-cta, .footer-logo, .hero-actions, .btn { display: none !important; }
   .section { padding-block: 1.5rem; }
   body { font-size: 11pt; }
 }

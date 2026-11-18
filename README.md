@@ -27,7 +27,7 @@ vyhledávačích. Před ostrým spuštěním tento řádek z `netlify.toml` sma�
 | `ochrana-osobnich-udaju.html` | Ochrana osobních údajů a cookies |
 | `404.html` | Stránka „nenalezeno“ |
 | `assets/css/main.css` | Všechny styly; nahoře barvy a písma z brandbooku |
-| `assets/js/main.js` | Jediný skript webu (bez knihoven): záložní parallax, linka přes stránku, menu, otevírací doba, ceník, souhlas s mapou, carousel, skeletony, poukaz |
+| `assets/js/main.js` | Jediný skript webu (bez knihoven): záložní parallax, linka přes stránku, menu, otevírací doba, ceník, souhlas s mapou, carousel s automatickým posouváním, skeletony, poukaz |
 | `assets/fonts/` | Inter, Cormorant Garamond, League Gothic, Instrument Serif a Pinyon Script (vše SIL OFL), hostované lokálně |
 | `assets/logo/` | Logo vytažené z vektoru v brandbooku (čokoládová, krémová, bílá) |
 | `assets/img/hero/` | Scéna pro úvod (na šířku a na výšku) |
@@ -102,13 +102,22 @@ zůstává ve stránce pro čtečky a vyhledávače.
 
 ## Carousel služeb
 
-Obyčejný carousel: řada sedmi snímků (3 : 4) s popiskem, která se posouvá do strany
-prstem, touchpadem, šipkami na klávesnici (řada je zaměřitelná) nebo dvěma tlačítky
-nahoře vpravo. Snímky se zarovnávají k levému okraji obsahu a řada běží až k okraji
-obrazovky.
+Plnohodnotný carousel: nekonečná řada sedmi snímků (3 : 4) s popiskem, která se každé
+3 vteřiny sama posune o jeden snímek. Aktuální snímek sedí u levého okraje obsahu, řada
+běží až k oběma okrajům obrazovky a po posledním snímku plynule pokračuje prvním.
 
-- Snímky a jejich názvy jsou obyčejný seznam v `index.html` (sekce „SLUŽBY V OBRAZE“);
-  stačí vyměnit soubory v `assets/img/glass/` nebo upravit položky seznamu.
+- **Ovládání:** šipky pod řadou, šipky na klávesnici (když je fokus v carouselu), tažení
+  myší, přejetí prstem, přejetí do strany na touchpadu a čárky pod řadou (každá skočí na
+  svůj snímek). Svislé přejetí prstem přes řadu dál normálně posouvá stránkou.
+- **Kdy stojí:** dokud na něm spočívá myš nebo prst, dokud je v něm fokus z klávesnice
+  a dokud není vidět na obrazovce; potom pokračuje. Aktuální čárka se plní po dobu, kterou
+  zbývá do dalšího posunu. Tlačítko vlevo dole ho zastaví natrvalo (a znovu spustí).
+- **Omezit pohyb:** kdo má v systému zapnuté „omezit pohyb“, tomu se carousel sám
+  nespustí (lze ho spustit tlačítkem) a snímky se přepínají bez animace.
+- Bez JavaScriptu je to obyčejná řada posuvná do strany.
+- Snímky jsou v `index.html` (sekce „SLUŽBY V OBRAZE“); výměna = soubor stejného jména
+  v `assets/img/glass/`. Nový snímek = další `.gallery-item` a k němu další čárka
+  `.gallery-dot`; upravit i „ze 7“ a „/ 07“. Interval je `DWELL` v `main.js` (část 7c).
 - Současné snímky jsou ilustrační; až budou fotografie ze salonu, stačí je vyměnit.
 
 ### Předlohy efektů

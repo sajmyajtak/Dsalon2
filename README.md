@@ -161,8 +161,6 @@ jen tady:
   ze salonu.
 - **Náš tým** — portréty, jména a úrovně specialistek: soubory v `assets/img/team/`
   vyměnit a do `<figcaption>` napsat jméno a úroveň.
-- **E-mail salonu** — zatím neznámý, proto na webu není. Po doplnění se přidá řádek
-  „E-mail“ do kontaktů a adresa do patičky.
 - **Sleva 10 % na první návštěvu** — na webu je bez dalších podmínek; pokud nějaké platí
   (které služby, kombinace s poukazem…), je potřeba je doplnit ke slevě v ceníku.
 - **Hodnocení na Google** — v kontaktu je napsané ručně (4,9 z 5, 32 recenzí podle profilu
@@ -171,8 +169,8 @@ jen tady:
 - **Patička** — sídlo společnosti a zápis v obchodním rejstříku (soud, oddíl, vložka).
   Řádek s těmito údaji byl z patičky odstraněn, dokud nejsou známé; obchodní
   společnost je má na webu uvádět.
-- **Ochrana osobních údajů** — sídlo a zápis v rejstříku, e-mail pro žádosti, konkrétní
-  doba uchování údajů z rezervací (teď obecná formulace) a datum účinnosti.
+- **Ochrana osobních údajů** — sídlo a zápis v rejstříku, konkrétní doba uchování údajů
+  z rezervací (teď obecná formulace) a datum účinnosti. E-mail pro žádosti je doplněný.
 
 ## Ceník
 
@@ -204,7 +202,10 @@ produkt, poměr 4 : 3). Výměna = nahrazení souboru stejného jména.
   Pro / Hodnota / Platnost do odpovídají tištěnému poukazu z brandbooku.
 - **Odkazy v textu** jsou smaragdové a podtržené; samostatné odkazy (Instagram, recenze,
   trasa v mapách) jsou nenápadná tlačítka v obrysu.
-- **Kontakt:** vlevo adresa, telefon, Instagram, rezervace a otevírací doba a pod nimi
+- **E-mail** (dstudiobeaty.cz@gmail.com) je v kontaktech, v patičce, v menu na mobilu,
+  ve strukturovaných datech pro vyhledávače a na stránce o ochraně osobních údajů; při
+  změně je potřeba ho přepsat na všech těchto místech.
+- **Kontakt:** vlevo adresa, telefon, e-mail, Instagram, rezervace a otevírací doba a pod nimi
   hodnocení na Google; vpravo vedle nich mapa přes celou výšku bloku. Mapa i odkazy
   „Trasa v aplikaci“ ukazují na profil salonu v Mapách Google (špendlík ve dvoře, ne na
   čísle domu na ulici). „Jak se k nám dostanete“ jsou tři kroky hned pod tím; na širokých

@@ -1047,7 +1047,9 @@ html.js .sk.is-loaded img, html:not(.js) .sk img { opacity: 1; }
 .contact-list > div { display: grid; grid-template-columns: 7.5rem 1fr; gap: 1rem; padding-block: 1rem; border-top: 1px solid var(--beige); }
 .contact-list > div:last-child { border-bottom: 1px solid var(--beige); }
 .contact-list dt { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; padding-top: 0.25em; }
+.contact-list dd { min-width: 0; }
 .contact-list dd a { font-weight: 500; }
+a[href^="mailto:"] { overflow-wrap: anywhere; }
 .hours th, .hours td { padding: 0 1rem 0.2rem 0; text-align: left; font-weight: 400; }
 .hours th { width: 1%; white-space: nowrap; padding-right: 1.25rem; }
 .hours abbr { text-decoration: none; }

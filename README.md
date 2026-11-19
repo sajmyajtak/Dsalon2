@@ -106,18 +106,20 @@ Plnohodnotný carousel: nekonečná řada sedmi snímků (3 : 4) s popiskem, kte
 3 vteřiny sama posune o jeden snímek. Aktuální snímek sedí u levého okraje obsahu, řada
 běží až k oběma okrajům obrazovky a po posledním snímku plynule pokračuje prvním.
 
-- **Ovládání:** šipky pod řadou, šipky na klávesnici (když je fokus v carouselu), tažení
-  myší, přejetí prstem, přejetí do strany na touchpadu a čárky pod řadou (každá skočí na
-  svůj snímek). Svislé přejetí prstem přes řadu dál normálně posouvá stránkou.
+- **Ovládání:** dvě kulaté šipky na levém a pravém kraji řady (v polovině výšky fotek),
+  šipky na klávesnici (když je fokus v carouselu), tažení myší, přejetí prstem a přejetí
+  do strany na touchpadu. Svislé přejetí prstem přes řadu dál normálně posouvá stránkou.
 - **Kdy stojí:** dokud na něm spočívá myš nebo prst, dokud je v něm fokus z klávesnice
-  a dokud není vidět na obrazovce; potom pokračuje. Aktuální čárka se plní po dobu, kterou
-  zbývá do dalšího posunu. Tlačítko vlevo dole ho zastaví natrvalo (a znovu spustí).
+  a dokud není vidět na obrazovce; potom pokračuje tam, kde přestal.
+- **Tlačítko „Zastavit automatické posouvání“** není vidět; objeví se jen při ovládání
+  z klávesnice (jako odkaz „Přeskočit na obsah“). Pravidla přístupnosti (WCAG 2.2.2)
+  vyžadují, aby šel samovolný pohyb zastavit.
 - **Omezit pohyb:** kdo má v systému zapnuté „omezit pohyb“, tomu se carousel sám
-  nespustí (lze ho spustit tlačítkem) a snímky se přepínají bez animace.
+  nespustí a snímky se přepínají bez animace.
 - Bez JavaScriptu je to obyčejná řada posuvná do strany.
 - Snímky jsou v `index.html` (sekce „SLUŽBY V OBRAZE“); výměna = soubor stejného jména
-  v `assets/img/glass/`. Nový snímek = další `.gallery-item` a k němu další čárka
-  `.gallery-dot`; upravit i „ze 7“ a „/ 07“. Interval je `DWELL` v `main.js` (část 7c).
+  v `assets/img/glass/`. Nový snímek = další `.gallery-item` (a upravit „ze 7“ u všech
+  snímků). Interval je `DWELL` v `main.js` (část 7c).
 - Současné snímky jsou ilustrační; až budou fotografie ze salonu, stačí je vyměnit.
 
 ### Předlohy efektů
@@ -202,10 +204,13 @@ produkt, poměr 4 : 3). Výměna = nahrazení souboru stejného jména.
   Pro / Hodnota / Platnost do odpovídají tištěnému poukazu z brandbooku.
 - **Odkazy v textu** jsou smaragdové a podtržené; samostatné odkazy (Instagram, recenze,
   trasa v mapách) jsou nenápadná tlačítka v obrysu.
-- **Kontakt:** adresa, telefon, Instagram, rezervace a otevírací doba; vedle hodnocení
-  na Google a mapa. Mapa i odkazy „Trasa v aplikaci“ ukazují na profil salonu v Mapách
-  Google (špendlík ve dvoře, ne na čísle domu na ulici). „Jak se k nám dostanete“ jsou
-  tři kroky pod mapou.
+- **Kontakt:** vlevo adresa, telefon, Instagram, rezervace a otevírací doba a pod nimi
+  hodnocení na Google; vpravo vedle nich mapa přes celou výšku bloku. Mapa i odkazy
+  „Trasa v aplikaci“ ukazují na profil salonu v Mapách Google (špendlík ve dvoře, ne na
+  čísle domu na ulici). „Jak se k nám dostanete“ jsou tři kroky hned pod tím; na širokých
+  obrazovkách stojí kroky pod mapou.
+- **Náš tým:** tři stejně velké fotografie v jedné řadě; nadpis a text nad nimi sedí na
+  stejných sloupcích (na mobilu se fotky posouvají do strany).
 - **Patička** je jeden čokoládový celek: výzva k rezervaci, čtyři sloupce (adresa,
   kontakt, otevírací doba, provozovatel), logo přes celou šířku a spodní lišta s odkazy.
 

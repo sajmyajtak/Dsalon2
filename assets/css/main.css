@@ -598,15 +598,19 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
 
 /* ---------- Carousel: services in pictures ----------
    An endless row of pictures. Every 3 seconds it moves on by one picture by itself; it
-   also moves with the arrow buttons, the keyboard arrows, by dragging with the mouse,
-   by swiping and with a sideways trackpad swipe, and each line under the row jumps to
-   its picture (assets/js/main.js, part 7c). It holds still while the mouse rests on it,
-   while it has keyboard focus or a finger on it, and while it is off screen; the first
-   button stops it for good. The current picture lines up with the page column and the
-   row runs out to both screen edges. Without scripts it is a plain sideways-scrolling
-   row. */
-.gallery { position: relative; padding-block: clamp(1rem, 3vw, 2.5rem) clamp(3rem, 7vw, 5.5rem); }
+   also moves with the two arrows on the edges of the row, the keyboard arrows, by
+   dragging with the mouse, by swiping and with a sideways trackpad swipe (assets/js/
+   main.js, part 7c). It holds still while the mouse rests on it, while it has keyboard
+   focus or a finger on it, and while it is off screen. A stop button appears only for
+   keyboard users. The current picture lines up with the page column and the row runs
+   out to both screen edges. Without scripts it is a plain sideways-scrolling row. */
+.gallery {
+  --card: clamp(13.5rem, 62vw, 21rem);                 /* width of one picture */
+  position: relative; padding-block: clamp(1rem, 3vw, 2.5rem) clamp(3rem, 7vw, 5.5rem);
+}
+@media (min-width: 48em) { .gallery { --card: clamp(15rem, 25vw, 21rem); } }
 .gallery-head { margin-bottom: clamp(1rem, 2vw, 1.5rem); }
+.gallery-stage { position: relative; }
 .gallery-viewport {
   --edge: max(var(--gutter), (100vw - var(--max)) / 2);
   overflow-x: auto; overscroll-behavior-x: contain;
@@ -616,8 +620,7 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
 .gallery-viewport::-webkit-scrollbar { display: none; }
 .gallery-viewport:focus-visible { outline: 2px solid var(--emerald); outline-offset: 4px; }
 .gallery .gallery-track { display: flex; gap: clamp(0.75rem, 1.6vw, 1.25rem); width: max-content; padding: 0 var(--edge) 0.25rem; }
-.gallery-item { flex: 0 0 clamp(13.5rem, 62vw, 21rem); scroll-snap-align: start; }
-@media (min-width: 48em) { .gallery-item { flex-basis: clamp(15rem, 25vw, 21rem); } }
+.gallery-item { flex: 0 0 var(--card); scroll-snap-align: start; }
 .gallery-media { aspect-ratio: 3 / 4; }
 .gallery-media img { width: 100%; height: 100%; object-fit: cover; }
 .gallery-item figcaption { display: flex; align-items: baseline; gap: 0.6rem; padding-top: 0.75rem; font-size: 0.9375rem; font-weight: 500; }
@@ -631,29 +634,28 @@ main > section:not(.hero) > *, .site-footer > * { position: relative; z-index: 2
 .gallery.is-dragging .gallery-viewport { cursor: grabbing; }
 .gallery.is-live .gallery-track { will-change: transform; }
 .gallery.is-live .gallery-item img { -webkit-user-drag: none; }
-/* under the row: stop/start, one line per picture (the current one fills while it
-   waits for the next move), the counter and the arrows */
-.gallery-controls { display: flex; align-items: center; gap: 0.5rem; margin-top: clamp(1.25rem, 2.5vw, 2rem); background: var(--white); }
-.gallery-dots { flex: 1 1 auto; display: flex; min-width: 0; margin-inline: 0.25rem; }
-.gallery-dot { flex: 1 1 0; min-width: 0; height: 2.75rem; padding: 0 2px; display: grid; align-content: center; }
-.gallery-dot-line { display: block; height: 2px; overflow: hidden; border-radius: 1px; background: rgb(43 30 26 / 0.16); transition: background-color 0.25s var(--ease-soft); }
-.gallery-dot-fill { display: block; height: 100%; background: var(--chocolate); transform: scaleX(0); transform-origin: left center; }
-.gallery-dot[aria-current="true"] .gallery-dot-fill { transform: scaleX(1); }
-.gallery-dot:hover .gallery-dot-line { background: rgb(43 30 26 / 0.34); }
-.gallery-count { display: none; min-width: 4.5rem; margin: 0; text-align: center; font-size: 0.8125rem; letter-spacing: 0.08em; }
-.gallery-nav { display: flex; gap: 0.5rem; }
+/* the arrows: white rounds on the left and right edge, level with the middle of the pictures */
 .gallery-btn {
-  flex: none; display: grid; place-items: center; width: 2.75rem; height: 2.75rem;
-  border: 1px solid var(--chocolate); border-radius: 50%; background: var(--white);
+  position: absolute; z-index: 3; top: calc(var(--card) * 2 / 3); translate: 0 -50%;
+  display: grid; place-items: center; width: 2.75rem; height: 2.75rem;
+  border-radius: 50%; background: var(--white); color: var(--chocolate);
+  box-shadow: 0 0.25rem 1rem rgb(43 30 26 / 0.14);
   transition: background-color 0.25s var(--ease-soft), color 0.25s var(--ease-soft);
 }
+.gallery-btn--prev { left: clamp(0.5rem, 1.5vw, 1.5rem); }
+.gallery-btn--next { right: clamp(0.5rem, 1.5vw, 1.5rem); }
 .gallery-btn svg { width: 1rem; height: 1rem; }
 .gallery-btn--prev svg { rotate: 180deg; }
-.gallery-btn:hover, .gallery-btn:focus-visible { background: var(--chocolate); color: var(--cream); }
-@media (min-width: 48em) {
-  .gallery-count { display: block; }
-  .gallery-dots { margin-inline: 0.75rem 0.25rem; }
+.gallery-btn:focus-visible { background: var(--chocolate); color: var(--cream); outline-color: var(--chocolate); }
+@media (hover: hover) { .gallery-btn:hover { background: var(--chocolate); color: var(--cream); } }
+@media (min-width: 48em) { .gallery-btn { width: 3.25rem; height: 3.25rem; } }
+/* the stop button: out of sight until it has keyboard focus */
+.gallery-play {
+  position: absolute; z-index: 4; left: var(--gutter); top: 0.75rem;
+  padding: 0.6rem 1rem; border-radius: 999px; background: var(--chocolate); color: var(--cream);
+  font-size: 0.875rem; font-weight: 500;
 }
+.gallery-play:not(:focus) { width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 /* ---------- Skeletons: placeholders while pictures load ----------
    A picture's frame shows a calm beige plane with a light sweeping across it until the
@@ -917,16 +919,18 @@ html.js .sk.is-loaded img, html:not(.js) .sk img { opacity: 1; }
 }
 
 /* ---------- Team: room for photographs ----------
-   Heading and text above; under them a row of large portrait photographs of different
-   widths, set off from one another in height like prints laid out on a table. On phones
-   the row scrolls sideways and snaps to each photograph. */
+   Three photographs of the same size in one row on a three-column grid, their tops and
+   captions level. The heading and text above sit on the same columns: the title over the
+   first two, the text over the third, both starting on one line. On phones the row
+   scrolls sideways and snaps to each photograph. */
+.team { --team-gap: clamp(0.75rem, 1.6vw, 1.5rem); }
 .team-head { display: grid; gap: 1.5rem; }
-.team-title { display: grid; gap: 1.25rem; }
-.team-intro { display: grid; gap: 1.1rem; justify-items: start; max-width: 36em; }
+.team-title { display: grid; gap: 1.25rem; align-content: start; }
+.team-intro { display: grid; gap: 1.1rem; justify-items: start; align-content: start; max-width: 36em; }
 .team-intro .btn { margin-top: 0.75rem; }
 .team .team-photos {
   --edge: max(var(--gutter), (100vw - var(--max)) / 2);
-  display: flex; gap: clamp(0.75rem, 1.6vw, 1.5rem); align-items: flex-start;
+  display: flex; gap: var(--team-gap); align-items: flex-start;
   margin: clamp(2.5rem, 5vw, 4rem) 0 0; padding: 0 var(--edge) 0.25rem; list-style: none;
   overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: var(--edge);
   scrollbar-width: none;
@@ -938,18 +942,16 @@ html.js .sk.is-loaded img, html:not(.js) .sk img { opacity: 1; }
 .team-media img { width: 100%; height: 100%; object-fit: cover; }
 .team-photo figcaption { padding-top: 0.75rem; font-size: 0.875rem; font-weight: 500; }
 @media (min-width: 48em) {
-  .team-photo { flex-basis: 44vw; }
+  /* all three in view, the same size, on the page column */
+  .team .team-photos {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start;
+    overflow: visible; padding-inline: 0; width: min(100% - 2 * var(--gutter), var(--max)); margin-inline: auto;
+  }
 }
-@media (min-width: 60em) {
-  .team-head { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 1.5rem; align-items: end; }
-  .team-title { grid-column: 1 / 7; }
-  .team-intro { grid-column: 7 / -1; }
-  /* all photographs in view: one large, two smaller, each a step lower */
-  .team .team-photos { overflow: visible; padding-inline: 0; width: min(100% - 2 * var(--gutter), var(--max)); margin-inline: auto; }
-  .team-photo { flex: 1 1 0; min-width: 0; }
-  .team-photo:nth-child(1) { flex-grow: 5; }
-  .team-photo:nth-child(2) { flex-grow: 4; margin-top: clamp(3rem, 8vw, 7rem); }
-  .team-photo:nth-child(3) { flex-grow: 3.2; margin-top: clamp(1.5rem, 4vw, 3.5rem); }
+@media (min-width: 64em) {
+  .team-head { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--team-gap); align-items: start; }
+  .team-title { grid-column: 1 / 3; }
+  .team-intro { grid-column: 3; }
 }
 
 /* ---------- Gift voucher: a ticket on the envelope ----------
@@ -1041,7 +1043,7 @@ html.js .sk.is-loaded img, html:not(.js) .sk img { opacity: 1; }
 /* ---------- Contact ---------- */
 .contact .hero-actions { margin-top: 0.5rem; }
 .contact-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.5rem; margin-top: clamp(2.5rem, 5vw, 4rem); }
-.contact-main { display: grid; gap: 2.5rem; align-content: start; min-width: 0; }
+.contact-main { display: grid; gap: clamp(1.75rem, 3vw, 2.5rem); align-content: start; min-width: 0; }
 .contact-list > div { display: grid; grid-template-columns: 7.5rem 1fr; gap: 1rem; padding-block: 1rem; border-top: 1px solid var(--beige); }
 .contact-list > div:last-child { border-bottom: 1px solid var(--beige); }
 .contact-list dt { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; padding-top: 0.25em; }
@@ -1052,8 +1054,9 @@ html.js .sk.is-loaded img, html:not(.js) .sk img { opacity: 1; }
 .hours .is-today th, .hours .is-today td { font-weight: 600; }
 .contact-list .status { margin-top: 0.5rem; font-size: 0.875rem; }
 
-/* Google rating: the score set large, stars filled to the score, a low-key link out */
-.contact-side { display: grid; gap: 2rem; align-content: start; min-width: 0; }
+/* Google rating (under the contact details): the score set large, stars filled to the
+   score, a low-key link out */
+.contact-side { display: flex; flex-direction: column; min-width: 0; }
 .rating {
   display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 0.35rem 1.25rem;
   padding: clamp(1.25rem, 3vw, 1.75rem); background: var(--white); border: 1px solid var(--beige);
@@ -1072,8 +1075,8 @@ html.js .sk.is-loaded img, html:not(.js) .sk img { opacity: 1; }
 .rating-count { align-self: start; font-size: 0.875rem; line-height: 1.4; }
 .rating .link-arrow { grid-column: 1 / -1; justify-self: start; margin-top: 0.9rem; }
 
-/* How to find us: a strip of three steps under the contact block */
-.way { display: grid; gap: 1.25rem; margin-top: clamp(2.5rem, 5vw, 4rem); padding-top: 1.5rem; border-top: 1px solid var(--chocolate); }
+/* How to find us: a strip of three steps right under the contact block */
+.way { display: grid; gap: 1.25rem; margin-top: clamp(2rem, 3.5vw, 3rem); padding-top: 1.5rem; border-top: 1px solid var(--chocolate); }
 .way-title { font-weight: 600; font-size: 1.125rem; line-height: 1.3; letter-spacing: -0.01em; }
 .way-steps { display: grid; gap: 0; }
 .way-steps li { display: grid; grid-template-columns: 2.5rem 1fr; align-items: baseline; padding-block: 0.85rem; border-top: 1px solid var(--beige); }
@@ -1081,15 +1084,14 @@ html.js .sk.is-loaded img, html:not(.js) .sk img { opacity: 1; }
 .way-no { font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.06em; }
 @media (min-width: 48em) {
   .way-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
-  .way-steps li { grid-template-columns: 1fr; gap: 0.6rem; padding: 0; border: 0; }
+  .way-steps li { grid-template-columns: 1fr; align-content: start; gap: 0.6rem; padding: 0; border: 0; }
 }
-@media (min-width: 60em) {
-  .way { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 1.5rem; align-items: start; }
-  .way-title { grid-column: 1 / 5; }
-  .way-steps { grid-column: 5 / -1; }
+@media (min-width: 75em) {
+  /* the same two columns as the block above: title under the details, steps under the map */
+  .way { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: var(--contact-gap); align-items: start; }
 }
 
-.map { display: grid; gap: 0.9rem; align-content: start; }
+.map { flex: 1 1 auto; display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 0.9rem; }
 .map-slot { position: relative; aspect-ratio: 4 / 3; background: var(--white); overflow: hidden; }
 .map-slot iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; transition: opacity 0.5s var(--ease-soft); }
 .map-slot.sk:not(.is-loaded) iframe { opacity: 0; }
@@ -1099,10 +1101,11 @@ html.js .sk.is-loaded img, html:not(.js) .sk img { opacity: 1; }
 .map-legal { font-size: 0.75rem; line-height: 1.5; max-width: 38em; }
 .map-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; font-size: 0.875rem; }
 .map-links > span { margin-right: 0.25rem; font-weight: 500; }
+.contact { --contact-gap: clamp(2rem, 4vw, 4rem); }
 @media (min-width: 60em) {
-  .contact-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 1.5rem; }
-  .contact-main { grid-column: 1 / 6; }
-  .contact-side { grid-column: 7 / -1; }
+  /* details and rating on the left, the map beside them as tall as both */
+  .contact-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: var(--contact-gap); align-items: stretch; }
+  .map-slot { aspect-ratio: auto; min-height: 24rem; }
 }
 
 
@@ -1266,7 +1269,7 @@ html.menu-open .bookbar, html.has-consent-banner .bookbar { display: none; }
 
 /* ---------- Print: the page becomes a price sheet ---------- */
 @media print {
-  .site-header, .bookbar, .consent, .consent-dialog, .ribbon, .gallery-controls, .prices-bar, .product-media, .product-cta, .panes-scroller, .map-slot, .footer-cta, .footer-logo, .hero-actions, .btn { display: none !important; }
+  .site-header, .bookbar, .consent, .consent-dialog, .ribbon, .gallery-arrows, .gallery-play, .prices-bar, .product-media, .product-cta, .panes-scroller, .map-slot, .footer-cta, .footer-logo, .hero-actions, .btn { display: none !important; }
   .section { padding-block: 1.5rem; }
   body { font-size: 11pt; }
 }

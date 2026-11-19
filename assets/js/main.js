@@ -577,22 +577,20 @@
    *     The pictures are copied once in front of and twice behind the real
    *     ones, and the position is always brought back onto the real ones,
    *     so the row never runs out. It moves by transform only, eased in one
-   *     requestAnimationFrame loop that runs only while it moves. The wait
-   *     for the next move is the fill of the current line under the row (a
-   *     Web Animation): pausing the fill pauses the carousel. It holds while
-   *     the mouse rests on it, while it has keyboard focus or a finger on
-   *     it, and while it is off screen; the stop button stops it for good.
-   *     With reduced motion it does not start by itself and moves at once.
+   *     requestAnimationFrame loop that runs only while it moves. It holds
+   *     while the mouse rests on it, while it has keyboard focus or a finger
+   *     on it, and while it is off screen, and carries on from where it was.
+   *     A stop button for keyboard users appears when it gets focus. With
+   *     reduced motion it does not start by itself and moves at once.
    * ------------------------------------------------------------------ */
   const gallery = $('[data-gallery]');
   const viewport = gallery && $('[data-gallery-viewport]', gallery);
   const row = gallery && $('[data-gallery-track]', gallery);
-  const controls = gallery && $('[data-gallery-controls]', gallery);
+  const arrows = gallery && $('[data-gallery-arrows]', gallery);
   const real = row ? $$('.gallery-item', row) : [];
-  if (gallery && viewport && controls && real.length > 1) {
+  if (gallery && viewport && arrows && real.length > 1) {
     const N = real.length;
-    const DWELL = 3000;
-    const canWait = typeof Element.prototype.animate === 'function';
+    const DWELL = 3000;                                    // ms on each picture
     const names = real.map((el) => {
       const cap = $('figcaption', el).cloneNode(true);
       $$('.gallery-no', cap).forEach((no) => no.remove());
@@ -608,10 +606,8 @@
     row.prepend(...copies());
     row.append(...copies(), ...copies());
     const items = $$('.gallery-item', row);                // N copies, the N real pictures, 2N copies
-    const dots = $$('[data-gallery-dot]', controls);
-    const playBtn = $('[data-gallery-play]', controls);
-    const count = $('[data-gallery-count]', controls);
-    const status = $('[data-gallery-status]', controls);
+    const playBtn = $('[data-gallery-play]', gallery);
+    const status = $('[data-gallery-status]', gallery);
     const easeOut = (t) => 1 - Math.pow(1 - t, 3);
     const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(2 - 2 * t, 3) / 2);
 
@@ -620,14 +616,12 @@
     let tween = null, raf = 0, drag = null, current = -1;
 
     const render = () => { row.style.transform = `translate3d(${(-pos * step).toFixed(2)}px, 0, 0)`; };
-    // the current picture: its number turns green, its line fills, the counter follows
+    // the current picture: its number turns green; moves made by the visitor are announced
     const mark = (announce) => {
       const i = Math.round(target), n = ((i % N) + N) % N;
       items.forEach((el, k) => el.classList.toggle('is-active', k === i));
       if (n === current) return;
       current = n;
-      dots.forEach((dot, k) => { if (k === n) dot.setAttribute('aria-current', 'true'); else dot.removeAttribute('aria-current'); });
-      if (count) count.textContent = String(n + 1).padStart(2, '0');
       if (announce && status) status.textContent = `Snímek ${n + 1} ze ${N}: ${names[n]}`;
     };
     // stay on the real pictures: the copies on either side look the same
@@ -661,44 +655,39 @@
       kick();
     };
 
-    // the wait for the next move
+    // the wait for the next move: a timer that keeps what is left of it while held
     const holds = new Set(['offscreen']);
-    let auto = motionOn && canWait, wait = null;
-    const restart = () => {
-      if (wait) { wait.cancel(); wait = null; }
-      if (!auto || current < 0) return;
-      const fill = $('.gallery-dot-fill', dots[current]);
-      const a = fill.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: DWELL, easing: 'linear', fill: 'forwards' });
-      a.onfinish = () => { a.cancel(); if (wait === a) wait = null; go(1, 'auto'); };
-      if (holds.size) a.pause();
-      wait = a;
+    let auto = motionOn, timer = 0, left = DWELL, since = 0;
+    const resume = () => {
+      if (timer || !auto || holds.size) return;
+      since = performance.now();
+      timer = setTimeout(() => { timer = 0; left = DWELL; go(1, 'auto'); }, Math.max(left, 0));
     };
+    const pause = () => {
+      if (!timer) return;
+      clearTimeout(timer); timer = 0;
+      left -= performance.now() - since;
+    };
+    const restart = () => { clearTimeout(timer); timer = 0; left = DWELL; resume(); };
     const hold = (why, on) => {
       if (on) holds.add(why); else holds.delete(why);
-      if (wait) { if (holds.size) wait.pause(); else wait.play(); }
+      if (holds.size) pause(); else resume();
     };
     const go = (dir, how = 'user') => { moveTo(Math.round(target) + dir, how); restart(); };
     const setAuto = (on) => {
-      auto = on && canWait;
-      playBtn.setAttribute('aria-label', auto ? 'Zastavit automatické posouvání' : 'Spustit automatické posouvání');
-      $('use', playBtn).setAttribute('href', auto ? '#i-pause' : '#i-play');
+      auto = on;
+      playBtn.textContent = auto ? 'Zastavit automatické posouvání' : 'Spustit automatické posouvání';
       restart();
     };
 
-    // buttons, lines and keyboard arrows
-    playBtn.hidden = !canWait;
+    // arrows, keyboard arrows and the stop button (keyboard users only)
+    playBtn.hidden = false;
     playBtn.addEventListener('click', () => {
       if (!auto) { holds.delete('focus'); holds.delete('hover'); }   // asked to run: run now
       setAuto(!auto);
     });
-    $('[data-gallery-prev]', controls).addEventListener('click', () => go(-1));
-    $('[data-gallery-next]', controls).addEventListener('click', () => go(1));
-    dots.forEach((dot, k) => dot.addEventListener('click', () => {
-      let diff = k - current;
-      if (diff > N / 2) diff -= N;
-      if (diff < -N / 2) diff += N;                                  // the shorter way round
-      if (diff) go(diff);
-    }));
+    $('[data-gallery-prev]', arrows).addEventListener('click', () => go(-1));
+    $('[data-gallery-next]', arrows).addEventListener('click', () => go(1));
     gallery.addEventListener('keydown', (e) => {
       if ((e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') || e.altKey || e.metaKey || e.ctrlKey) return;
       e.preventDefault();
@@ -778,7 +767,7 @@
     };
     viewport.removeAttribute('tabindex');
     gallery.classList.add('is-live');
-    controls.hidden = false;
+    arrows.hidden = false;
     measure();
     window.addEventListener('resize', measure, { passive: true });
     mark(false);
